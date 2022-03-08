@@ -1,0 +1,11 @@
+group 'com.mcdev.framework.bukkit'
+
+dependencies {
+    compileOnly project(':commons')
+    compileOnly project(':commands')
+    compileOnly project(':locale')
+
+    compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
+
+    implementation 'net.kyori:adventure-platform-bukkit:4.0.1'
+}

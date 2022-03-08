@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.0'
+    id 'org.cadixdev.licenser' version '0.6.1'
+}
+
+group 'com.mcdev.framework'
+version '1.0-SNAPSHOT'
+
+final def DELIMITER = '[] ===================================== []'
+
+println """
+$DELIMITER
+- It's official commons made by Max_Wainer
+- Use it but keep in mind, don't try take
+- it as yours :>
+$DELIMITER
+"""
+
+
+println DELIMITER
+
+println 'Configuring projects...'
+
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven-publish'
+    apply plugin: 'org.cadixdev.licenser'
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+
+        maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://oss.sonatype.org/content/repositories/central' }
+        maven { url 'https://repo.codemc.org/repository/nms/' }
+    }
+
+    dependencies {
+        implementation 'org.jetbrains:annotations:23.0.0'
+        implementation 'joda-time:joda-time:2.10.13'
+        implementation 'com.google.guava:guava:31.0.1-jre'
+        implementation 'com.google.code.gson:gson:2.8.9'
+
+        // kyori
+        implementation 'net.kyori:adventure-api:4.9.3'
+        implementation 'net.kyori:adventure-text-serializer-legacy:4.9.3'
+        implementation 'net.kyori:adventure-text-serializer-gson:4.9.3'
+        implementation 'net.kyori:adventure-text-serializer-plain:4.9.3'
+
+        // testing utils
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    compileJava {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+
+        options.encoding = 'utf-8'
+    }
+
+    license {
+        header = rootProject.file('HEADER.txt')
+        include '**/*.java'
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = rootProject.group
+                artifactId = project.name
+                version = rootProject.version
+
+                from components.java
+            }
+        }
+    }
+
+    println "Configured '$project.name'!"
+}
+println DELIMITER
+
+dependencies {
+    implementation project(':locale')
+    implementation project(':commons')
+    implementation project(':example')
+    implementation project(':bukkit')
+    implementation project(':commands')
+}
+
+shadowJar {
+    destinationDirectory = file('E:\\Coding\\Server\\1_12\\plugins')
+}

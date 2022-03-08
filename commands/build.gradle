@@ -1,0 +1,6 @@
+group 'com.mcdev.framework.commands'
+
+dependencies {
+    compileOnly project(':commons')
+    compileOnly project(':locale')
+}

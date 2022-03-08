@@ -1,0 +1,5 @@
+group 'com.mcdev.framework.locale'
+
+dependencies {
+    compileOnly project(':commons')
+}
