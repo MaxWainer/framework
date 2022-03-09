@@ -1,0 +1,11 @@
+dependencies {
+    compileOnly 'org.jetbrains:annotations:22.0.0'
+    compileOnly 'org.ow2.asm:asm:9.2'
+    compileOnly 'me.lucko:jar-relocator:1.5'
+
+    compileOnly 'org.apache.logging.log4j:log4j-api:2.17.2'
+    compileOnly 'org.apache.logging.log4j:log4j-core:2.17.2'
+
+    compileOnly 'com.google.inject:guice:5.1.0'
+    compileOnly project(':commons')
+}
