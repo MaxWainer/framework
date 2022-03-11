@@ -1,6 +1,6 @@
-package com.mcdev.framework.config;
+package com.mcdev.framework.config.api;
 
-import com.mcdev.framework.config.options.ConfigOptions;
+import com.mcdev.framework.config.api.options.ConfigOptions;
 import java.io.File;
 import org.jetbrains.annotations.NotNull;
 

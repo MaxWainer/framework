@@ -1,4 +1,4 @@
-package com.mcdev.framework.config.comment;
+package com.mcdev.framework.config.api.comment;
 
 import java.util.List;
 import org.jetbrains.annotations.NotNull;

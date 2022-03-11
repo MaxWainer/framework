@@ -1,6 +1,6 @@
-package com.mcdev.framework.config.options;
+package com.mcdev.framework.config.api.options;
 
-import com.mcdev.framework.config.adapter.AdapterRegistry;
+import com.mcdev.framework.config.api.adapter.AdapterRegistry;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 

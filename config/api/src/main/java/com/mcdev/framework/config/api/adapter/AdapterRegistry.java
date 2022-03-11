@@ -1,4 +1,4 @@
-package com.mcdev.framework.config.adapter;
+package com.mcdev.framework.config.api.adapter;
 
 import org.jetbrains.annotations.NotNull;
 

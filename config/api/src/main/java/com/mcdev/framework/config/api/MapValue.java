@@ -1,4 +1,4 @@
-package com.mcdev.framework.config;
+package com.mcdev.framework.config.api;
 
 import java.util.Map.Entry;
 import java.util.function.Predicate;

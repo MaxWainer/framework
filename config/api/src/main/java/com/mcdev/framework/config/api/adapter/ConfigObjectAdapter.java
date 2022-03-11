@@ -1,6 +1,6 @@
-package com.mcdev.framework.config.adapter;
+package com.mcdev.framework.config.api.adapter;
 
-import com.mcdev.framework.config.Section;
+import com.mcdev.framework.config.api.Section;
 import org.jetbrains.annotations.NotNull;
 
 public interface ConfigObjectAdapter<T> {

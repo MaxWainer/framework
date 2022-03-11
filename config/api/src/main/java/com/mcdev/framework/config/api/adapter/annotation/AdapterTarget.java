@@ -1,4 +1,4 @@
-package com.mcdev.framework.config.adapter.annotation;
+package com.mcdev.framework.config.api.adapter.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
