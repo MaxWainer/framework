@@ -3,7 +3,7 @@ package com.mcdev.framework.config.api;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
-public interface Section {
+public interface Section extends Value {
 
   @NotNull Config config();
 

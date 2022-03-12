@@ -1,10 +1,11 @@
 package com.mcdev.framework.config.api;
 
+import com.mcdev.framework.config.api.comment.Commentable;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Value {
+public interface Value extends Commentable {
 
   boolean isMap();
 
