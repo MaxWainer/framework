@@ -1,4 +1,4 @@
-group 'com.mcdev.framework.locale'
+group 'framework.locale'
 
 dependencies {
     compileOnly project(':commons')

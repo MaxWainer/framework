@@ -4,7 +4,7 @@ plugins {
     id 'org.cadixdev.licenser' version '0.6.1'
 }
 
-group 'com.mcdev.framework'
+group 'framework'
 version '1.0-SNAPSHOT'
 
 final def DELIMITER = '[] ===================================== []'
@@ -95,5 +95,5 @@ dependencies {
 }
 
 shadowJar {
-    destinationDirectory = file('E:\\Coding\\Server\\1_12\\plugins')
+
 }

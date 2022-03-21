@@ -1,4 +1,4 @@
-group 'com.mcdev.framework.commands'
+group 'framework.commands'
 
 dependencies {
     compileOnly project(':commons')

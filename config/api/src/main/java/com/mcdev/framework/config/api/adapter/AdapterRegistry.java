@@ -1,9 +1,0 @@
-package com.mcdev.framework.config.api.adapter;
-
-import org.jetbrains.annotations.NotNull;
-
-public interface AdapterRegistry {
-
-  <V> @NotNull ConfigObjectAdapter<V> findAdapter(final @NotNull Class<V> clazz);
-
-}

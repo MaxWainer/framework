@@ -1,4 +1,4 @@
-group 'com.mcdev.framework.config.yaml'
+group 'framework.config.yaml'
 
 dependencies {
     compileOnly project(':config:config-api')

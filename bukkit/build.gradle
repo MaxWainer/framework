@@ -1,4 +1,4 @@
-group 'com.mcdev.framework.bukkit'
+group 'framework.bukkit'
 
 dependencies {
     compileOnly project(':commons')

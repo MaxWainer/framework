@@ -1,3 +1,3 @@
 name: "Example"
 version: 1.0
-main: "com.mcdev.framework.example.bukkit.ExampleBukkitPlugin"
+main: "framework.example.bukkit.ExampleBukkitPlugin"
