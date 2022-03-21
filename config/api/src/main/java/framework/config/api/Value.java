@@ -217,11 +217,23 @@ public interface Value extends Commentable {
 
   boolean isPrimitive();
 
-  @NotNull PrimitiveValue asPrimitive();
+  boolean isDictionary();
 
-  @NotNull ListValue asList();
+  default @NotNull PrimitiveValue asPrimitive() {
+    throw new UnsupportedOperationException("Value is not primitive!");
+  }
 
-  @NotNull MapValue asMap();
+  default @NotNull ListValue asList() {
+    throw new UnsupportedOperationException("Value is not list!");
+  }
+
+  default @NotNull MapValue asMap() {
+    throw new UnsupportedOperationException("Value is not map!");
+  }
+
+  default @NotNull DictionaryValue asDictionary() {
+    throw new UnsupportedOperationException("Value is not dictionary!");
+  }
 
   // null-value
   @Nullable Object raw();

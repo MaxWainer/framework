@@ -205,11 +205,11 @@
 package framework.config.yaml;
 
 import framework.config.api.Config;
-import framework.config.api.ConfigFactoryBridge;
+import framework.config.api.ConfigFactory;
 import framework.config.api.options.ConfigOptions;
 import org.jetbrains.annotations.NotNull;
 
-public class YamlConfigBridge implements ConfigFactoryBridge {
+public class YamlConfigFactory implements ConfigFactory {
 
   @Override
   public @NotNull Config createConfig(final @NotNull ConfigOptions options) {

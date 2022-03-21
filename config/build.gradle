@@ -1,3 +1,5 @@
-dependencies {
-
+allprojects {
+    dependencies {
+        compileOnly project(':commons')
+    }
 }
