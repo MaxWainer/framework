@@ -3,9 +3,7 @@ group 'framework.bukkit'
 subprojects {
     dependencies {
         compileOnly project(':commons')
-        compileOnly project(':commands')
         compileOnly project(':locale')
-        compileOnly project(':loader')
 
         compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
 

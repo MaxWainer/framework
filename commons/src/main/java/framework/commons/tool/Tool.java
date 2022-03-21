@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,30 +202,13 @@
  *    limitations under the License.
  */
 
-package framework.loader.plugin;
+package framework.commons.tool;
 
-import com.google.inject.Binder;
-import framework.loader.module.PluginModuleManager;
-import java.nio.file.Path;
-import org.apache.logging.log4j.Logger;
+import framework.commons.repository.RepositoryObject;
 import org.jetbrains.annotations.NotNull;
 
-public interface LoadableJavaPlugin<B> {
+public interface Tool<H> extends RepositoryObject<String> {
 
-  void registerModules();
-
-  void configure(final @NotNull Binder binder);
-
-  default void onEnable() {}
-
-  default void onDisable() {}
-
-  default void onLoad() {}
-
-  @NotNull PluginModuleManager moduleManager();
-
-  @NotNull Logger logger();
-
-  @NotNull Path dataPath();
+  void handleClick(final @NotNull ToolsDataHolder toolHolder, final @NotNull H interactingData);
 
 }

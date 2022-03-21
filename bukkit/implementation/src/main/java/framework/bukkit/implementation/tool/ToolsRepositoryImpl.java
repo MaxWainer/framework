@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,21 +202,39 @@
  *    limitations under the License.
  */
 
-package framework.loader.module;
+package framework.bukkit.implementation.tool;
 
-import com.google.inject.Binder;
+import com.mcdev.portals.tool.implementation.CuboidSelectorTool;
+import framework.commons.tool.Tool;
+import framework.commons.tool.ToolsRepository;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import org.bukkit.Bukkit;
+import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
-public interface PluginModule {
+public final class ToolsRepositoryImpl implements ToolsRepository {
 
-  default void preconfigure() {}
+  private final Map<String, Tool<?>> toolMap = new ConcurrentHashMap<>();
 
-  void load();
+  public ToolsRepositoryImpl() {
+    register("cuboid", new CuboidSelectorTool());
+  }
 
-  default void unload() {}
+  @Override
+  public @NotNull Optional<@NotNull Tool<?>> find(final @NotNull String s) {
+    return Optional.ofNullable(toolMap.get(s));
+  }
 
-  default void configureInnerComponent(final @NotNull Binder binder) {}
+  @Override
+  public void register(final @NotNull String s, final @NotNull Tool<?> tool) {
+    toolMap.put(s, tool);
 
-  @NotNull String name();
-
+    if (tool instanceof AbstractListeningTool<?>) {
+      Bukkit
+          .getPluginManager()
+          .registerEvents((Listener) tool, plugin);
+    }
+  }
 }

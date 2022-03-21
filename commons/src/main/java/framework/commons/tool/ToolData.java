@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,133 +202,29 @@
  *    limitations under the License.
  */
 
-package framework.loader.helper;
+package framework.commons.tool;
 
-import framework.commons.Exceptions;
-import framework.commons.LoggerCompat;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.logging.Logger;
-import org.jetbrains.annotations.ApiStatus;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-@ApiStatus.Internal
-public final class JVMHelper {
+public interface ToolData {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
-
-  private static final Set<JavaVersion> REFLECTION_LOADABLE_VERSION = EnumSet.of(
-      JavaVersion.JAVA_8
-  );
-
-  private static final Set<JavaVersion> THE_UNSAFE_LOADABLE_VERSION = EnumSet.of(
-      JavaVersion.JAVA_9,
-      JavaVersion.JAVA_10,
-      JavaVersion.JAVA_11,
-      JavaVersion.JAVA_12,
-      JavaVersion.JAVA_13,
-      JavaVersion.JAVA_14,
-      JavaVersion.JAVA_15,
-      JavaVersion.JAVA_16,
-      JavaVersion.JAVA_17
-  );
-
-  public static final JavaVersion CURRENT_VERSION = detectVersion();
-
-  private JVMHelper() {
-    Exceptions.instantiationError();
+  static ToolData create() {
+    return new ToolDataImpl();
   }
 
-  public static boolean isReflectionSupported() {
-    return REFLECTION_LOADABLE_VERSION.contains(CURRENT_VERSION);
-  }
+  <T> void setProperty(final @NotNull String propertyName, final @NotNull T value);
 
-  public static boolean isTheUnsafeSupported() {
-    return THE_UNSAFE_LOADABLE_VERSION.contains(CURRENT_VERSION);
-  }
+  <T> boolean modifyProperty(
+      final @NotNull String propertyName,
+      final @NotNull UnaryOperator<T> operator);
 
-  private static JavaVersion detectVersion() {
-    final String stringVersion = System.getProperty("java.version");
+  <T> @Nullable T getProperty(final @NotNull String propertyName);
 
-    LOGGER.info(() -> "Running plugin on version " + stringVersion);
-
-    final JavaVersion detected = JavaVersion.fromString(stringVersion);
-
-    if (detected == JavaVersion.UNDETECTED) {
-      LOGGER.warning("=====================================================");
-      LOGGER.warning("> You are using java version which is not support by framework!");
-      LOGGER.warning("> Please, switch it to most relevant version, such as");
-      LOGGER.warning(">  Java 1.8, if you using lower than this version!");
-      LOGGER.warning("=====================================================");
-    }
-
-    if (THE_UNSAFE_LOADABLE_VERSION.contains(detected)) {
-      LOGGER.info("Using the unsafe java class loading strategy!");
-    }
-
-    if (REFLECTION_LOADABLE_VERSION.contains(detected)) {
-      LOGGER.info("Using reflection java class loading strategy!");
-    }
-
-    return detected;
-  }
-
-  public enum JavaVersion {
-    JAVA_8,
-    JAVA_9,
-    JAVA_10,
-    JAVA_11,
-    JAVA_12,
-    JAVA_13,
-    JAVA_14,
-    JAVA_15,
-    JAVA_16,
-    JAVA_17,
-    UNDETECTED;
-
-    static JavaVersion fromString(final @NotNull String propertyVersion) {
-      if (propertyVersion.startsWith("1.")) {
-        return JAVA_8;
-      }
-
-      if (propertyVersion.contains("17")) {
-        return JAVA_17;
-      }
-
-      if (propertyVersion.contains("16")) {
-        return JAVA_16;
-      }
-
-      if (propertyVersion.contains("15")) {
-        return JAVA_15;
-      }
-
-      if (propertyVersion.contains("4")) {
-        return JAVA_14;
-      }
-
-      if (propertyVersion.contains("13")) {
-        return JAVA_13;
-      }
-
-      if (propertyVersion.contains("12")) {
-        return JAVA_12;
-      }
-
-      if (propertyVersion.contains("11")) {
-        return JAVA_11;
-      }
-
-      if (propertyVersion.contains("10")) {
-        return JAVA_10;
-      }
-
-      if (propertyVersion.contains("9")) {
-        return JAVA_9;
-      }
-
-      return UNDETECTED;
-    }
+  default <T> @NotNull Optional<T> getPropertySafe(final @NotNull String propertyName) {
+    return Optional.ofNullable(getProperty(propertyName));
   }
 
 }

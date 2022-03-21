@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,167 +202,22 @@
  *    limitations under the License.
  */
 
-package framework.loader.module;
+package framework.bukkit.implementation.tool;
 
-import framework.commons.Measure;
-import framework.commons.SneakyThrows;
-import framework.loader.module.annotation.ModuleLoadProcess;
-import framework.loader.module.annotation.ModuleLoadProcess.Scope;
-import framework.loader.module.annotation.Priority;
-import framework.loader.plugin.LoadableJavaPlugin;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import framework.commons.tool.Tool;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
-public final class PluginModuleManager {
+public abstract class AbstractListeningTool<H extends PlayerEvent> implements Tool<H>, Listener {
 
-  private final Map<PluginModule, LoadingProcessInfo> pluginModules = new ConcurrentHashMap<>();
-  private final LoadableJavaPlugin<?> plugin;
+  protected final SetupUserRepository userRepository;
 
-  public PluginModuleManager(final @NotNull LoadableJavaPlugin<?> plugin) {
+  protected final DevPortalsPlugin plugin;
+
+  protected AbstractListeningTool(
+      final @NotNull DevPortalsPlugin plugin) {
+    this.userRepository = plugin.usersRepository();
     this.plugin = plugin;
-  }
-
-  public void registerModule(final @NotNull PluginModule module) {
-    this.pluginModules.put(module, readProcessInfo(module));
-  }
-
-  public void preconfigure() {
-    this.iterateModules(PluginModule::preconfigure);
-  }
-
-  public void enable() {
-    this.iterateModules(
-        pluginModule -> {
-          final long time = System.currentTimeMillis();
-          this.plugin.logger().info("Enabling module '{}'...", pluginModule.name());
-
-          try {
-            pluginModule.load();
-          } catch (final @NotNull Throwable throwable) {
-            this.plugin
-                .logger()
-                .error(
-                    "Error while enabling module '{}': {}",
-                    pluginModule.name(),
-                    throwable.getMessage());
-            SneakyThrows.sneakyThrows(throwable);
-          }
-
-          this.plugin
-              .logger()
-              .info(
-                  "Successfully enabled module '{}', took {}ms...",
-                  pluginModule.name(),
-                  System.currentTimeMillis() - time);
-        });
-  }
-
-  public void disable() {
-    this.iterateModules(
-        pluginModule -> {
-          final long time = System.currentTimeMillis();
-          this.plugin.logger().info("Disabling module '{}'...", pluginModule.name());
-
-          try {
-            pluginModule.unload();
-          } catch (final @NotNull Throwable throwable) {
-            this.plugin
-                .logger()
-                .error(
-                    "Error while disabling module '{}': {}",
-                    pluginModule.name(),
-                    throwable.getMessage());
-            SneakyThrows.sneakyThrows(throwable);
-          }
-
-          this.plugin
-              .logger()
-              .info(
-                  "Successfully disabled module '{}', took {}ms...",
-                  pluginModule.name(),
-                  System.currentTimeMillis() - time);
-        });
-  }
-
-  public long reload() {
-    return Measure.measure(() -> this.iterateModules(
-        pluginModule -> {
-          if (pluginModule instanceof Reloadable) {
-            final Reloadable reloadable = (Reloadable) pluginModule;
-
-            final long time = System.currentTimeMillis();
-            this.plugin.logger().info("Reloading module '{}'...", pluginModule.name());
-
-            try {
-              reloadable.reload();
-            } catch (final @NotNull Throwable throwable) {
-              this.plugin
-                  .logger()
-                  .error(
-                      "Error while reloading module '{}': {}",
-                      pluginModule.name(),
-                      throwable.getMessage());
-              SneakyThrows.sneakyThrows(throwable);
-            }
-
-            final long took = System.currentTimeMillis() - time;
-
-            this.plugin
-                .logger()
-                .info("Successfully reloaded module '{}', took {}ms...", pluginModule.name(), took);
-          }
-        })).took();
-  }
-
-  public void iterateModules(final @NotNull Consumer<? super PluginModule> consumer) {
-    for (final PluginModule pluginModule : this.listModulesSorted()) {
-      consumer.accept(pluginModule);
-    }
-  }
-
-  private @NotNull @Unmodifiable List<PluginModule> listModulesSorted() {
-    return this.pluginModules
-        .entrySet()
-        .stream()
-        .sorted(Entry.comparingByValue())
-        .map(Entry::getKey)
-        .collect(Collectors.toList());
-  }
-
-  private static LoadingProcessInfo readProcessInfo(final @NotNull PluginModule pluginModule) {
-    final ModuleLoadProcess process = pluginModule.getClass()
-        .getAnnotation(ModuleLoadProcess.class);
-
-    if (process == null) {
-      return LoadingProcessInfo.DEFAULT;
-    }
-
-    return new LoadingProcessInfo(process.priority(), process.scope());
-  }
-
-  private static final class LoadingProcessInfo implements Comparable<LoadingProcessInfo> {
-
-    public static final LoadingProcessInfo DEFAULT = new LoadingProcessInfo(Priority.LOWEST,
-        Scope.UNDEFINED);
-
-    final short priority;
-    final ModuleLoadProcess.Scope scope;
-
-    private LoadingProcessInfo(final short priority,
-        final Scope scope) {
-      this.priority = priority;
-      this.scope = scope;
-    }
-
-    @Override
-    public int compareTo(@NotNull final PluginModuleManager.LoadingProcessInfo o) {
-      return Short.compare(priority, o.priority);
-    }
   }
 }

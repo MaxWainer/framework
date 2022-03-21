@@ -1,9 +1,10 @@
-plugins {
-    id 'java'
-}
-
 group 'framework.bukkit.implementation'
 
 dependencies {
+    compileOnly project(':bukkit:bukkit-commons')
+    compileOnly project(':bootstrap')
+    compileOnly project(':commands')
+    compileOnly project(':loader')
 
+    compileOnly 'com.google.inject:guice:5.1.0'
 }

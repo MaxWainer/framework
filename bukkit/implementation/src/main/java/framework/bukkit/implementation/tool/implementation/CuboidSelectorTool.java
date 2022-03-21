@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,28 +202,86 @@
  *    limitations under the License.
  */
 
-package framework.loader;
+package framework.bukkit.implementation.tool.implementation;
 
-import framework.loader.loadstrategy.ClassLoadingStrategy;
-import framework.loader.repository.RepositoryManager;
-import java.nio.file.Path;
+import framework.bukkit.implementation.tool.AbstractListeningTool;
+import framework.commons.tool.ToolData;
+import framework.commons.tool.ToolsDataHolder;
+import java.util.EnumSet;
+import java.util.Optional;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.jetbrains.annotations.NotNull;
 
-public interface FrameworkLoader<B> {
+public final class CuboidSelectorTool extends AbstractListeningTool<PlayerInteractEvent> {
 
-  void load();
+  private static final EnumSet<Action> ALLOWED_ACTIONS = EnumSet.of(Action.LEFT_CLICK_BLOCK,
+      Action.RIGHT_CLICK_BLOCK);
 
-  void enable();
+  public CuboidSelectorTool(
+      final @NotNull DevPortalsPlugin plugin) {
+    super(plugin);
+  }
 
-  void disable();
+  @Override
+  public void handleClick(final @NotNull ToolsDataHolder toolHolder,
+      final @NotNull PlayerInteractEvent interactingData) {
+    if ((Optional.ofNullable(interactingData.getHand()).orElse(EquipmentSlot.HAND))
+        != EquipmentSlot.HAND) {
+      return;
+    }
 
-  @NotNull
-  Path librariesPath();
+    final Player clicker = interactingData.getPlayer();
 
-  @NotNull
-  RepositoryManager repositoryManager();
+    if (!clicker.hasPermission("devportals.tool.cuboid")) {
+      return;
+    }
 
-  @NotNull
-  ClassLoadingStrategy classLoadingStrategy();
+    final Material material = plugin.settings()
+        .selectingToolMaterial();
 
+    if (!clicker.getInventory().getItemInMainHand().getType().equals(material)) {
+      return;
+    }
+
+    final ToolData toolData = toolHolder.getOrCreateToolData("cuboid");
+
+    if (!ALLOWED_ACTIONS.contains(interactingData.getAction())) {
+      return;
+    }
+
+    final String type =
+        interactingData.getAction() == Action.RIGHT_CLICK_BLOCK ? "first" : "second";
+
+    final Location location = interactingData.getClickedBlock().getLocation();
+
+    toolData.setProperty(type, location);
+
+    if (toolHolder instanceof SetupUser) {
+      ((SetupUser) toolHolder).sendTranslatable(
+          "tools.selector.click." + type,
+          Transformers.formatLocation(location)
+      );
+    }
+
+    interactingData.setCancelled(true);
+  }
+
+  @EventHandler
+  public void onEvent(final @NotNull PlayerInteractEvent event) {
+    final Optional<SetupUser> userOptional = userRepository
+        .find(event.getPlayer().getUniqueId());
+
+    userOptional.ifPresent(user -> handleClick(user, event));
+  }
+
+  @Override
+  public @NotNull String identifier() {
+    return "selector";
+  }
 }

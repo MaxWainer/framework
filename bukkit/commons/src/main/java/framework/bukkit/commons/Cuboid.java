@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,13 +202,76 @@
  *    limitations under the License.
  */
 
-package framework.loader.module.annotation;
+package framework.bukkit.commons;
 
-public interface Priority {
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-  short LOWEST = 1;
-  short LOW = 2;
-  short HIGH = 3;
-  short HIGHEST = 4;
+import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
+public final class Cuboid {
+
+  private final Location firstLocation;
+  private final Location secondLocation;
+
+  private final int minX, minY, minZ, maxX, maxY, maxZ;
+
+  public Cuboid(final @NotNull Location firstLocation, final @NotNull Location secondLocation) {
+    this.firstLocation = firstLocation;
+    this.secondLocation = secondLocation;
+
+    if (!firstLocation.getWorld().equals(secondLocation.getWorld())) {
+      throw new UnsupportedOperationException();
+    }
+
+    this.minX = min(firstLocation.getBlockX(), secondLocation.getBlockX());
+    this.minY = min(firstLocation.getBlockY(), secondLocation.getBlockY());
+    this.minZ = min(firstLocation.getBlockZ(), secondLocation.getBlockZ());
+
+    this.maxX = max(firstLocation.getBlockX(), secondLocation.getBlockX());
+    this.maxY = max(firstLocation.getBlockY(), secondLocation.getBlockY());
+    this.maxZ = max(firstLocation.getBlockZ(), secondLocation.getBlockZ());
+  }
+
+  @NotNull
+  public Location secondLocation() {
+    return secondLocation;
+  }
+
+  @NotNull
+  public Location firstLocation() {
+    return firstLocation;
+  }
+
+  public boolean clashesWith(final @NotNull Cuboid other) {
+    final boolean first = in(other.firstLocation);
+    final boolean second = in(other.secondLocation);
+
+    return !first && !second;
+  }
+
+  public boolean in(final @NotNull Location location) {
+    final int
+        x = location.getBlockX(),
+        y = location.getBlockY(),
+        z = location.getBlockZ();
+
+    return
+        x >= this.minX && x <= this.maxX
+        && y >= this.minY && y <= this.maxY
+        && z >= this.minZ && z <= this.maxZ;
+  }
+
+  @Override
+  public String toString() {
+    return "[" +
+        "minX=" + minX +
+        ", minY=" + minY +
+        ", minZ=" + minZ +
+        ", maxX=" + maxX +
+        ", maxY=" + maxY +
+        ", maxZ=" + maxZ +
+        ']';
+  }
 }

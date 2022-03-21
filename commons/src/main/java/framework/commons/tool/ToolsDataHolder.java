@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,242 +202,33 @@
  *    limitations under the License.
  */
 
-package framework.loader;
+package framework.commons.tool;
 
-import com.google.inject.Guice;
-import framework.commons.Measure;
-import framework.commons.SneakyThrows;
-import framework.loader.helper.JVMHelper;
-import framework.loader.inject.FrameworkModule;
-import framework.loader.loadstrategy.ClassLoadingStrategy;
-import framework.loader.loadstrategy.version.ReflectionClassLoadingStrategy;
-import framework.loader.loadstrategy.version.TheUnsafeClassLoadingStrategy;
-import framework.loader.plugin.LoadableJavaPlugin;
-import framework.loader.repository.RepositoryManager;
-import framework.loader.repository.dependency.Dependencies;
-import framework.loader.repository.dependency.Dependency;
-import framework.loader.repository.implementation.CentralRepository;
-import framework.loader.resource.ResourceFile;
-import framework.loader.resource.ResourceFileLoader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.MalformedURLException;
-import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import me.lucko.jarrelocator.JarRelocator;
-import me.lucko.jarrelocator.Relocation;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractFrameworkLoader<B> implements FrameworkLoader<B> {
+public interface ToolsDataHolder {
 
-  private final LoadableJavaPlugin<B> providing;
+  @Nullable ToolData getToolData(final @NotNull String name);
 
-  private final ClassLoader classLoader;
-  private final Logger logger;
-
-  private final Path librariesPath;
-  private final RepositoryManager repositoryManager = new RepositoryManager();
-
-  private ClassLoadingStrategy classLoadingStrategy;
-
-  // Guice
-  private FrameworkModule<B> frameworkModule;
-
-  protected AbstractFrameworkLoader(
-      final @NotNull LoadableJavaPlugin<B> providing,
-      final @NotNull ClassLoader classLoader,
-      final @NotNull File dataFolder,
-      final @NotNull Logger logger) {
-    this.providing = providing;
-    this.classLoader = classLoader;
-    this.logger = logger;
-    this.librariesPath = new File(dataFolder, "libraries").toPath();
+  default @NotNull Optional<ToolData> getToolDataSafe(final @NotNull String name) {
+    return Optional.ofNullable(getToolData(name));
   }
 
-  @Override
-  public void load() {
-    this.logger.info("Loader is started working...");
-    if (!Files.exists(this.librariesPath)) {
-      try {
-        Files.createDirectories(this.librariesPath);
-      } catch (final IOException exception) {
-        SneakyThrows.sneakyThrows(exception);
-      }
-    }
+  default @NotNull ToolData getOrCreateToolData(final @NotNull String name) {
+    final ToolData toolData = getToolData(name);
 
-    loadClassLoadingStrategy();
-
-    this.repositoryManager.registerRepository("central", new CentralRepository());
-
-    final ResourceFile resourceFile = readDependencies();
-
-    for (final Entry<Dependency, String> entry : resourceFile.dependencies().entrySet()) {
-      final Dependency dependency = entry.getKey();
-      final String relocateTo = entry.getValue();
-
-      try {
-        Path outPath = this.repositoryManager.repositorySafe(dependency.repository())
-            .loadDependency(dependency, this.librariesPath);
-
-        Objects.requireNonNull(outPath, "outPath is null!");
-
-        // Check, do we need actually relocate it
-        if (!relocateTo.equals("*")) {
-          // We need temp path, it's base file
-          final Path tempPath = outPath;
-
-          // relocated
-          outPath = this.librariesPath.resolve(Dependencies.fileNameOf(dependency, "relocated"));
-
-          // As far as group id not always represent
-          // jar package, we should handle it via
-          // stuff like that
-          final String groupId;
-          final String relocationGroup;
-          if (relocateTo.contains(":")) {
-            final String[] data = relocateTo.split(":");
-
-            groupId = data[0];
-            relocationGroup = data[1];
-          } else {
-            groupId = dependency.groupId();
-            relocationGroup = relocateTo;
-          }
-
-          // Load ASM, we need it for jar-relocator
-          this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm:9.2"));
-          this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm-commons:9.2"));
-
-          // Load lucko's jar-relocator
-          this.fastDependency(Dependency.of("central:me{}lucko:jar-relocator:1.5"));
-
-          // Create relocator
-          final JarRelocator relocator = new JarRelocator(tempPath.toFile(), outPath.toFile(),
-              Collections.singletonList(new Relocation(groupId, relocationGroup)));
-
-          // Run relocator
-          relocator.run();
-
-          // Delete unneeded file
-          Files.deleteIfExists(tempPath);
-        }
-
-        this.loadPath(outPath);
-      } catch (final IOException exception) {
-        throw new UnsupportedOperationException(
-            "An exception acquired while loading dependency " + dependency + "!", exception);
-      }
-    }
-
-    this.frameworkModule = new FrameworkModule<>(this, this.providing);
-
-    this.providing.onLoad();
+    return toolData == null ? addToolData(name, ToolData.create()) : toolData;
   }
 
-  private ResourceFile readDependencies() {
-    final ResourceFile resourceFile;
-    try (final Reader reader = new InputStreamReader(
-        Objects.requireNonNull(this.classLoader.getResourceAsStream("loader.json"),
-            "loader.json is not provided!")
-    )) {
-      resourceFile = ResourceFileLoader.readFile(reader);
-    } catch (final IOException exception) {
-      throw new UnsupportedOperationException("An exception acquired while getting loader.json!",
-          exception);
-    }
+  @NotNull ToolData addToolData(
+      final @NotNull String name,
+      final @NotNull ToolData data);
 
-    return resourceFile;
-  }
+  void modifyToolData(
+      final @NotNull String name,
+      final @NotNull UnaryOperator<ToolData> operator);
 
-  private void loadClassLoadingStrategy() {
-    if (JVMHelper.isTheUnsafeSupported()) {
-      this.classLoadingStrategy = TheUnsafeClassLoadingStrategy.FACTORY.withClassLoader(
-          (URLClassLoader) this.classLoader);
-    } else {
-      this.classLoadingStrategy = ReflectionClassLoadingStrategy.FACTORY.withClassLoader(
-          (URLClassLoader) this.classLoader);
-
-      if (!JVMHelper.isReflectionSupported()) {
-        this.logger.warning(
-            "Looks like you are using undetected version of java, by default, will be used reflection-based class loading strategy!");
-      }
-    }
-  }
-
-  private void loadPath(final Path path) throws MalformedURLException {
-    this.classLoadingStrategy.addURL(path.toFile().toURI().toURL());
-  }
-
-  private void fastDependency(final Dependency dependency) throws MalformedURLException {
-    final Path dependencyPath = this.repositoryManager.repositorySafe(dependency.repository())
-        .loadDependency(dependency, this.librariesPath);
-
-    if (dependencyPath == null) {
-      throw new UnsupportedOperationException("dependencyPath is null!");
-    }
-
-    this.classLoadingStrategy.addURL(dependencyPath.toFile().toURI().toURL());
-  }
-
-  @Override
-  public void enable() {
-    final Measure.Result result = Measure.measure(() -> {
-      this.providing.registerModules();
-
-      this.providing.moduleManager().preconfigure();
-      Guice.createInjector(this.frameworkModule);
-      this.providing.moduleManager().enable();
-
-      this.providing.onEnable();
-    });
-
-    if (result.isMeasuredWithException()) {
-      this.logger.log(Level.SEVERE, result.exception(),
-          () -> "Error while enabling plugin, caught exception");
-    } else {
-      this.logger.info(() -> "Successfully enabled plugin in " + result.took() + "ms");
-    }
-  }
-
-  @Override
-  public void disable() {
-    final Measure.Result result = Measure.measure(() -> {
-      this.providing.moduleManager().disable();
-
-      this.providing.onDisable();
-    });
-
-    if (result.isMeasuredWithException()) {
-      this.logger.log(Level.SEVERE, result.exception(),
-          () -> "Error while disabling plugin, caught exception");
-    } else {
-      this.logger.info(() -> "Successfully disabled plugin in " + result.took() + "ms");
-    }
-  }
-
-  @Override
-  @NotNull
-  public Path librariesPath() {
-    return this.librariesPath;
-  }
-
-  @Override
-  @NotNull
-  public RepositoryManager repositoryManager() {
-    return this.repositoryManager;
-  }
-
-  @Override
-  @NotNull
-  public ClassLoadingStrategy classLoadingStrategy() {
-    return this.classLoadingStrategy;
-  }
 }

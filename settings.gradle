@@ -19,4 +19,5 @@ project(':bukkit:commons').name = 'bukkit-commons'
 include 'stack-wrapper'
 include 'bukkit:implementation'
 project(':bukkit:implementation').name = 'bukkit-implementation'
+include 'bootstrap'
 

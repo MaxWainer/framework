@@ -202,24 +202,49 @@
  *    limitations under the License.
  */
 
-package framework.loader.module.annotation;
+package framework.loader;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import framework.commons.Buildable;
+import framework.loader.DependencyLoaderImpl.BuilderImpl;
+import framework.loader.loadstrategy.ClassLoadingStrategy;
+import framework.loader.repository.RepositoryManager;
+import framework.loader.repository.dependency.Dependency;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ModuleLoadProcess {
+public interface DependencyLoader {
 
-  short priority() default Priority.LOWEST;
+  static Builder builder() {
+    return new BuilderImpl();
+  }
 
-  @NotNull Scope scope() default Scope.UNDEFINED;
+  void load();
 
-  enum Scope {
-    POST, PRE, UNDEFINED;
+  @NotNull
+  Path librariesPath();
+
+  @NotNull
+  RepositoryManager repositoryManager();
+
+  @NotNull
+  ClassLoadingStrategy classLoadingStrategy();
+
+  interface Builder extends Buildable<DependencyLoader> {
+
+    Builder logger(final @NotNull Logger logger);
+
+    Builder dataFolder(final @NotNull Path dataFolder);
+
+    Builder classLoader(final @NotNull ClassLoader classLoader);
+
+    Builder additionalDependency(final @NotNull Dependency dependency, final @NotNull String relocateTo);
+
+    default Builder dataFolder(final @NotNull File dataFolder) {
+      return dataFolder(dataFolder.toPath());
+    }
+
   }
 
 }

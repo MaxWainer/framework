@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 MaxWainer
+ *    Copyright 2022 McDev.Store
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -202,44 +202,39 @@
  *    limitations under the License.
  */
 
-package framework.loader.plugin;
+package framework.commons.tool;
 
-import com.google.inject.Binder;
-import framework.loader.module.PluginModuleManager;
-import java.nio.file.Path;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractLoadablePlugin<B> implements LoadableJavaPlugin<B> {
+final class ToolDataImpl implements ToolData {
 
-  private final PluginModuleManager moduleManager;
-  private final Logger logger;
-  private final Path dataPath;
+  private final Map<String, Object> propertyMap = new ConcurrentHashMap<>();
 
-  protected AbstractLoadablePlugin(final @NotNull Path dataPath) {
-    this.moduleManager = new PluginModuleManager(this);
-    this.logger = LogManager.getLogger();
-    this.dataPath = dataPath;
+  @Override
+  public <T> void setProperty(@NotNull String propertyName, @NotNull T value) {
+    propertyMap.put(propertyName, value);
   }
 
   @Override
-  public void configure(final @NotNull Binder binder) {
-  }
+  public <T> boolean modifyProperty(@NotNull String propertyName,
+      @NotNull UnaryOperator<T> operator) {
+    final Optional<T> optionalValue = getPropertySafe(propertyName);
 
-  @NotNull
-  public Logger logger() {
-    return this.logger;
-  }
+    if (optionalValue.isPresent()) {
+      setProperty(propertyName, operator.apply(getProperty(propertyName)));
+      return true;
+    }
 
-  @NotNull
-  public PluginModuleManager moduleManager() {
-    return this.moduleManager;
+    return false;
   }
 
   @Override
-  public @NotNull Path dataPath() {
-    return this.dataPath;
+  public <T> @Nullable T getProperty(@NotNull String propertyName) {
+    return (T) propertyMap.get(propertyName);
   }
-
 }

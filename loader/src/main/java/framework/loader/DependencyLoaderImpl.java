@@ -202,40 +202,254 @@
  *    limitations under the License.
  */
 
-package framework.loader.inject;
+package framework.loader;
 
-import com.google.inject.AbstractModule;
-import framework.commons.Types;
-import framework.loader.FrameworkLoader;
-import framework.loader.plugin.LoadableJavaPlugin;
+import static java.util.Objects.requireNonNull;
+
+import framework.commons.Nulls;
+import framework.commons.SneakyThrows;
+import framework.loader.helper.JVMHelper;
+import framework.loader.loadstrategy.ClassLoadingStrategy;
+import framework.loader.loadstrategy.version.ReflectionClassLoadingStrategy;
+import framework.loader.loadstrategy.version.TheUnsafeClassLoadingStrategy;
+import framework.loader.repository.RepositoryManager;
+import framework.loader.repository.dependency.Dependencies;
+import framework.loader.repository.dependency.Dependency;
+import framework.loader.repository.implementation.CentralRepository;
+import framework.loader.resource.ResourceFile;
+import framework.loader.resource.ResourceFileLoader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.logging.Logger;
+import me.lucko.jarrelocator.JarRelocator;
+import me.lucko.jarrelocator.Relocation;
 import org.jetbrains.annotations.NotNull;
 
-public final class FrameworkModule<B> extends AbstractModule {
+final class DependencyLoaderImpl implements DependencyLoader {
 
-  private final FrameworkLoader<B> baseProvider;
-  private final LoadableJavaPlugin<B> providingPluginInstance;
+  private final ClassLoader classLoader;
+  private final Logger logger;
 
-  public FrameworkModule(
-      final @NotNull FrameworkLoader<B> baseProvider,
-      final @NotNull LoadableJavaPlugin<B> providingPluginInstance) {
-    this.baseProvider = baseProvider;
-    this.providingPluginInstance = providingPluginInstance;
+  private final Path librariesPath;
+  private final RepositoryManager repositoryManager = new RepositoryManager();
+
+  private ClassLoadingStrategy classLoadingStrategy;
+
+  private final Map<Dependency, String> additionalDependencies;
+
+  private DependencyLoaderImpl(
+      final @NotNull ClassLoader classLoader,
+      final @NotNull Path dataFolder,
+      final @NotNull Logger logger,
+      final @NotNull Map<Dependency, String> additionalDependencies) {
+    this.classLoader = classLoader;
+    this.logger = logger;
+    this.librariesPath = dataFolder.resolve("libraries");
+    this.additionalDependencies = additionalDependencies;
   }
 
   @Override
-  protected void configure() {
-    this.bind(FrameworkLoader.class).toInstance(this.baseProvider);
-    this.bind(LoadableJavaPlugin.class).toInstance(this.providingPluginInstance);
+  public void load() {
+    this.logger.info("Loader is started working...");
+    if (!Files.exists(this.librariesPath)) {
+      try {
+        Files.createDirectories(this.librariesPath);
+      } catch (final IOException exception) {
+        SneakyThrows.sneakyThrows(exception);
+      }
+    }
 
-    this.providingPluginInstance
-        .moduleManager()
-        .iterateModules(
-            pluginModule -> {
-              this.bind(Types.contravarianceType(pluginModule)).toInstance(pluginModule);
+    loadClassLoadingStrategy();
 
-              pluginModule.configureInnerComponent(this.binder());
-            });
+    this.repositoryManager.registerRepository("central", new CentralRepository());
 
-    this.providingPluginInstance.configure(this.binder());
+    final ResourceFile resourceFile = readDependencies(); // read dependencies
+
+    // collect additional and file-based
+    final Map<Dependency, String> dependencies = new HashMap<>();
+    dependencies.putAll(resourceFile.dependencies());
+    dependencies.putAll(additionalDependencies);
+    // this thing basically need if someone not goes to use bootstrap
+    // or someone who need load extra-dependencies
+
+    try {
+      // Load ASM, we need it for jar-relocator
+      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm:9.2"));
+      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm-commons:9.2"));
+
+      // Load lucko's jar-relocator
+      this.fastDependency(Dependency.of("central:me{}lucko:jar-relocator:1.5"));
+    } catch (final MalformedURLException exception) {
+      SneakyThrows.sneakyThrows(exception);
+    }
+
+    for (final Entry<Dependency, String> entry : dependencies.entrySet()) {
+      final Dependency dependency = entry.getKey();
+      final String relocateTo = entry.getValue();
+
+      try {
+        Path outPath = this.repositoryManager.repositorySafe(dependency.repository())
+            .loadDependency(dependency, this.librariesPath);
+
+        requireNonNull(outPath, "outPath is null!");
+
+        // Check, do we need actually relocate it
+        if (!relocateTo.equals("*")) {
+          // We need temp path, it's base file
+          final Path tempPath = outPath;
+
+          // relocated
+          outPath = this.librariesPath.resolve(Dependencies.fileNameOf(dependency, "relocated"));
+
+          // As far as group id not always represent
+          // jar package, we should handle it via
+          // stuff like that
+          final String groupId;
+          final String relocationGroup;
+          if (relocateTo.contains(":")) {
+            final String[] data = relocateTo.split(":");
+
+            groupId = data[0];
+            relocationGroup = data[1];
+          } else {
+            groupId = dependency.groupId();
+            relocationGroup = relocateTo;
+          }
+
+          // Create relocator
+          final JarRelocator relocator = new JarRelocator(tempPath.toFile(), outPath.toFile(),
+              Collections.singletonList(new Relocation(groupId, relocationGroup)));
+
+          // Run relocator
+          relocator.run();
+
+          // Delete unneeded file
+          Files.deleteIfExists(tempPath);
+        }
+
+        this.loadPath(outPath);
+      } catch (final IOException exception) {
+        throw new UnsupportedOperationException(
+            "An exception acquired while loading dependency " + dependency + "!", exception);
+      }
+    }
   }
+
+  private ResourceFile readDependencies() {
+    final ResourceFile resourceFile;
+    try (final Reader reader = new InputStreamReader(
+        requireNonNull(this.classLoader.getResourceAsStream("dependencies.json"),
+            "loader.json is not provided!")
+    )) {
+      resourceFile = ResourceFileLoader.readFile(reader);
+    } catch (final IOException exception) {
+      throw new UnsupportedOperationException(
+          "An exception acquired while getting dependencies.json!",
+          exception);
+    }
+
+    return resourceFile;
+  }
+
+  private void loadClassLoadingStrategy() {
+    if (JVMHelper.isTheUnsafeSupported()) {
+      this.classLoadingStrategy = TheUnsafeClassLoadingStrategy.FACTORY.withClassLoader(
+          (URLClassLoader) this.classLoader);
+    } else {
+      this.classLoadingStrategy = ReflectionClassLoadingStrategy.FACTORY.withClassLoader(
+          (URLClassLoader) this.classLoader);
+
+      if (!JVMHelper.isReflectionSupported()) {
+        this.logger.warning(
+            "Looks like you are using undetected version of java, by default, will be used reflection-based class loading strategy!");
+      }
+    }
+  }
+
+  private void loadPath(final Path path) throws MalformedURLException {
+    this.classLoadingStrategy.addURL(path.toFile().toURI().toURL());
+  }
+
+  private void fastDependency(final Dependency dependency) throws MalformedURLException {
+    final Path dependencyPath = this.repositoryManager.repositorySafe(dependency.repository())
+        .loadDependency(dependency, this.librariesPath);
+
+    this.classLoadingStrategy.addURL(requireNonNull(dependencyPath, "dependencyPath is null!").toFile().toURI().toURL());
+  }
+
+  @Override
+  @NotNull
+  public Path librariesPath() {
+    return this.librariesPath;
+  }
+
+  @Override
+  @NotNull
+  public RepositoryManager repositoryManager() {
+    return this.repositoryManager;
+  }
+
+  @Override
+  @NotNull
+  public ClassLoadingStrategy classLoadingStrategy() {
+    return this.classLoadingStrategy;
+  }
+
+  static final class BuilderImpl implements DependencyLoader.Builder {
+
+    private ClassLoader classLoader = null;
+    private Logger logger = null;
+    private Path dataFolder = null;
+
+    private final Map<Dependency, String> additionalDependencies = new LinkedHashMap<>();
+
+    @Override
+    public Builder logger(final @NotNull Logger logger) {
+      this.logger = logger;
+      return this;
+    }
+
+    @Override
+    public Builder dataFolder(final @NotNull Path dataFolder) {
+      this.dataFolder = dataFolder;
+      return this;
+    }
+
+    @Override
+    public Builder classLoader(final @NotNull ClassLoader classLoader) {
+      this.classLoader = classLoader;
+      return this;
+    }
+
+    @Override
+    public Builder additionalDependency(
+        final @NotNull Dependency dependency,
+        final @NotNull String relocateTo) {
+      this.additionalDependencies.put(dependency, relocateTo);
+      return this;
+    }
+
+    @Override
+    public DependencyLoader build() {
+      return new DependencyLoaderImpl(
+          requireNonNull(classLoader, "Class loader is not provided in builder!"),
+          requireNonNull(dataFolder, "Data folder is not provided in builder!"),
+          Nulls.getOr(logger, () -> Logger.getLogger("Framework")),
+          additionalDependencies
+      );
+    }
+  }
+
 }
