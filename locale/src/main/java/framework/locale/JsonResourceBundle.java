@@ -235,7 +235,7 @@ public final class JsonResourceBundle extends ResourceBundle {
 
     try (final Reader reader = new BufferedReader(
         new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-      bundleObject = new JsonParser().parse(reader).getAsJsonObject();
+      bundleObject = new JsonParser().parse(reader).getAsJsonObject(); // legacy support
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

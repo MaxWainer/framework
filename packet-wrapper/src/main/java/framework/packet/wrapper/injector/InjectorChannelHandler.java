@@ -1,5 +1,6 @@
 package framework.packet.wrapper.injector;
 
+import framework.commons.annotation.LegacyImplementation;
 import framework.packet.wrapper.mapper.PacketMapper;
 import framework.packet.wrapper.packet.WrappedPacket;
 import framework.packet.wrapper.player.WrappedPlayer;
@@ -11,7 +12,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
-// legacy support
+@LegacyImplementation
 final class InjectorChannelHandler extends ChannelDuplexHandler {
 
   private final WrappedPlayer wrappedPlayer;
