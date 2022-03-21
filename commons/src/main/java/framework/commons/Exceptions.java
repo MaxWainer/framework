@@ -204,6 +204,8 @@
 
 package framework.commons;
 
+import org.jetbrains.annotations.NotNull;
+
 public final class Exceptions {
 
   private Exceptions() {
@@ -212,6 +214,17 @@ public final class Exceptions {
 
   public static void instantiationError() {
     throw new AssertionError("Utility class cannot be instantiated!");
+  }
+
+  public static void nagAuthor(final @NotNull String detailedMessage) {
+    throw new NagAuthorException(detailedMessage);
+  }
+
+  // we're going to keep it private, to avoid ignoring them
+  private static final class NagAuthorException extends RuntimeException {
+    NagAuthorException(final @NotNull String message) {
+      super(message);
+    }
   }
 
 }

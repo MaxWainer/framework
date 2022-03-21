@@ -206,6 +206,7 @@ package framework.loader;
 
 import static java.util.Objects.requireNonNull;
 
+import framework.commons.Exceptions;
 import framework.commons.Nulls;
 import framework.commons.SneakyThrows;
 import framework.loader.helper.JVMHelper;
@@ -228,10 +229,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.logging.Logger;
 import me.lucko.jarrelocator.JarRelocator;
 import me.lucko.jarrelocator.Relocation;
@@ -262,6 +261,7 @@ final class DependencyLoaderImpl implements DependencyLoader {
 
   @Override
   public void load() {
+    ensureRelocation(); // to be sure, that framework is relocated
     this.logger.info("Loader is started working...");
     if (!Files.exists(this.librariesPath)) {
       try {
@@ -386,7 +386,8 @@ final class DependencyLoaderImpl implements DependencyLoader {
     final Path dependencyPath = this.repositoryManager.repositorySafe(dependency.repository())
         .loadDependency(dependency, this.librariesPath);
 
-    this.classLoadingStrategy.addURL(requireNonNull(dependencyPath, "dependencyPath is null!").toFile().toURI().toURL());
+    this.classLoadingStrategy.addURL(
+        requireNonNull(dependencyPath, "dependencyPath is null!").toFile().toURI().toURL());
   }
 
   @Override
@@ -405,6 +406,22 @@ final class DependencyLoaderImpl implements DependencyLoader {
   @NotNull
   public ClassLoadingStrategy classLoadingStrategy() {
     return this.classLoadingStrategy;
+  }
+
+  private static void ensureRelocation() {
+    final String basicPackage = new String(
+        new char[]{
+            'f', 'r', 'a', 'm', 'e', 'w', 'o', 'r', 'k', '.', 'l', 'o', 'a', 'd', 'e', 'r', '.',
+            'D', 'e', 'p', 'e', 'n', 'd', 'e', 'n', 'c', 'y', 'L', 'o', 'a', 'd', 'e', 'r' }
+    ); // avoid relocation
+
+    final String checkingClassName = DependencyLoader.class.getName();
+
+    if (basicPackage.equals(checkingClassName)) {
+      Exceptions.nagAuthor(checkingClassName
+          + " is not relocated, this part of framework is very sensitive to it, suggesting to nag plugin developer and resolve issue! "
+          + "To author: Add relocation to entire framework dependencies, if someone gonna use it not the same version, this may produce silly issues!");
+    }
   }
 
   static final class BuilderImpl implements DependencyLoader.Builder {
