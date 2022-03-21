@@ -207,7 +207,7 @@ package framework.config.api;
 import framework.config.api.options.ConfigOptions;
 import org.jetbrains.annotations.NotNull;
 
-public interface ConfigFactoryBridge {
+public interface ConfigFactory {
 
   @NotNull Config createConfig(final @NotNull ConfigOptions options);
 

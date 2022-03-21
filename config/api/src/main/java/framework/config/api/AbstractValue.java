@@ -233,6 +233,20 @@ abstract class AbstractValue extends AbstractCommentable implements Value {
   }
 
   @Override
+  public boolean isDictionary() {
+    return this instanceof DictionaryValue;
+  }
+
+  @Override
+  public @NotNull DictionaryValue asDictionary() {
+    if (isDictionary()) {
+      return (DictionaryValue) this;
+    }
+
+    throw new IllegalArgumentException("Not dictionary value!");
+  }
+
+  @Override
   public @NotNull PrimitiveValue asPrimitive() {
     if (isPrimitive()) {
       return (PrimitiveValue) this;

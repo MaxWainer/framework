@@ -228,8 +228,8 @@ public final class YamlComments {
     final List<String> yamlLines = Files.readAllLines(Paths.get(url.toURI()));
 
     for (final String yamlLine : yamlLines) {
-      if (yamlLine.startsWith("#") || yamlLine.contains("#")) {
-
+      if (yamlLine.startsWith("#") || yamlLine.trim().isEmpty()) {
+        System.out.println("Found comment " + yamlLine);
       }
     }
 
