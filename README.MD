@@ -1,4 +1,6 @@
 # framework
+Current version: 0.0.1
+
 Simple framework for developing simple plugins for minecraft servers
 
 This framework doesn't contain any cOoLfEaTuReS, just few utilities that may reduce developing time
