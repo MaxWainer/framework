@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.0'
     id 'org.cadixdev.licenser' version '0.6.1'
+    id 'signing'
 }
 
 group 'framework'
@@ -25,6 +26,7 @@ println 'Configuring projects...'
 allprojects {
     apply plugin: 'java'
     apply plugin: 'maven-publish'
+    apply plugin: 'signing'
     apply plugin: 'org.cadixdev.licenser'
 
     repositories {
@@ -40,14 +42,14 @@ allprojects {
     dependencies {
         implementation 'org.jetbrains:annotations:23.0.0'
         implementation 'joda-time:joda-time:2.10.13'
-        implementation 'com.google.guava:guava:31.0.1-jre'
+        implementation 'com.google.guava:guava:31.1-jre'
         implementation 'com.google.code.gson:gson:2.9.0'
 
         // kyori
-        implementation 'net.kyori:adventure-api:4.9.3'
+        implementation 'net.kyori:adventure-api:4.10.1'
         implementation 'net.kyori:adventure-text-serializer-legacy:4.9.3'
-        implementation 'net.kyori:adventure-text-serializer-gson:4.9.3'
-        implementation 'net.kyori:adventure-text-serializer-plain:4.9.3'
+        implementation 'net.kyori:adventure-text-serializer-gson:4.10.1'
+        implementation 'net.kyori:adventure-text-serializer-plain:4.10.1'
 
         // testing utils
         testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
@@ -70,17 +72,92 @@ allprojects {
         include '**/*.java'
     }
 
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId = rootProject.group
-                artifactId = project.name
-                version = rootProject.version
+    // central publishing start
+    if (project.name != 'example') {
+        task javadocJar(type: Jar) {
+            classifier 'javadoc'
+            from javadoc
+        }
 
-                from components.java
+        task sourcesJar(type: Jar) {
+            classifier 'sources'
+            from sourceSets.main.allSource
+        }
+
+        artifacts {
+            archives javadocJar, sourcesJar
+        }
+
+        publishing {
+            // setup publication
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId = "framework-${project.name}"
+                    groupId = 'io.github.maxwainer'
+                    version = '0.0.1'
+
+                    from components.java
+                    artifact sourcesJar
+                    artifact javadocJar
+
+                    // setup pom
+                    pom {
+                        packaging = 'jar'
+
+                        name = 'framework'
+                        url = 'https://github.com/MaxWainer/framework'
+                        description = 'Simple framework for developing minecraft plugins'
+
+                        developers {
+                            developer {
+                                id = 'Max_Wainer'
+                                name = 'Ilya'
+                            }
+                        }
+
+                        licenses {
+                            license {
+                                name = 'The Apache License, Version 2.0'
+                                url = 'https://opensource.org/licenses/Apache-2.0'
+                            }
+                        }
+
+                        scm {
+                            connection = 'scm:https://github.com/MaxWainer/framework/framework.git'
+                            developerConnection = 'scm:git@https://github.com:MaxWainer/framework/framework.git'
+                            url = 'scm:git:https://github.com/MaxWainer/framework/framework.git'
+                        }
+                    }
+                }
+            }
+
+            // setup repository
+            repositories {
+                maven {
+                    def release = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    def snapshot = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+
+                    url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                            //version.toString().endsWith('SNAPSHOT') ? snapshot : release
+
+                    credentials {
+                        username ossrhUsername
+                        password ossrhPassword
+                    }
+                }
             }
         }
+
+        signing {
+            // useGpgCmd()
+
+            sign configurations.archives
+            sign publishing.publications.mavenJava
+            required = true
+        }
     }
+
+    // central publishing end
 
     println "Configured '$project.name'!"
 }

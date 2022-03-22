@@ -20,4 +20,7 @@ include 'stack-wrapper'
 include 'bukkit:implementation'
 project(':bukkit:implementation').name = 'bukkit-implementation'
 include 'bootstrap'
+include 'orm'
+include 'orm:api'
+project(':orm:api').name = 'orm-api'
 

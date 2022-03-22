@@ -1,0 +1,7 @@
+group 'framework.orm'
+
+allprojects {
+    dependencies {
+        compileOnly project(':commons')
+    }
+}

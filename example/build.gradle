@@ -3,6 +3,7 @@ dependencies {
     compileOnly project(':commands')
     compileOnly project(':locale')
     compileOnly project(':bukkit')
+    compileOnly project(':bukkit:bukkit-implementation')
 
     compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
 

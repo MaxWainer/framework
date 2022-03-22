@@ -1,5 +1,3 @@
-group 'framework.locale'
-
 dependencies {
     compileOnly project(':commons')
 }
