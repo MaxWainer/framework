@@ -1,5 +1,8 @@
+![](.images/logo.jpg)
 # framework
 Current version: 0.0.1
+
+Discord: [Discord](https://discord.gg/teSGwVf64R)
 
 Simple framework for developing simple plugins for minecraft servers
 
