@@ -100,113 +100,113 @@ subprojects {
 
   // central publishing start
 
-  if (project.name.chars().filter { return it == '-' }.count() > 1) {
-    if (publishCentral) {
-      task javadocJar(type: Jar) {
-        classifier 'javadoc'
-        from javadoc
-      }
-
-      task sourcesJar(type: Jar) {
-        classifier 'sources'
-        from sourceSets.main.allSource
-      }
-
-      artifacts {
-        archives javadocJar, sourcesJar
-      }
-
-      publishing {
-        // setup publication
-        publications {
-          mavenJava(MavenPublication) {
-            artifactId = project.name
-            groupId = 'io.github.maxwainer'
-            version = '0.0.1'
-
-            from components.java
-            artifact sourcesJar
-            artifact javadocJar
-
-            // setup pom
-            pom {
-              packaging = 'jar'
-
-              name = 'framework'
-              url = 'https://github.com/MaxWainer/framework'
-              description = 'Simple framework for developing minecraft plugins'
-
-              developers {
-                developer {
-                  id = 'Max_Wainer'
-                  name = 'Ilya'
-                }
-              }
-
-              licenses {
-                license {
-                  name = 'The Apache License, Version 2.0'
-                  url = 'https://opensource.org/licenses/Apache-2.0'
-                }
-              }
-
-              scm {
-                connection = 'scm:https://github.com/MaxWainer/framework/framework.git'
-                developerConnection = 'scm:git@https://github.com:MaxWainer/framework/framework.git'
-                url = 'scm:git:https://github.com/MaxWainer/framework/framework.git'
-              }
-            }
-          }
-        }
-
-        // setup repository
-        repositories {
-          maven {
-            def release = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            def snapshot = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-
-            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-            //version.toString().endsWith('SNAPSHOT') ? snapshot : release
-
-            credentials {
-              username ossrhUsername
-              password ossrhPassword
-            }
-          }
-        }
-      }
-
-      signing {
-        sign configurations.archives
-        sign publishing.publications.mavenJava
-        required = true
-      }
-    } else {
-      publishing {
-        repositories {
-          maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/MaxWainer/framework")
-            credentials {
-              username = gprUser
-              password = gprKey
-            }
-          }
-        }
-
-        publications {
-          gpr(MavenPublication) {
-            artifactId = "framework-${project.name}"
-            groupId = 'io.github.maxwainer'
-            version = '0.0.1'
-
-            from components.java
-          }
-        }
-      }
-    }
-    println "[PUBLISHING] '$project.name', ready to publishing!"
-  }
+//  if (project.name.chars().filter { return it == '-' }.count() > 1) {
+//    if (publishCentral) {
+//      task javadocJar(type: Jar) {
+//        classifier 'javadoc'
+//        from javadoc
+//      }
+//
+//      task sourcesJar(type: Jar) {
+//        classifier 'sources'
+//        from sourceSets.main.allSource
+//      }
+//
+//      artifacts {
+//        archives javadocJar, sourcesJar
+//      }
+//
+//      publishing {
+//        // setup publication
+//        publications {
+//          mavenJava(MavenPublication) {
+//            artifactId = project.name
+//            groupId = 'io.github.maxwainer'
+//            version = '0.0.1'
+//
+//            from components.java
+//            artifact sourcesJar
+//            artifact javadocJar
+//
+//            // setup pom
+//            pom {
+//              packaging = 'jar'
+//
+//              name = 'framework'
+//              url = 'https://github.com/MaxWainer/framework'
+//              description = 'Simple framework for developing minecraft plugins'
+//
+//              developers {
+//                developer {
+//                  id = 'Max_Wainer'
+//                  name = 'Ilya'
+//                }
+//              }
+//
+//              licenses {
+//                license {
+//                  name = 'The Apache License, Version 2.0'
+//                  url = 'https://opensource.org/licenses/Apache-2.0'
+//                }
+//              }
+//
+//              scm {
+//                connection = 'scm:https://github.com/MaxWainer/framework/framework.git'
+//                developerConnection = 'scm:git@https://github.com:MaxWainer/framework/framework.git'
+//                url = 'scm:git:https://github.com/MaxWainer/framework/framework.git'
+//              }
+//            }
+//          }
+//        }
+//
+//        // setup repository
+//        repositories {
+//          maven {
+//            def release = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            def snapshot = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+//
+//            url = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+//            //version.toString().endsWith('SNAPSHOT') ? snapshot : release
+//
+//            credentials {
+//              username ossrhUsername
+//              password ossrhPassword
+//            }
+//          }
+//        }
+//      }
+//
+//      signing {
+//        sign configurations.archives
+//        sign publishing.publications.mavenJava
+//        required = true
+//      }
+//    } else {
+//      publishing {
+//        repositories {
+//          maven {
+//            name = "GitHubPackages"
+//            url = uri("https://maven.pkg.github.com/MaxWainer/framework")
+//            credentials {
+//              username = gprUser
+//              password = gprKey
+//            }
+//          }
+//        }
+//
+//        publications {
+//          gpr(MavenPublication) {
+//            artifactId = "framework-${project.name}"
+//            groupId = 'io.github.maxwainer'
+//            version = '0.0.1'
+//
+//            from components.java
+//          }
+//        }
+//      }
+//    }
+//    println "[PUBLISHING] '$project.name', ready to publishing!"
+//  }
 
   // central publishing end
 
