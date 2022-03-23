@@ -67,7 +67,7 @@ subprojects {
 
   dependencies {
     implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'joda-time:joda-time:2.10.13'
+    implementation 'joda-time:joda-time:2.10.14'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'com.google.code.gson:gson:2.9.0'
 
