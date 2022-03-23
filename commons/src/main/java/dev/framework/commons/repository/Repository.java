@@ -9,4 +9,8 @@ public interface Repository<I, T extends RepositoryObject> {
 
   void register(final @NotNull I i, final @NotNull T t);
 
+  default boolean exists(final @NotNull I i) {
+    return find(i).isPresent();
+  }
+
 }
