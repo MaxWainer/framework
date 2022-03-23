@@ -216,37 +216,38 @@ import org.jetbrains.annotations.NotNull;
 
 public interface DependencyLoader {
 
-    static Builder builder() {
-        return new BuilderImpl();
+  static Builder builder() {
+    return new BuilderImpl();
+  }
+
+  void load();
+
+  @NotNull
+  Path librariesPath();
+
+  @NotNull
+  RepositoryManager repositoryManager();
+
+  @NotNull
+  ClassLoadingStrategy classLoadingStrategy();
+
+  @NotNull Logger logger();
+
+  interface Builder extends Buildable<DependencyLoader> {
+
+    Builder logger(final @NotNull Logger logger);
+
+    Builder dataFolder(final @NotNull Path dataFolder);
+
+    Builder classLoader(final @NotNull ClassLoader classLoader);
+
+    Builder additionalDependency(final @NotNull Dependency dependency,
+        final @NotNull String relocateTo);
+
+    default Builder dataFolder(final @NotNull File dataFolder) {
+      return dataFolder(dataFolder.toPath());
     }
 
-    void load();
-
-    @NotNull
-    Path librariesPath();
-
-    @NotNull
-    RepositoryManager repositoryManager();
-
-    @NotNull
-    ClassLoadingStrategy classLoadingStrategy();
-
-    @NotNull Logger logger();
-
-    interface Builder extends Buildable<DependencyLoader> {
-
-        Builder logger(final @NotNull Logger logger);
-
-        Builder dataFolder(final @NotNull Path dataFolder);
-
-        Builder classLoader(final @NotNull ClassLoader classLoader);
-
-        Builder additionalDependency(final @NotNull Dependency dependency, final @NotNull String relocateTo);
-
-        default Builder dataFolder(final @NotNull File dataFolder) {
-            return dataFolder(dataFolder.toPath());
-        }
-
-    }
+  }
 
 }

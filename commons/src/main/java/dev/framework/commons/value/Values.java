@@ -211,11 +211,11 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Values {
 
-    static String formatNumber(final int number, final @NotNull FormatValueDisplayGroup group) {
-        return CountFormatValue.of(number, FormatValueConfig.<NumberUnit>builder()
-                        .allowZero(true)
-                        .build())
-                .applyFormat(GroupMappers.createRussianNumber(), NumberDisplaySetFormat.of(group));
-    }
+  static String formatNumber(final int number, final @NotNull FormatValueDisplayGroup group) {
+    return CountFormatValue.of(number, FormatValueConfig.<NumberUnit>builder()
+            .allowZero(true)
+            .build())
+        .applyFormat(GroupMappers.createRussianNumber(), NumberDisplaySetFormat.of(group));
+  }
 
 }

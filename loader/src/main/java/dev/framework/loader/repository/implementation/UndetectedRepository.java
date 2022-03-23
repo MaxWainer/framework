@@ -209,14 +209,14 @@ import org.jetbrains.annotations.NotNull;
 // Will Always be replaced with unknown repository if url provided
 public final class UndetectedRepository extends AbstractRepository {
 
-    private final String repositoryUrl;
+  private final String repositoryUrl;
 
-    public UndetectedRepository(final @NotNull String repositoryUrl) {
-        this.repositoryUrl = repositoryUrl;
-    }
+  public UndetectedRepository(final @NotNull String repositoryUrl) {
+    this.repositoryUrl = repositoryUrl;
+  }
 
-    @Override
-    protected @NotNull String repositoryUrl() {
-        return this.repositoryUrl;
-    }
+  @Override
+  protected @NotNull String repositoryUrl() {
+    return this.repositoryUrl;
+  }
 }

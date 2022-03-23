@@ -216,29 +216,29 @@ import org.yaml.snakeyaml.Yaml;
 
 public final class YamlComments {
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
-        final DumperOptions options = new DumperOptions();
+  public static void main(String[] args) throws URISyntaxException, IOException {
+    final DumperOptions options = new DumperOptions();
 
-        final Yaml yaml = new Yaml(options);
+    final Yaml yaml = new Yaml(options);
 
-        final URL url = YamlComments.class
-                .getClassLoader()
-                .getResource("example.yaml");
+    final URL url = YamlComments.class
+        .getClassLoader()
+        .getResource("example.yaml");
 
-        final List<String> yamlLines = Files.readAllLines(Paths.get(url.toURI()));
+    final List<String> yamlLines = Files.readAllLines(Paths.get(url.toURI()));
 
-        for (final String yamlLine : yamlLines) {
-            if (yamlLine.startsWith("#") || yamlLine.trim().isEmpty()) {
-                System.out.println("Found comment " + yamlLine);
-            }
-        }
-
-        final String rawYaml = String.join("\n", yamlLines);
-
-        System.out.println(rawYaml);
-
-        final Map<String, Object> obj = yaml.load(rawYaml);
-        System.out.println(obj);
+    for (final String yamlLine : yamlLines) {
+      if (yamlLine.startsWith("#") || yamlLine.trim().isEmpty()) {
+        System.out.println("Found comment " + yamlLine);
+      }
     }
+
+    final String rawYaml = String.join("\n", yamlLines);
+
+    System.out.println(rawYaml);
+
+    final Map<String, Object> obj = yaml.load(rawYaml);
+    System.out.println(obj);
+  }
 
 }

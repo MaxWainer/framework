@@ -211,22 +211,22 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CommandContext {
 
-    @NotNull CommandContext assertTail(final @NotNull String object);
+  @NotNull CommandContext assertTail(final @NotNull String object);
 
-    @NotNull String nextOrThrow(final @NotNull String paramName) throws CommandException;
+  @NotNull String nextOrThrow(final @NotNull String paramName) throws CommandException;
 
-    @NotNull Optional<String> next(final boolean remove);
+  @NotNull Optional<String> next(final boolean remove);
 
-    <V> @NotNull Optional<V> nextAs(final @NotNull ContextParser<V> parser) throws CommandException;
+  <V> @NotNull Optional<V> nextAs(final @NotNull ContextParser<V> parser) throws CommandException;
 
-    <V> @NotNull V nextAsOrThrow(final @NotNull String paramName,
-                                 final @NotNull ContextParser<V> parser) throws CommandException;
+  <V> @NotNull V nextAsOrThrow(final @NotNull String paramName,
+      final @NotNull ContextParser<V> parser) throws CommandException;
 
-    default @NotNull Optional<String> next() {
-        return next(true);
-    }
+  default @NotNull Optional<String> next() {
+    return next(true);
+  }
 
-    @NotNull CommandContext truncate(final int from);
+  @NotNull CommandContext truncate(final int from);
 
-    @NotNull List<String> asListFrom(final int from);
+  @NotNull List<String> asListFrom(final int from);
 }

@@ -206,6 +206,6 @@ package dev.framework.commons.tick;
 
 public interface Tickable {
 
-    void tick();
+  void tick();
 
 }

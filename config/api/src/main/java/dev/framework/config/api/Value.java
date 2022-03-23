@@ -211,40 +211,40 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Value extends Commentable {
 
-    boolean isMap();
+  boolean isMap();
 
-    boolean isList();
+  boolean isList();
 
-    boolean isPrimitive();
+  boolean isPrimitive();
 
-    boolean isDictionary();
+  boolean isDictionary();
 
-    default @NotNull PrimitiveValue asPrimitive() {
-        throw new UnsupportedOperationException("Value is not primitive!");
-    }
+  default @NotNull PrimitiveValue asPrimitive() {
+    throw new UnsupportedOperationException("Value is not primitive!");
+  }
 
-    default @NotNull ListValue asList() {
-        throw new UnsupportedOperationException("Value is not list!");
-    }
+  default @NotNull ListValue asList() {
+    throw new UnsupportedOperationException("Value is not list!");
+  }
 
-    default @NotNull MapValue asMap() {
-        throw new UnsupportedOperationException("Value is not map!");
-    }
+  default @NotNull MapValue asMap() {
+    throw new UnsupportedOperationException("Value is not map!");
+  }
 
-    default @NotNull DictionaryValue asDictionary() {
-        throw new UnsupportedOperationException("Value is not dictionary!");
-    }
+  default @NotNull DictionaryValue asDictionary() {
+    throw new UnsupportedOperationException("Value is not dictionary!");
+  }
 
-    // null-value
-    @Nullable Object raw();
+  // null-value
+  @Nullable Object raw();
 
-    // setters
-    void set(final @Nullable Object raw);
+  // setters
+  void set(final @Nullable Object raw);
 
-    boolean exists();
+  boolean exists();
 
-    // null-safe
-    default @NotNull Optional<Object> rawSafe() {
-        return Optional.ofNullable(raw());
-    }
+  // null-safe
+  default @NotNull Optional<Object> rawSafe() {
+    return Optional.ofNullable(raw());
+  }
 }

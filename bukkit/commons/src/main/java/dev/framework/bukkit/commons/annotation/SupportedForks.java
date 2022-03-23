@@ -209,6 +209,6 @@ import org.jetbrains.annotations.NotNull;
 
 public @interface SupportedForks {
 
-    @NotNull Fork[] value() default {Fork.PAPER, Fork.SPIGOT, Fork.UNSUPPORTED};
+  @NotNull Fork[] value() default {Fork.PAPER, Fork.SPIGOT, Fork.UNSUPPORTED};
 
 }

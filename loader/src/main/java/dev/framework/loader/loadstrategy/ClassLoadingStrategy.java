@@ -210,13 +210,13 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ClassLoadingStrategy {
 
-    void addURL(final @NotNull URL url);
+  void addURL(final @NotNull URL url);
 
-    @NotNull URLClassLoader providedClassLoader();
+  @NotNull URLClassLoader providedClassLoader();
 
-    interface ClassLoadingStrategyFactory {
+  interface ClassLoadingStrategyFactory {
 
-        ClassLoadingStrategy withClassLoader(final @NotNull URLClassLoader classLoader);
+    ClassLoadingStrategy withClassLoader(final @NotNull URLClassLoader classLoader);
 
-    }
+  }
 }

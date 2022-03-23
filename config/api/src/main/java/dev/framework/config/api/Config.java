@@ -211,10 +211,10 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Config extends AutoCloseable {
 
-    @NotNull ConfigOptions options();
+  @NotNull ConfigOptions options();
 
-    @NotNull Path file();
+  @NotNull Path file();
 
-    @NotNull InputStream openStream();
+  @NotNull InputStream openStream();
 
 }

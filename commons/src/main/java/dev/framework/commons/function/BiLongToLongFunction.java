@@ -207,6 +207,6 @@ package dev.framework.commons.function;
 @FunctionalInterface
 public interface BiLongToLongFunction {
 
-    long applyAsLong(long first, long second);
+  long applyAsLong(long first, long second);
 
 }

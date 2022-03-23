@@ -213,22 +213,22 @@ import org.jetbrains.annotations.NotNull;
 
 final class PatternParser implements ContextParser<String> {
 
-    private final Pattern pattern;
+  private final Pattern pattern;
 
-    PatternParser(final @NotNull Pattern pattern) {
-        this.pattern = pattern;
+  PatternParser(final @NotNull Pattern pattern) {
+    this.pattern = pattern;
+  }
+
+  @Override
+  public @NotNull ParserResult<String> checkInput(final @NotNull String raw) {
+    final Matcher matcher = pattern.matcher(raw); // creating matcher
+
+    if (matcher.find()) { // if we have something
+      return ParserResult.success(raw); // return success raw
     }
 
-    @Override
-    public @NotNull ParserResult<String> checkInput(final @NotNull String raw) {
-        final Matcher matcher = pattern.matcher(raw); // creating matcher
-
-        if (matcher.find()) { // if we have something
-            return ParserResult.success(raw); // return success raw
-        }
-
-        // else error
-        return ParserResult.error(Error.PARSER_PATTERN.applyArguments(raw, pattern.pattern()));
-    }
+    // else error
+    return ParserResult.error(Error.PARSER_PATTERN.applyArguments(raw, pattern.pattern()));
+  }
 
 }

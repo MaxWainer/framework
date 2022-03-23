@@ -209,42 +209,42 @@ import dev.framework.commons.concurrent.annotation.ThreadSafe;
 @ThreadSafe
 final class SynchronizedMutableTuple<K, V> extends UnsafeMutableTuple<K, V> {
 
-    private final Object[] mutex;
+  private final Object[] mutex;
 
-    SynchronizedMutableTuple(final K key, final V value, final Object[] mutex) {
-        super(key, value);
-        this.mutex = mutex;
-    }
+  SynchronizedMutableTuple(final K key, final V value, final Object[] mutex) {
+    super(key, value);
+    this.mutex = mutex;
+  }
 
-    SynchronizedMutableTuple(final K key, final V value) {
-        this(key, value, new Object[0]);
-    }
+  SynchronizedMutableTuple(final K key, final V value) {
+    this(key, value, new Object[0]);
+  }
 
-    @Override
-    public K key() {
-        synchronized (mutex) {
-            return super.key();
-        }
+  @Override
+  public K key() {
+    synchronized (mutex) {
+      return super.key();
     }
+  }
 
-    @Override
-    public V value() {
-        synchronized (mutex) {
-            return super.value();
-        }
+  @Override
+  public V value() {
+    synchronized (mutex) {
+      return super.value();
     }
+  }
 
-    @Override
-    public void updateKey(final K key) {
-        synchronized (mutex) {
-            super.updateKey(key);
-        }
+  @Override
+  public void updateKey(final K key) {
+    synchronized (mutex) {
+      super.updateKey(key);
     }
+  }
 
-    @Override
-    public void updateValue(final V value) {
-        synchronized (mutex) {
-            super.updateValue(value);
-        }
+  @Override
+  public void updateValue(final V value) {
+    synchronized (mutex) {
+      super.updateValue(value);
     }
+  }
 }

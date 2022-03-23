@@ -210,12 +210,13 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CountFormatValue extends FormatValue<Integer, NumberUnit> {
 
-    static CountFormatValue of(final int number) {
-        return new CountFormatValueImpl(number);
-    }
+  static CountFormatValue of(final int number) {
+    return new CountFormatValueImpl(number);
+  }
 
-    static CountFormatValue of(final int number, final @NotNull FormatValueConfig<NumberUnit> config) {
-        return new CountFormatValueImpl(number, config);
-    }
+  static CountFormatValue of(final int number,
+      final @NotNull FormatValueConfig<NumberUnit> config) {
+    return new CountFormatValueImpl(number, config);
+  }
 
 }

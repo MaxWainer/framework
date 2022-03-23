@@ -207,26 +207,26 @@ package dev.framework.commands.result;
 // wrapping class
 public final class BiResult<V, E> {
 
-    private final V successValue;
-    private final E errorValue;
+  private final V successValue;
+  private final E errorValue;
 
-    private final boolean error;
+  private final boolean error;
 
-    public BiResult(final V successValue, final E errorValue, final boolean error) {
-        this.successValue = successValue;
-        this.errorValue = errorValue;
-        this.error = error;
-    }
+  public BiResult(final V successValue, final E errorValue, final boolean error) {
+    this.successValue = successValue;
+    this.errorValue = errorValue;
+    this.error = error;
+  }
 
-    public V successValue() {
-        return successValue;
-    }
+  public V successValue() {
+    return successValue;
+  }
 
-    public E errorValue() {
-        return errorValue;
-    }
+  public E errorValue() {
+    return errorValue;
+  }
 
-    public boolean error() {
-        return error;
-    }
+  public boolean error() {
+    return error;
+  }
 }

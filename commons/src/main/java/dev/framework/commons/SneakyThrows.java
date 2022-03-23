@@ -209,16 +209,16 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class SneakyThrows {
 
-    private SneakyThrows() {
-        Exceptions.instantiationError();
-    }
+  private SneakyThrows() {
+    Exceptions.instantiationError();
+  }
 
-    public static void sneakyThrows(final Throwable throwable) {
-        SneakyThrows.sneakyThrows0(throwable); // rethrow it
-    }
+  public static void sneakyThrows(final Throwable throwable) {
+    SneakyThrows.sneakyThrows0(throwable); // rethrow it
+  }
 
-    private static <T extends Throwable> void sneakyThrows0(final Throwable throwable) throws T {
-        throw (T) throwable; // throw an exception casting to generic type
-    }
+  private static <T extends Throwable> void sneakyThrows0(final Throwable throwable) throws T {
+    throw (T) throwable; // throw an exception casting to generic type
+  }
 
 }

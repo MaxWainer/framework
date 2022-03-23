@@ -212,16 +212,16 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractClassLoadingStrategy implements ClassLoadingStrategy {
 
-    static final Logger LOGGER = LoggerCompat.getLogger();
+  static final Logger LOGGER = LoggerCompat.getLogger();
 
-    protected final URLClassLoader providedClassLoader;
+  protected final URLClassLoader providedClassLoader;
 
-    AbstractClassLoadingStrategy(final @NotNull URLClassLoader providedClassLoader) {
-        this.providedClassLoader = providedClassLoader;
-    }
+  AbstractClassLoadingStrategy(final @NotNull URLClassLoader providedClassLoader) {
+    this.providedClassLoader = providedClassLoader;
+  }
 
-    @Override
-    public @NotNull URLClassLoader providedClassLoader() {
-        return this.providedClassLoader;
-    }
+  @Override
+  public @NotNull URLClassLoader providedClassLoader() {
+    return this.providedClassLoader;
+  }
 }

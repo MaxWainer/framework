@@ -209,31 +209,31 @@ import dev.framework.commons.concurrent.annotation.NotThreadSafe;
 @NotThreadSafe
 class UnsafeMutableTuple<K, V> implements MutableTuple<K, V> {
 
-    private K key;
-    private V value;
+  private K key;
+  private V value;
 
-    UnsafeMutableTuple(final K key, final V value) {
-        this.key = key;
-        this.value = value;
-    }
+  UnsafeMutableTuple(final K key, final V value) {
+    this.key = key;
+    this.value = value;
+  }
 
-    @Override
-    public K key() {
-        return this.key;
-    }
+  @Override
+  public K key() {
+    return this.key;
+  }
 
-    @Override
-    public V value() {
-        return this.value;
-    }
+  @Override
+  public V value() {
+    return this.value;
+  }
 
-    @Override
-    public void updateKey(final K key) {
-        this.key = key;
-    }
+  @Override
+  public void updateKey(final K key) {
+    this.key = key;
+  }
 
-    @Override
-    public void updateValue(final V value) {
-        this.value = value;
-    }
+  @Override
+  public void updateValue(final V value) {
+    this.value = value;
+  }
 }

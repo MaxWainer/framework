@@ -224,147 +224,147 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public abstract class AbstractParentCommand implements Command {
 
-    @Override
-    public void execute(final @NotNull Sender sender, final @NotNull CommandContext context)
-            throws CommandException {
-        final Result<Command> result = resolveChildExecutable(sender,
-                context); // resolving executable child
+  @Override
+  public void execute(final @NotNull Sender sender, final @NotNull CommandContext context)
+      throws CommandException {
+    final Result<Command> result = resolveChildExecutable(sender,
+        context); // resolving executable child
 
-        if (result.error()) { // if any error, just return it
-            return;
-        }
-
-        final Command child = result.value(); // else getting child
-
-        child.execute(sender, context.truncate(0)); // executing
+    if (result.error()) { // if any error, just return it
+      return;
     }
 
-    @Override
-    public @NotNull @Unmodifiable List<String> suggestions(final @NotNull Sender sender,
-                                                           final @NotNull CommandContext context) {
-        final BiResult<Command, List<String>> result =
-                resolveChildSuggestable(sender, context); // resolving all suggestions
+    final Command child = result.value(); // else getting child
 
-        if (result.error()) { // if error, we return error value from it
-            return result.errorValue();
-        }
+    child.execute(sender, context.truncate(0)); // executing
+  }
 
-        final Command child = result.successValue(); // else command
+  @Override
+  public @NotNull @Unmodifiable List<String> suggestions(final @NotNull Sender sender,
+      final @NotNull CommandContext context) {
+    final BiResult<Command, List<String>> result =
+        resolveChildSuggestable(sender, context); // resolving all suggestions
 
-        return child.suggestions(sender, context.truncate(0)); // suggest from command
+    if (result.error()) { // if error, we return error value from it
+      return result.errorValue();
     }
 
-    @Override
-    public void sendUsage(final @NotNull Sender sender) {
-        final Set<Command> allowedCommands = childCommands()
-                .stream()
-                .filter(it -> it.canExecute(sender)) // listing all allowed command
-                .collect(Collectors.toSet());
+    final Command child = result.successValue(); // else command
 
-        if (allowedCommands.isEmpty()) { // if empty, we return that command fully unusable to sender
-            sender.sendMessage(Error.FULL_UNUSABLE);
-            return;
-        }
+    return child.suggestions(sender, context.truncate(0)); // suggest from command
+  }
 
-        final TextComponent.Builder builder = text();
+  @Override
+  public void sendUsage(final @NotNull Sender sender) {
+    final Set<Command> allowedCommands = childCommands()
+        .stream()
+        .filter(it -> it.canExecute(sender)) // listing all allowed command
+        .collect(Collectors.toSet());
 
-        // header
-        builder.append(HelpTopic.HEADER.applyArguments(name()))
-                .append(newline())
-                .append(HelpTopic.HEADER_DESCRIPTION)
-                .append(newline())
-                .append(HelpTopic.DESCRIPTION_PLACEHOLDER.applyArguments(description()))
-                .append(newline())
-                .append(HelpTopic.HEADER_HELP);
-
-        for (final Command command : allowedCommands) {
-            builder.append(newline());
-            if (!command.canExecute(sender)) {
-                continue; //skip it :>
-            }
-
-            // append placeholder
-            builder.append(
-                    HelpTopic.PLACEHOLDER_COMMAND.applyArguments(
-                            HelpTopic.PLACEHOLDER_COMMAND_FORMAT.applyArguments(command),
-                            command.description()
-                    )
-            );
-        }
-
-        // footer
-        builder.append(newline())
-                .append(HelpTopic.FOOTER);
-
-        // sending mesasge
-        sender.sendMessage(builder.build());
+    if (allowedCommands.isEmpty()) { // if empty, we return that command fully unusable to sender
+      sender.sendMessage(Error.FULL_UNUSABLE);
+      return;
     }
 
-    protected BiResult<Command, List<String>> resolveChildSuggestable(final @NotNull Sender sender,
-                                                                      final @NotNull CommandContext context) {
-        final Result<Command> result = resolveChild(context); // resolve child
+    final TextComponent.Builder builder = text();
 
-        if (result.error()) { // if error
-            // return children suggestions
-            return new BiResult<>(null, suggestChildren(sender), true);
-        }
+    // header
+    builder.append(HelpTopic.HEADER.applyArguments(name()))
+        .append(newline())
+        .append(HelpTopic.HEADER_DESCRIPTION)
+        .append(newline())
+        .append(HelpTopic.DESCRIPTION_PLACEHOLDER.applyArguments(description()))
+        .append(newline())
+        .append(HelpTopic.HEADER_HELP);
 
-        final Command child = result.value(); // getting child
+    for (final Command command : allowedCommands) {
+      builder.append(newline());
+      if (!command.canExecute(sender)) {
+        continue; //skip it :>
+      }
 
-        if (!child.canExecute(sender)) { // if we can't execute it
-            // return empty list
-            return new BiResult<>(null, Collections.emptyList(), true);
-        }
-
-        // else return child
-        return new BiResult<>(child, null, false);
+      // append placeholder
+      builder.append(
+          HelpTopic.PLACEHOLDER_COMMAND.applyArguments(
+              HelpTopic.PLACEHOLDER_COMMAND_FORMAT.applyArguments(command),
+              command.description()
+          )
+      );
     }
 
-    protected Result<Command> resolveChildExecutable(final @NotNull Sender sender,
-                                                     final @NotNull CommandContext context) {
-        final Result<Command> result = resolveChild(context); // resolve child
+    // footer
+    builder.append(newline())
+        .append(HelpTopic.FOOTER);
 
-        if (result.error()) { // if child resolver returned error
-            sendUsage(sender); // send error
-            return (Result<Command>) Result.ERROR; // return error
-        }
+    // sending mesasge
+    sender.sendMessage(builder.build());
+  }
 
-        final Command child = result.value();
+  protected BiResult<Command, List<String>> resolveChildSuggestable(final @NotNull Sender sender,
+      final @NotNull CommandContext context) {
+    final Result<Command> result = resolveChild(context); // resolve child
 
-        if (!child.canExecute(sender)) {
-            sender.sendMessage(Error.UNUSABLE); // send that it's unusable
-            return (Result<Command>) Result.ERROR; // returning error
-        }
-
-        return new Result<>(result.value(), false); // else command
+    if (result.error()) { // if error
+      // return children suggestions
+      return new BiResult<>(null, suggestChildren(sender), true);
     }
 
-    protected @NotNull @Unmodifiable List<String> suggestChildren(final @NotNull Sender sender) {
-        return childCommands()
-                .stream()
-                .filter(command -> command.canExecute(sender)) // we need only player-allowed commands
-                .map(Command::name) // getting names from them
-                .collect(Collectors.toList()); // collecting
+    final Command child = result.value(); // getting child
+
+    if (!child.canExecute(sender)) { // if we can't execute it
+      // return empty list
+      return new BiResult<>(null, Collections.emptyList(), true);
     }
 
-    protected @NotNull Result<Command> resolveChild(final @NotNull CommandContext context) {
-        final Optional<String> optionalRawCommand = context.next(); // getting current argument
+    // else return child
+    return new BiResult<>(child, null, false);
+  }
 
-        if (!optionalRawCommand.isPresent()) {
-            return (Result<Command>) Result.ERROR; // return if it not preset
-        }
+  protected Result<Command> resolveChildExecutable(final @NotNull Sender sender,
+      final @NotNull CommandContext context) {
+    final Result<Command> result = resolveChild(context); // resolve child
 
-        final String rawCommand = optionalRawCommand.get(); // unwrapping it
-
-        final Optional<Command> optionalCommand = childCommands()
-                .stream()
-                .filter(it -> it.name().equals(rawCommand)) // trying to find it basing on name
-                .findFirst();
-
-        return optionalCommand
-                .map(command -> new Result<>(command, false)) // mapping to result with command
-                .orElseGet(
-                        () -> (Result<Command>) Result.ERROR); // if our command is null, just return error result
+    if (result.error()) { // if child resolver returned error
+      sendUsage(sender); // send error
+      return (Result<Command>) Result.ERROR; // return error
     }
+
+    final Command child = result.value();
+
+    if (!child.canExecute(sender)) {
+      sender.sendMessage(Error.UNUSABLE); // send that it's unusable
+      return (Result<Command>) Result.ERROR; // returning error
+    }
+
+    return new Result<>(result.value(), false); // else command
+  }
+
+  protected @NotNull @Unmodifiable List<String> suggestChildren(final @NotNull Sender sender) {
+    return childCommands()
+        .stream()
+        .filter(command -> command.canExecute(sender)) // we need only player-allowed commands
+        .map(Command::name) // getting names from them
+        .collect(Collectors.toList()); // collecting
+  }
+
+  protected @NotNull Result<Command> resolveChild(final @NotNull CommandContext context) {
+    final Optional<String> optionalRawCommand = context.next(); // getting current argument
+
+    if (!optionalRawCommand.isPresent()) {
+      return (Result<Command>) Result.ERROR; // return if it not preset
+    }
+
+    final String rawCommand = optionalRawCommand.get(); // unwrapping it
+
+    final Optional<Command> optionalCommand = childCommands()
+        .stream()
+        .filter(it -> it.name().equals(rawCommand)) // trying to find it basing on name
+        .findFirst();
+
+    return optionalCommand
+        .map(command -> new Result<>(command, false)) // mapping to result with command
+        .orElseGet(
+            () -> (Result<Command>) Result.ERROR); // if our command is null, just return error result
+  }
 
 }

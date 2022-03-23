@@ -221,35 +221,36 @@ import org.jetbrains.annotations.NotNull;
 
 public final class JsonResourceBundle extends ResourceBundle {
 
-    private final JsonObject bundleObject;
+  private final JsonObject bundleObject;
 
-    public JsonResourceBundle(final @NotNull String bundleName) {
-        final String fullName = bundleName + ".json";
+  public JsonResourceBundle(final @NotNull String bundleName) {
+    final String fullName = bundleName + ".json";
 
-        final InputStream inputStream = getClass()
-                .getClassLoader()
-                .getResourceAsStream(fullName);
+    final InputStream inputStream = getClass()
+        .getClassLoader()
+        .getResourceAsStream(fullName);
 
-        if (inputStream == null)
-            throw new IllegalArgumentException("Unknown resource bundle: " + fullName);
-
-        try (final Reader reader = new BufferedReader(
-                new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-            bundleObject = new JsonParser().parse(reader).getAsJsonObject(); // legacy support
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    if (inputStream == null) {
+      throw new IllegalArgumentException("Unknown resource bundle: " + fullName);
     }
 
-    @Override
-    protected Object handleGetObject(@NotNull final String key) {
-        return bundleObject.get(key).getAsJsonPrimitive().getAsString();
+    try (final Reader reader = new BufferedReader(
+        new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+      bundleObject = new JsonParser().parse(reader).getAsJsonObject(); // legacy support
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
-    @NotNull
-    @Override
-    public Enumeration<String> getKeys() {
-        return Collections.enumeration(bundleObject.entrySet().stream().map(Entry::getKey).collect(
-                Collectors.toList()));
-    }
+  @Override
+  protected Object handleGetObject(@NotNull final String key) {
+    return bundleObject.get(key).getAsJsonPrimitive().getAsString();
+  }
+
+  @NotNull
+  @Override
+  public Enumeration<String> getKeys() {
+    return Collections.enumeration(bundleObject.entrySet().stream().map(Entry::getKey).collect(
+        Collectors.toList()));
+  }
 }

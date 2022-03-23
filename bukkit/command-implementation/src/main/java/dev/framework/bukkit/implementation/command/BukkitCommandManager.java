@@ -213,39 +213,39 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public final class BukkitCommandManager extends
-        AbstractCommandManager<CommandSender, BukkitSenderFactory, Command> {
+    AbstractCommandManager<CommandSender, BukkitSenderFactory, Command> {
 
-    private final String pluginName;
+  private final String pluginName;
 
-    public BukkitCommandManager(
-            final @NotNull BukkitAudiences audiences) {
-        super(new BukkitSenderFactory(audiences));
-        this.pluginName = BukkitBootstrapProvider.instance().bootstrap().getName();
-    }
+  public BukkitCommandManager(
+      final @NotNull BukkitAudiences audiences) {
+    super(new BukkitSenderFactory(audiences));
+    this.pluginName = BukkitBootstrapProvider.instance().bootstrap().getName();
+  }
 
-    @Override
-    protected void registerHandle(final @NotNull Command handle) {
-        Commands.injectBukkitCommand(pluginName, handle);
-    }
+  @Override
+  protected void registerHandle(final @NotNull Command handle) {
+    Commands.injectBukkitCommand(pluginName, handle);
+  }
 
-    @Override
-    protected Command wrapToInternal(final @NotNull String name,
-                                     final @NotNull WrappedCommand<CommandSender> wrappedCommand) {
-        return new Command(name) {
-            @Override
-            public boolean execute(final CommandSender commandSender, final String s,
-                                   final String[] strings) {
-                wrappedCommand.execute(commandSender, strings);
-                return false;
-            }
+  @Override
+  protected Command wrapToInternal(final @NotNull String name,
+      final @NotNull WrappedCommand<CommandSender> wrappedCommand) {
+    return new Command(name) {
+      @Override
+      public boolean execute(final CommandSender commandSender, final String s,
+          final String[] strings) {
+        wrappedCommand.execute(commandSender, strings);
+        return false;
+      }
 
-            @Override
-            public List<String> tabComplete(final CommandSender sender, final String alias,
-                                            final String[] args)
-                    throws IllegalArgumentException {
-                return wrappedCommand.suggestions(sender, args);
-            }
-        };
-    }
+      @Override
+      public List<String> tabComplete(final CommandSender sender, final String alias,
+          final String[] args)
+          throws IllegalArgumentException {
+        return wrappedCommand.suggestions(sender, args);
+      }
+    };
+  }
 
 }

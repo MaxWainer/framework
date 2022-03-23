@@ -212,47 +212,47 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Types {
 
-    private static final BiMap<Class<?>, Class<?>> PRIMITIVE_TO_BOXED = HashBiMap.create();
-    private static final BiMap<Class<?>, Class<?>> BOXED_TO_PRIMITIVE = PRIMITIVE_TO_BOXED.inverse();
+  private static final BiMap<Class<?>, Class<?>> PRIMITIVE_TO_BOXED = HashBiMap.create();
+  private static final BiMap<Class<?>, Class<?>> BOXED_TO_PRIMITIVE = PRIMITIVE_TO_BOXED.inverse();
 
-    static {
-        PRIMITIVE_TO_BOXED.forcePut(int.class, Integer.class);
-        PRIMITIVE_TO_BOXED.forcePut(long.class, Long.class);
-        PRIMITIVE_TO_BOXED.forcePut(double.class, Double.class);
-        PRIMITIVE_TO_BOXED.forcePut(float.class, Float.class);
-        PRIMITIVE_TO_BOXED.forcePut(short.class, Short.class);
-        PRIMITIVE_TO_BOXED.forcePut(byte.class, Byte.class);
-        PRIMITIVE_TO_BOXED.forcePut(boolean.class, Boolean.class);
-        PRIMITIVE_TO_BOXED.forcePut(char.class, Character.class);
-        PRIMITIVE_TO_BOXED.forcePut(String.class, String.class);
-    }
+  static {
+    PRIMITIVE_TO_BOXED.forcePut(int.class, Integer.class);
+    PRIMITIVE_TO_BOXED.forcePut(long.class, Long.class);
+    PRIMITIVE_TO_BOXED.forcePut(double.class, Double.class);
+    PRIMITIVE_TO_BOXED.forcePut(float.class, Float.class);
+    PRIMITIVE_TO_BOXED.forcePut(short.class, Short.class);
+    PRIMITIVE_TO_BOXED.forcePut(byte.class, Byte.class);
+    PRIMITIVE_TO_BOXED.forcePut(boolean.class, Boolean.class);
+    PRIMITIVE_TO_BOXED.forcePut(char.class, Character.class);
+    PRIMITIVE_TO_BOXED.forcePut(String.class, String.class);
+  }
 
-    private Types() {
-        Exceptions.instantiationError();
-    }
+  private Types() {
+    Exceptions.instantiationError();
+  }
 
-    // contravariance object type as class
-    public static <R> Class<? super R> contravarianceType(final @NotNull R obj) {
-        return (Class<? super R>) TypeToken.of(obj.getClass()).getRawType();
-    }
+  // contravariance object type as class
+  public static <R> Class<? super R> contravarianceType(final @NotNull R obj) {
+    return (Class<? super R>) TypeToken.of(obj.getClass()).getRawType();
+  }
 
-    public static boolean isPrimitive(final @NotNull Class<?> clazz) {
-        return PRIMITIVE_TO_BOXED.containsKey(clazz);
-    }
+  public static boolean isPrimitive(final @NotNull Class<?> clazz) {
+    return PRIMITIVE_TO_BOXED.containsKey(clazz);
+  }
 
-    public static boolean isBoxed(final @NotNull Class<?> clazz) {
-        return BOXED_TO_PRIMITIVE.containsKey(clazz);
-    }
+  public static boolean isBoxed(final @NotNull Class<?> clazz) {
+    return BOXED_TO_PRIMITIVE.containsKey(clazz);
+  }
 
-    public static Class<?> unboxed(final @NotNull Class<?> clazz) {
-        return Exceptions.checkObject(BOXED_TO_PRIMITIVE.get(clazz), Objects::nonNull,
-                $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
-    }
+  public static Class<?> unboxed(final @NotNull Class<?> clazz) {
+    return Exceptions.checkObject(BOXED_TO_PRIMITIVE.get(clazz), Objects::nonNull,
+        $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
+  }
 
-    public static Class<?> boxed(final @NotNull Class<?> clazz) {
-        return Exceptions.checkObject(PRIMITIVE_TO_BOXED.get(clazz), Objects::nonNull,
-                $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
-    }
+  public static Class<?> boxed(final @NotNull Class<?> clazz) {
+    return Exceptions.checkObject(PRIMITIVE_TO_BOXED.get(clazz), Objects::nonNull,
+        $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
+  }
 
 }
 

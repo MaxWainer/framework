@@ -21,22 +21,26 @@ Mainly, framework created with intent on dependency injection, and require `guic
     }
   
     dependencies {
-        compileOnly 'io.github.maxwainer:framework-commons:<Major>.<Minor>.<Revision>'
-            
+        
         // highly recommend include them in jar if you really using this 
+        implementation 'io.github.maxwainer:framework-commons:<Major>.<Minor>.<Revision>'
         implementation 'io.github.maxwainer:framework-loader:<Major>.<Minor>.<Revision>'
         implementation 'io.github.maxwainer:framework-bootstrap:<Major>.<Minor>.<Revision>'
-        // bootstrap required also to implementation
+        // bootstrap implementation also required to implementation
         implementation 'io.github.maxwainer:framework-bukkit-bootstrap-implementation:<Major>.<Minor>.<Revision>'
   
         // implementation of some modules
         compileOnly 'io.github.maxwainer:framework-<platform>-<module>-implementation:<Major>.<Minor>.<Revision>'
         
-        compileOnly 'io.github.maxwainer:framework-commands:<Major>.<Minor>.<Revision>'
+        // basic logic
+        compileOnly 'io.github.maxwainer:framework-<platform>-<module>-implementation:<Major>.<Minor>.<Revision>'
+  
+        // modules and submodules artifact logic
+        compileOnly 'io.github.maxwainer:framework-<module>-<submodules, split them using dashed ->:<Major>.<Minor>.<Revision>'
   
         compileOnly 'io.github.maxwainer:framework-config-api:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-config-bukkit-adapters:<Major>.<Minor>.<Revision>'
-        compileOnly 'io.github.maxwainer:framework-config-yaml:<Major>.<Minor>.<Revision>'
+        compileOnly 'io.github.maxwainer:framework-config-<type>:<Major>.<Minor>.<Revision>'
   
         compileOnly 'io.github.maxwainer:framework-locale:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-orm-api:<Major>.<Minor>.<Revision>'

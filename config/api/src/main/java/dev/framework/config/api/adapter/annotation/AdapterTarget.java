@@ -214,6 +214,6 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AdapterTarget {
 
-    @NotNull Class<?> value();
+  @NotNull Class<?> value();
 
 }

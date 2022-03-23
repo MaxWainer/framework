@@ -215,38 +215,39 @@ import org.jetbrains.annotations.NotNull;
 
 final class BukkitSender implements Sender {
 
-    private final Audience audience;
-    private final CommandSender handle;
+  private final Audience audience;
+  private final CommandSender handle;
 
-    BukkitSender(
-            final @NotNull Audience audience,
-            final @NotNull CommandSender handle) {
-        this.audience = audience;
-        this.handle = handle;
-    }
+  BukkitSender(
+      final @NotNull Audience audience,
+      final @NotNull CommandSender handle) {
+    this.audience = audience;
+    this.handle = handle;
+  }
 
-    @Override
-    public @NotNull
-    UUID uniqueId() {
-        return handle instanceof ConsoleCommandSender ? Sender.GENERIC_UUID : ((Player) handle).getUniqueId();
-    }
+  @Override
+  public @NotNull
+  UUID uniqueId() {
+    return handle instanceof ConsoleCommandSender ? Sender.GENERIC_UUID
+        : ((Player) handle).getUniqueId();
+  }
 
-    @Override
-    public void sendMessage(final @NotNull Component component) {
-        audience.sendMessage(component);
-    }
+  @Override
+  public void sendMessage(final @NotNull Component component) {
+    audience.sendMessage(component);
+  }
 
-    @Override
-    public void sendMessage(final @NotNull String message) {
-        handle.sendMessage(message);
-    }
+  @Override
+  public void sendMessage(final @NotNull String message) {
+    handle.sendMessage(message);
+  }
 
-    @Override
-    public boolean hasPermission(final @NotNull String permission) {
-        return handle.hasPermission(permission);
-    }
+  @Override
+  public boolean hasPermission(final @NotNull String permission) {
+    return handle.hasPermission(permission);
+  }
 
-    public CommandSender handle() {
-        return handle;
-    }
+  public CommandSender handle() {
+    return handle;
+  }
 }

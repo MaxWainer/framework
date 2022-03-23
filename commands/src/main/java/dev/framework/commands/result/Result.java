@@ -207,22 +207,22 @@ package dev.framework.commands.result;
 // wrapping class
 public final class Result<T> {
 
-    // error result
-    public static Result<?> ERROR = new Result<>(null, true);
+  // error result
+  public static Result<?> ERROR = new Result<>(null, true);
 
-    private final T value;
-    private final boolean error;
+  private final T value;
+  private final boolean error;
 
-    public Result(final T value, final boolean error) {
-        this.value = value;
-        this.error = error;
-    }
+  public Result(final T value, final boolean error) {
+    this.value = value;
+    this.error = error;
+  }
 
-    public T value() {
-        return value;
-    }
+  public T value() {
+    return value;
+  }
 
-    public boolean error() {
-        return error;
-    }
+  public boolean error() {
+    return error;
+  }
 }

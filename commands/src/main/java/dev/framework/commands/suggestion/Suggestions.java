@@ -213,26 +213,26 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Suggestions {
 
-    static Suggestions create() {
-        return new SuggestionsImpl();
-    }
+  static Suggestions create() {
+    return new SuggestionsImpl();
+  }
 
-    Suggestions assertNext(final @NotNull List<String> list);
+  Suggestions assertNext(final @NotNull List<String> list);
 
-    Suggestions assertNext(final @NotNull Collection<String> list);
+  Suggestions assertNext(final @NotNull Collection<String> list);
 
-    Suggestions assertNext(final @NotNull Suggestions suggestions);
+  Suggestions assertNext(final @NotNull Suggestions suggestions);
 
-    default <V> Suggestions assertNext(final @NotNull List<V> list,
-                                       final @NotNull Function<V, String> mapper) {
-        return assertNext(list.stream().map(mapper).collect(Collectors.toList()));
-    }
+  default <V> Suggestions assertNext(final @NotNull List<V> list,
+      final @NotNull Function<V, String> mapper) {
+    return assertNext(list.stream().map(mapper).collect(Collectors.toList()));
+  }
 
-    default <V> Suggestions assertNext(final @NotNull Collection<V> list,
-                                       final @NotNull Function<V, String> mapper) {
-        return assertNext(list.stream().map(mapper).collect(Collectors.toList()));
-    }
+  default <V> Suggestions assertNext(final @NotNull Collection<V> list,
+      final @NotNull Function<V, String> mapper) {
+    return assertNext(list.stream().map(mapper).collect(Collectors.toList()));
+  }
 
-    @NotNull List<String> completeFor(final @NotNull CommandContext context);
+  @NotNull List<String> completeFor(final @NotNull CommandContext context);
 
 }

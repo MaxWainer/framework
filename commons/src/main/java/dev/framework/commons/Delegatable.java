@@ -213,10 +213,10 @@ import org.jetbrains.annotations.UnknownNullability;
  */
 public interface Delegatable<T> {
 
-    /**
-     * @return Delegating value
-     */
-    @UnknownNullability
-    T delegate();
+  /**
+   * @return Delegating value
+   */
+  @UnknownNullability
+  T delegate();
 
 }

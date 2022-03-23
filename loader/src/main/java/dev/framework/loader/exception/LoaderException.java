@@ -208,12 +208,12 @@ import org.jetbrains.annotations.NotNull;
 
 public final class LoaderException extends Exception {
 
-    public LoaderException(final @NotNull String message) {
-        super(String.format("Error while loading provider: %s", message));
-    }
+  public LoaderException(final @NotNull String message) {
+    super(String.format("Error while loading provider: %s", message));
+  }
 
-    public LoaderException() {
-        super("Error while loading provider!");
-    }
+  public LoaderException() {
+    super("Error while loading provider!");
+  }
 
 }

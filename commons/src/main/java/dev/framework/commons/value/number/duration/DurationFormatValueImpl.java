@@ -217,53 +217,53 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.Period;
 
 final class DurationFormatValueImpl extends AbstractFormatValue<Long, DurationType> implements
-        DurationFormatValue {
+    DurationFormatValue {
 
-    DurationFormatValueImpl(final long number,
-                            final @NotNull DurationType baseUnit,
-                            final @NotNull FormatValueConfig<DurationType> config) {
-        super(number, baseUnit, config);
-    }
+  DurationFormatValueImpl(final long number,
+      final @NotNull DurationType baseUnit,
+      final @NotNull FormatValueConfig<DurationType> config) {
+    super(number, baseUnit, config);
+  }
 
-    DurationFormatValueImpl(
-            final long number,
-            final @NotNull DurationType baseUnit) {
-        super(number, baseUnit, FormatValueConfig.<DurationType>builder()
-                .delimiter(", ")
-                .allowZero(false)
-                .build());
-    }
+  DurationFormatValueImpl(
+      final long number,
+      final @NotNull DurationType baseUnit) {
+    super(number, baseUnit, FormatValueConfig.<DurationType>builder()
+        .delimiter(", ")
+        .allowZero(false)
+        .build());
+  }
 
-    @Override
-    public @NotNull String applyFormat(final @NotNull GroupMapper<Long> mapper,
-                                       final @NotNull FormatValueDisplaySet<DurationType> displaySet) {
-        final StringJoiner builder = new StringJoiner(config.delimiter(), config.prefix(),
-                config.suffix());
+  @Override
+  public @NotNull String applyFormat(final @NotNull GroupMapper<Long> mapper,
+      final @NotNull FormatValueDisplaySet<DurationType> displaySet) {
+    final StringJoiner builder = new StringJoiner(config.delimiter(), config.prefix(),
+        config.suffix());
 
-        final List<DurationType> set = Enums.reversedEnumValues(DurationType.class);
-        set.removeAll(config.excludedUnits());
+    final List<DurationType> set = Enums.reversedEnumValues(DurationType.class);
+    set.removeAll(config.excludedUnits());
 
-        for (final DurationType unit : set) {
-            if (displaySet.supported(unit)) { // sorting units
-                final FormatValueDisplayGroup group = displaySet.group(unit); // getting group
-                assert group != null; // ensuring that group is not null
+    for (final DurationType unit : set) {
+      if (displaySet.supported(unit)) { // sorting units
+        final FormatValueDisplayGroup group = displaySet.group(unit); // getting group
+        assert group != null; // ensuring that group is not null
 
-                final Period period = new Period(0, delegate); // getting period
-                final long partial = period.get(unit.durationFieldType()); // getting partial
+        final Period period = new Period(0, delegate); // getting period
+        final long partial = period.get(unit.durationFieldType()); // getting partial
 
-                if (partial <= 0 && !config.allowZero()) {
-                    continue; // checking is partial zero and do we allowed to print it
-                }
-
-                final String result = mapper.apply(group, partial); // applying mapper
-
-                if (!result.isEmpty()) { // is result is not empty
-                    builder.add(result); // adding it
-                }
-            }
+        if (partial <= 0 && !config.allowZero()) {
+          continue; // checking is partial zero and do we allowed to print it
         }
 
-        return builder.toString().trim();
+        final String result = mapper.apply(group, partial); // applying mapper
+
+        if (!result.isEmpty()) { // is result is not empty
+          builder.add(result); // adding it
+        }
+      }
     }
+
+    return builder.toString().trim();
+  }
 
 }

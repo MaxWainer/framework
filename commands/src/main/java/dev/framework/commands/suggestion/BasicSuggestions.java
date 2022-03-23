@@ -211,15 +211,15 @@ import java.util.stream.IntStream;
 
 public interface BasicSuggestions {
 
-    static List<String> intRange(final int from, final int to) {
-        return IntStream.range(from, to) // get range
-                .boxed() // boxing them
-                .map(Object::toString) // making strings
-                .collect(Collectors.toList()); // collecting
-    }
+  static List<String> intRange(final int from, final int to) {
+    return IntStream.range(from, to) // get range
+        .boxed() // boxing them
+        .map(Object::toString) // making strings
+        .collect(Collectors.toList()); // collecting
+  }
 
-    static List<String> booleans() {
-        return Booleans.ALLOWED_STRINGS;
-    }
+  static List<String> booleans() {
+    return Booleans.ALLOWED_STRINGS;
+  }
 
 }

@@ -210,15 +210,15 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Dependencies {
 
-    private Dependencies() {
-        Exceptions.instantiationError();
-    }
+  private Dependencies() {
+    Exceptions.instantiationError();
+  }
 
-    public static @NotNull String fileNameOf(final @NotNull Dependency dependency,
-                                             final @NotNull String @NonNls ... appendix) {
-        return dependency.artifactId() + '-'
-                + dependency.version() + (appendix.length == 0 ? "" : '-') + String.join("-",
-                appendix) + ".jar";
-    }
+  public static @NotNull String fileNameOf(final @NotNull Dependency dependency,
+      final @NotNull String @NonNls ... appendix) {
+    return dependency.artifactId() + '-'
+        + dependency.version() + (appendix.length == 0 ? "" : '-') + String.join("-",
+        appendix) + ".jar";
+  }
 
 }

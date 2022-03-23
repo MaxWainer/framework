@@ -211,33 +211,33 @@ import org.jetbrains.annotations.NotNull;
 
 final class ArgumentSchemaImpl implements ArgumentSchema {
 
-    public static final ArgumentSchema EMPTY = new ArgumentSchemaImpl(new HashSet<>());
+  public static final ArgumentSchema EMPTY = new ArgumentSchemaImpl(new HashSet<>());
 
-    private final Set<Argument> targets;
+  private final Set<Argument> targets;
 
-    ArgumentSchemaImpl(final @NotNull Set<Argument> targets) {
-        this.targets = targets;
+  ArgumentSchemaImpl(final @NotNull Set<Argument> targets) {
+    this.targets = targets;
+  }
+
+  @Override
+  public @NotNull Set<Argument> arguments() {
+    return targets;
+  }
+
+  static final class BuilderImpl implements Builder {
+
+    private final Set<Argument> targets = new LinkedHashSet<>();
+
+    @Override
+    public Builder assertArgument(final @NotNull Argument argument) {
+      this.targets.add(argument);
+      return this;
     }
 
     @Override
-    public @NotNull Set<Argument> arguments() {
-        return targets;
+    public ArgumentSchema build() {
+      return new ArgumentSchemaImpl(targets);
     }
-
-    static final class BuilderImpl implements Builder {
-
-        private final Set<Argument> targets = new LinkedHashSet<>();
-
-        @Override
-        public Builder assertArgument(final @NotNull Argument argument) {
-            this.targets.add(argument);
-            return this;
-        }
-
-        @Override
-        public ArgumentSchema build() {
-            return new ArgumentSchemaImpl(targets);
-        }
-    }
+  }
 
 }

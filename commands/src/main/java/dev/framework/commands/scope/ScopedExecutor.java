@@ -213,14 +213,14 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface ScopedExecutor<T> extends Scoped {
 
-    void executeScoped(
-            final @NotNull Sender sender,
-            final @NotNull T scope,
-            final @NotNull CommandContext context) throws CommandException;
+  void executeScoped(
+      final @NotNull Sender sender,
+      final @NotNull T scope,
+      final @NotNull CommandContext context) throws CommandException;
 
-    @NotNull @Unmodifiable List<String> suggestScoped(
-            final @NotNull Sender sender,
-            final @NotNull T scope,
-            final @NotNull CommandContext context);
+  @NotNull @Unmodifiable List<String> suggestScoped(
+      final @NotNull Sender sender,
+      final @NotNull T scope,
+      final @NotNull CommandContext context);
 
 }

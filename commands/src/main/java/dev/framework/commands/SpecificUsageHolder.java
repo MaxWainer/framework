@@ -209,6 +209,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface SpecificUsageHolder {
 
-    @NotNull Component specificAppendix();
+  @NotNull Component specificAppendix();
 
 }

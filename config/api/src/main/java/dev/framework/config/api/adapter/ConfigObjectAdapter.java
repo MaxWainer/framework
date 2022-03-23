@@ -209,8 +209,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ConfigObjectAdapter<T> {
 
-    @NotNull T deserialize(final @NotNull Section section);
+  @NotNull T deserialize(final @NotNull Section section);
 
-    @NotNull Section serialize(final @NotNull T object);
+  @NotNull Section serialize(final @NotNull T object);
 
 }

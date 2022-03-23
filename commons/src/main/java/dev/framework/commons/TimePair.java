@@ -209,22 +209,22 @@ import org.jetbrains.annotations.NotNull;
 
 public final class TimePair {
 
-    public static final TimePair ZERO = new TimePair(TimeUnit.NANOSECONDS, 0);
+  public static final TimePair ZERO = new TimePair(TimeUnit.NANOSECONDS, 0);
 
-    private final TimeUnit unit;
-    private final long time;
+  private final TimeUnit unit;
+  private final long time;
 
-    public TimePair(final @NotNull TimeUnit unit, final long time) {
-        this.unit = unit;
-        this.time = time;
-    }
+  public TimePair(final @NotNull TimeUnit unit, final long time) {
+    this.unit = unit;
+    this.time = time;
+  }
 
-    @NotNull
-    public TimeUnit unit() {
-        return unit;
-    }
+  @NotNull
+  public TimeUnit unit() {
+    return unit;
+  }
 
-    public long time() {
-        return time;
-    }
+  public long time() {
+    return time;
+  }
 }

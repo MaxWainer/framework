@@ -211,8 +211,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class YamlConfigFactory implements ConfigFactory {
 
-    @Override
-    public @NotNull Config createConfig(final @NotNull ConfigOptions options) {
-        return null;
-    }
+  @Override
+  public @NotNull Config createConfig(final @NotNull ConfigOptions options) {
+    return null;
+  }
 }

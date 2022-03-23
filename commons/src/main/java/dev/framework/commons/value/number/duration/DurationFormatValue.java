@@ -212,31 +212,31 @@ import org.joda.time.Duration;
 
 public interface DurationFormatValue extends FormatValue<Long, DurationType> {
 
-    static DurationFormatValue of(
-            final long number,
-            final @NotNull DurationType unit) {
-        return new DurationFormatValueImpl(number, unit);
-    }
+  static DurationFormatValue of(
+      final long number,
+      final @NotNull DurationType unit) {
+    return new DurationFormatValueImpl(number, unit);
+  }
 
-    static DurationFormatValue ofSeconds(final long number) {
-        return of(number, DurationType.SECONDS);
-    }
+  static DurationFormatValue ofSeconds(final long number) {
+    return of(number, DurationType.SECONDS);
+  }
 
-    static DurationFormatValue ofDuration(final @NotNull Duration duration) {
-        return of(duration.getMillis(), DurationType.MILLIS);
-    }
+  static DurationFormatValue ofDuration(final @NotNull Duration duration) {
+    return of(duration.getMillis(), DurationType.MILLIS);
+  }
 
-    static DurationFormatValue of(
-            final long number,
-            final @NotNull DurationType unit,
-            final @NotNull FormatValueConfig<DurationType> config) {
-        return new DurationFormatValueImpl(number, unit, config);
-    }
+  static DurationFormatValue of(
+      final long number,
+      final @NotNull DurationType unit,
+      final @NotNull FormatValueConfig<DurationType> config) {
+    return new DurationFormatValueImpl(number, unit, config);
+  }
 
-    static DurationFormatValue ofSeconds(
-            final long number,
-            final @NotNull FormatValueConfig<DurationType> config) {
-        return of(number, DurationType.SECONDS, config);
-    }
+  static DurationFormatValue ofSeconds(
+      final long number,
+      final @NotNull FormatValueConfig<DurationType> config) {
+    return of(number, DurationType.SECONDS, config);
+  }
 
 }

@@ -210,15 +210,15 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ResourceFile {
 
-    private final ImmutableMap<Dependency, String> dependencies;
+  private final ImmutableMap<Dependency, String> dependencies;
 
-    public ResourceFile(
-            final @NotNull ImmutableMap<Dependency, String> dependencies) {
-        this.dependencies = dependencies;
-    }
+  public ResourceFile(
+      final @NotNull ImmutableMap<Dependency, String> dependencies) {
+    this.dependencies = dependencies;
+  }
 
-    @NotNull
-    public ImmutableMap<Dependency, String> dependencies() {
-        return this.dependencies;
-    }
+  @NotNull
+  public ImmutableMap<Dependency, String> dependencies() {
+    return this.dependencies;
+  }
 }

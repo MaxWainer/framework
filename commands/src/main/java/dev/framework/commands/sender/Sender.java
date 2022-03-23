@@ -210,18 +210,18 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Sender {
 
-    UUID GENERIC_UUID = new UUID(0, 0); // if sender is console or undefined
+  UUID GENERIC_UUID = new UUID(0, 0); // if sender is console or undefined
 
-    @NotNull UUID uniqueId();
+  @NotNull UUID uniqueId();
 
-    void sendMessage(final @NotNull Component component);
+  void sendMessage(final @NotNull Component component);
 
-    void sendMessage(final @NotNull String message);
+  void sendMessage(final @NotNull String message);
 
-    boolean hasPermission(final @NotNull String permission);
+  boolean hasPermission(final @NotNull String permission);
 
-    default boolean console() {
-        return uniqueId().equals(GENERIC_UUID);
-    }
+  default boolean console() {
+    return uniqueId().equals(GENERIC_UUID);
+  }
 
 }

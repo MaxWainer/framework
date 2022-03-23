@@ -216,27 +216,27 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface Command {
 
-    void execute(final @NotNull Sender sender, final @NotNull CommandContext context)
-            throws CommandException;
+  void execute(final @NotNull Sender sender, final @NotNull CommandContext context)
+      throws CommandException;
 
-    default @NotNull @Unmodifiable List<String> suggestions(
-            final @NotNull Sender sender,
-            final @NotNull CommandContext context) {
-        return Collections.emptyList();
-    }
+  default @NotNull @Unmodifiable List<String> suggestions(
+      final @NotNull Sender sender,
+      final @NotNull CommandContext context) {
+    return Collections.emptyList();
+  }
 
-    @NotNull @Unmodifiable Set<Command> childCommands();
+  @NotNull @Unmodifiable Set<Command> childCommands();
 
-    @NotNull String name();
+  @NotNull String name();
 
-    default @NotNull Component description() {
-        return Component.text("Не указано", CommandStyleConfig.systemPrimaryColor());
-    }
+  default @NotNull Component description() {
+    return Component.text("Не указано", CommandStyleConfig.systemPrimaryColor());
+  }
 
-    default boolean canExecute(final @NotNull Sender sender) {
-        return true;
-    }
+  default boolean canExecute(final @NotNull Sender sender) {
+    return true;
+  }
 
-    void sendUsage(final @NotNull Sender sender);
+  void sendUsage(final @NotNull Sender sender);
 
 }

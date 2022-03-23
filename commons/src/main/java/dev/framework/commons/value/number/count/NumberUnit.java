@@ -205,5 +205,5 @@
 package dev.framework.commons.value.number.count;
 
 public enum NumberUnit {
-    DUMMY
+  DUMMY
 }

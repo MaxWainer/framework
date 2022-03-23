@@ -206,6 +206,6 @@ package dev.framework.commons;
 
 public interface Buildable<T> {
 
-    T build();
+  T build();
 
 }

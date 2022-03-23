@@ -214,4 +214,5 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UtilityClass {
+
 }

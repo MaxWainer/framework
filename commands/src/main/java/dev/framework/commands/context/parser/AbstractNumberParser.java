@@ -211,27 +211,27 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractNumberParser<T extends Number> implements ContextParser<T> {
 
-    @Override
-    public @NotNull ParserResult<T> checkInput(final @NotNull String raw) {
-        final T number = parseNumber0(raw); // parsing number
+  @Override
+  public @NotNull ParserResult<T> checkInput(final @NotNull String raw) {
+    final T number = parseNumber0(raw); // parsing number
 
-        if (number != null) { // if not null
-            return ParserResult.success(number); // success
-        }
-
-        // else error
-        return ParserResult.error(Error.PARSER_NUMBER.applyArguments(raw));
+    if (number != null) { // if not null
+      return ParserResult.success(number); // success
     }
 
+    // else error
+    return ParserResult.error(Error.PARSER_NUMBER.applyArguments(raw));
+  }
 
-    protected T parseNumber0(final @NotNull String raw) {
-        try {
-            return parseNumber1(raw); // parse it
-        } catch (final NumberFormatException ignored) { // if we have NumberFormatException, just ignore it
-        }
 
-        return null; // return null
+  protected T parseNumber0(final @NotNull String raw) {
+    try {
+      return parseNumber1(raw); // parse it
+    } catch (final NumberFormatException ignored) { // if we have NumberFormatException, just ignore it
     }
 
-    protected abstract T parseNumber1(final @NotNull String raw); // number depend wrapper
+    return null; // return null
+  }
+
+  protected abstract T parseNumber1(final @NotNull String raw); // number depend wrapper
 }

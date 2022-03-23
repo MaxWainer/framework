@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 McDev.Store
+ *    Copyright 2022 MaxWainer
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -213,28 +213,28 @@ import org.jetbrains.annotations.Nullable;
 
 final class ToolDataImpl implements ToolData {
 
-    private final Map<String, Object> propertyMap = new ConcurrentHashMap<>();
+  private final Map<String, Object> propertyMap = new ConcurrentHashMap<>();
 
-    @Override
-    public <T> void setProperty(@NotNull String propertyName, @NotNull T value) {
-        propertyMap.put(propertyName, value);
+  @Override
+  public <T> void setProperty(@NotNull String propertyName, @NotNull T value) {
+    propertyMap.put(propertyName, value);
+  }
+
+  @Override
+  public <T> boolean modifyProperty(@NotNull String propertyName,
+      @NotNull UnaryOperator<T> operator) {
+    final Optional<T> optionalValue = getPropertySafe(propertyName);
+
+    if (optionalValue.isPresent()) {
+      setProperty(propertyName, operator.apply(getProperty(propertyName)));
+      return true;
     }
 
-    @Override
-    public <T> boolean modifyProperty(@NotNull String propertyName,
-                                      @NotNull UnaryOperator<T> operator) {
-        final Optional<T> optionalValue = getPropertySafe(propertyName);
+    return false;
+  }
 
-        if (optionalValue.isPresent()) {
-            setProperty(propertyName, operator.apply(getProperty(propertyName)));
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public <T> @Nullable T getProperty(@NotNull String propertyName) {
-        return (T) propertyMap.get(propertyName);
-    }
+  @Override
+  public <T> @Nullable T getProperty(@NotNull String propertyName) {
+    return (T) propertyMap.get(propertyName);
+  }
 }

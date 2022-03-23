@@ -187,7 +187,7 @@
  *       same "printed page" as the copyright notice for easier
  *       identification within third-party archives.
  *
- *    Copyright 2022 McDev.Store
+ *    Copyright 2022 MaxWainer
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -209,6 +209,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Tool<H> extends RepositoryObject<String> {
 
-    void handleClick(final @NotNull ToolsDataHolder toolHolder, final @NotNull H interactingData);
+  void handleClick(final @NotNull ToolsDataHolder toolHolder, final @NotNull H interactingData);
 
 }

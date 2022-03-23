@@ -1,5 +1,3 @@
-import java.nio.file.Files
-
 rootProject.name = 'framework'
 
 println 'Searching for subprojects...'
@@ -37,17 +35,17 @@ class BlacklistFileFilter implements FileFilter {
 }
 
 rootDir.eachDir {
-    if (BlacklistFileFilter.INSTANCE.accept(it)) {
-        return
-    }
+  if (BlacklistFileFilter.INSTANCE.accept(it)) {
+    return
+  }
 
   deepInclude(it)
 }
 
 final def deepInclude(File dir) {
-    if (BlacklistFileFilter.INSTANCE.accept(dir)) {
-        return
-    }
+  if (BlacklistFileFilter.INSTANCE.accept(dir)) {
+    return
+  }
 
   dir.eachDir {
     deepInclude(it)
