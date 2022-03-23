@@ -1,4 +1,3 @@
-![](.images/logo.jpg)
 # framework
 Current version: 0.0.1
 
@@ -25,16 +24,18 @@ Mainly, framework created with intent on dependency injection, and require `guic
         // highly recommend include them in jar if you really using this 
         implementation 'io.github.maxwainer:framework-loader:<Major>.<Minor>.<Revision>'
         implementation 'io.github.maxwainer:framework-bootstrap:<Major>.<Minor>.<Revision>'
-        implementation 'io.github.maxwainer:framework-bootstrap-<platform>:<Major>.<Minor>.<Revision>'
+        // bootstrap required also to implementation
+        implementation 'io.github.maxwainer:framework-bukkit-bootstrap-implementation:<Major>.<Minor>.<Revision>'
   
         // implementation of some modules
-        compileOnly 'io.github.maxwainer:framework-<platform>-implementation:<Major>.<Minor>.<Revision>'
+        compileOnly 'io.github.maxwainer:framework-<platform>-<module>-implementation:<Major>.<Minor>.<Revision>'
         
         compileOnly 'io.github.maxwainer:framework-commands:<Major>.<Minor>.<Revision>'
-        compileOnly 'io.github.maxwainer:framework-commands:<Major>.<Minor>.<Revision>'
+  
         compileOnly 'io.github.maxwainer:framework-config-api:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-config-bukkit-adapters:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-config-yaml:<Major>.<Minor>.<Revision>'
+  
         compileOnly 'io.github.maxwainer:framework-locale:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-orm-api:<Major>.<Minor>.<Revision>'
         compileOnly 'io.github.maxwainer:framework-packet-wrapper:<Major>.<Minor>.<Revision>'

@@ -1,0 +1,7 @@
+group 'dev.framework.bukkit.implementation.bootstrap'
+
+dependencies {
+    compileOnly project(':framework-bootstrap')
+    compileOnly project(':framework-loader')
+    compileOnly project(':framework-commons')
+}

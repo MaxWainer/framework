@@ -16,7 +16,8 @@ public final class Repositories {
     Exceptions.instantiationError();
   }
 
-  public static <V extends RepositoryObject<UUID>> Repository<UUID, V> uuidToObjectMemoryRepository() {
+  public static <V extends RepositoryObject<UUID>>
+      Repository<UUID, V> uuidToObjectMemoryRepository() {
     return uuidToObjectMemoryRepository(HashMap::new);
   }
 
@@ -43,6 +44,15 @@ public final class Repositories {
     public void register(final @NotNull UUID uuid, @NotNull final O o) {
       data.putIfAbsent(uuid, o);
     }
-  }
 
+    @Override
+    public void delete(@NotNull UUID uuid) {
+      this.data.remove(uuid);
+    }
+
+    @Override
+    public void update(@NotNull UUID uuid, @NotNull O o) {
+      this.data.replace(uuid, o);
+    }
+  }
 }

@@ -1,0 +1,5 @@
+group 'dev.framework.bukkit.implementation.command'
+
+dependencies {
+    //compileOnly project(':bukkit:bukkit-bootstrap-implementation')
+}

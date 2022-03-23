@@ -1,6 +1,6 @@
 group 'framework.commands'
 
 dependencies {
-    compileOnly project(':commons')
-    compileOnly project(':locale')
+    compileOnly project(':framework-commons')
+    compileOnly project(':framework-locale')
 }

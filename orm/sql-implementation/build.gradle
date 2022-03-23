@@ -1,0 +1,5 @@
+group 'dev.framework.orm.implementation.sql'
+
+dependencies {
+//    compileOnly project(':orm:orm-api')
+}

@@ -2,6 +2,7 @@ group 'framework.orm'
 
 allprojects {
     dependencies {
-        compileOnly project(':commons')
+        compileOnly project(':framework-commons')
+        testCompileOnly project(':framework-commons')
     }
 }

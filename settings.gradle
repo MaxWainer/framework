@@ -1,26 +1,67 @@
 rootProject.name = 'framework'
-include 'commons'
-include 'commands'
-include 'locale'
-include 'bukkit'
-include 'example'
-include 'loader'
-include 'config'
-include 'config:api'
-project(':config:api').name = 'config-api'
-include 'config:yaml'
-project(':config:yaml').name = 'config-yaml'
-include 'config:bukkit-adapters'
-project(':config:bukkit-adapters').name = 'config-bukkit-adapters'
-include ':packet-wrapper'
-project(':packet-wrapper').name = 'packet-wrapper'
-include 'bukkit:commons'
-project(':bukkit:commons').name = 'bukkit-commons'
-include 'stack-wrapper'
-include 'bukkit:implementation'
-project(':bukkit:implementation').name = 'bukkit-implementation'
-include 'bootstrap'
-include 'orm'
-include 'orm:api'
-project(':orm:api').name = 'orm-api'
 
+println 'Searching for subprojects...'
+
+class BlacklistFileFilter implements FileFilter {
+
+    static final def INSTANCE = new BlacklistFileFilter()
+
+    static final def NAME_BLACKLIST = [
+            '.github',
+            '.images',
+            'gradle',
+            'src',
+            '.git',
+            '.idea',
+            '.gradle',
+            'src',
+            'test',
+            'resource',
+            'build',
+            'java',
+            'main',
+            'dev',
+            'annotationProcessor',
+            'sources',
+            '.checkstyle'
+    ]
+
+    @Override
+    boolean accept(File pathname) {
+        final def name = pathname.name
+
+        return NAME_BLACKLIST.contains(name)
+    }
+}
+
+rootDir.eachDir {
+    if (BlacklistFileFilter.INSTANCE.accept(it)) return
+
+    deepInclude(it)
+}
+
+final def deepInclude(File dir) {
+    if (BlacklistFileFilter.INSTANCE.accept(dir)) return
+
+    dir.eachDir {
+        deepInclude(it)
+    }
+
+    final def fullPath = dir.toString()
+
+    final def frameworkIndex = fullPath.indexOf('framework')
+
+    final def substring = fullPath.substring(frameworkIndex)
+    final def including = substring.substring('framework'.length()).replace('/', ':')
+    final def colon = including.substring(1)
+    final def customName = substring.replace('/', '-')
+
+    println '-------------------------------'
+    include(colon)
+    println "Founded project: $substring"
+    project(including).name = customName
+    println "Renaming to: $customName"
+    println '-------------------------------'
+}
+
+println 'Founded all subprojects! Starting configuring process...'
