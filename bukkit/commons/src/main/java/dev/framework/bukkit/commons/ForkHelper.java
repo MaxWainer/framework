@@ -212,58 +212,56 @@ import java.util.logging.Logger;
 
 public final class ForkHelper {
 
-  private ForkHelper() {
-    Exceptions.instantiationError();
-  }
+    private static final Logger LOGGER = LoggerCompat.getLogger();
+    private static final Set<Fork> SUPPORTED_FORKS = EnumSet.of(Fork.PAPER);
+    public static final Fork CURRENT_FORK = detectFork();
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
-
-  private static final Set<Fork> SUPPORTED_FORKS = EnumSet.of(Fork.PAPER);
-
-  public static final Fork CURRENT_FORK = detectFork();
-
-  private static Fork detectFork() {
-    final Fork fork;
-    if (hasClass("com.destroystokyo.paper.VersionHistoryManager$VersionData")) {
-      fork = Fork.PAPER;
-    } else if (hasClass("org.bukkit.entity.Player$Spigot")) {
-      fork = Fork.SPIGOT;
-    } else {
-      fork = Fork.UNSUPPORTED;
+    private ForkHelper() {
+        Exceptions.instantiationError();
     }
 
-    // If fork is not supported, we print
-    // corresponding message
-    if (!SUPPORTED_FORKS.contains(fork)) {
-      LOGGER.warning("=====================================================");
-      LOGGER.warning("> You are using fork which is poorly support by framework!");
-      LOGGER.warning(">  I'd suggest use paper: https://papermc.io/downloads");
-      LOGGER.warning("=====================================================");
+    private static Fork detectFork() {
+        final Fork fork;
+        if (hasClass("com.destroystokyo.paper.VersionHistoryManager$VersionData")) {
+            fork = Fork.PAPER;
+        } else if (hasClass("org.bukkit.entity.Player$Spigot")) {
+            fork = Fork.SPIGOT;
+        } else {
+            fork = Fork.UNSUPPORTED;
+        }
+
+        // If fork is not supported, we print
+        // corresponding message
+        if (!SUPPORTED_FORKS.contains(fork)) {
+            LOGGER.warning("=====================================================");
+            LOGGER.warning("> You are using fork which is poorly support by framework!");
+            LOGGER.warning(">  I'd suggest use paper: https://papermc.io/downloads");
+            LOGGER.warning("=====================================================");
+        }
+
+        // If current for is paper, print message
+        if (fork == Fork.PAPER) {
+            LOGGER.info("Good boi");
+        }
+
+        return fork;
     }
 
-    // If current for is paper, print message
-    if (fork == Fork.PAPER) {
-      LOGGER.info("Good boi");
+    private static boolean hasClass(final String className) {
+        try {
+            Class.forName(className);
+
+            return true;
+        } catch (final ClassNotFoundException ignored) {
+        }
+
+        return false;
     }
 
-    return fork;
-  }
-
-  private static boolean hasClass(final String className) {
-    try {
-      Class.forName(className);
-
-      return true;
-    } catch (final ClassNotFoundException ignored) {
+    public enum Fork {
+        PAPER,
+        SPIGOT,
+        UNSUPPORTED
     }
-
-    return false;
-  }
-
-  public enum Fork {
-    PAPER,
-    SPIGOT,
-    UNSUPPORTED
-  }
 
 }

@@ -10,15 +10,15 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ModuleInfo {
 
-  @NotNull String name();
+    @NotNull String name();
 
-  @NotNull Priority priority() default Priority.LOWEST;
+    @NotNull Priority priority() default Priority.LOWEST;
 
-  enum Priority {
-    LOWEST,
-    LOW,
-    HIGH,
-    HIGHEST
-  }
+    enum Priority {
+        LOWEST,
+        LOW,
+        HIGH,
+        HIGHEST
+    }
 
 }

@@ -4,8 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 public @interface OptionPair {
 
-  @NotNull String key();
+    @NotNull String key();
 
-  @NotNull String value();
+    @NotNull String value();
 
 }

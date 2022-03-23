@@ -217,31 +217,31 @@ import org.jetbrains.annotations.NotNull;
 
 public final class RepositoryManager {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+    private static final Logger LOGGER = LoggerCompat.getLogger();
 
-  private final Map<String, Repository> registeredRepositories = new HashMap<>();
+    private final Map<String, Repository> registeredRepositories = new HashMap<>();
 
-  public void registerRepository(final @NotNull String alias,
-      final @NotNull Repository repository) {
-    this.registeredRepositories.putIfAbsent(alias, repository);
-  }
+    public void registerRepository(final @NotNull String alias,
+                                   final @NotNull Repository repository) {
+        this.registeredRepositories.putIfAbsent(alias, repository);
+    }
 
-  public @NotNull Optional<Repository> repository(final @NotNull String alias) {
-    return Optional.ofNullable(this.registeredRepositories.get(alias));
-  }
+    public @NotNull Optional<Repository> repository(final @NotNull String alias) {
+        return Optional.ofNullable(this.registeredRepositories.get(alias));
+    }
 
-  public @NotNull Repository repositorySafe(final @NotNull String value) {
-    return this.repository(value).orElseGet(() -> {
-      try {
-        // To check is entered value URL
-        new URL(value);
-        return new UndetectedRepository(value);
-      } catch (final MalformedURLException exception) {
-        LOGGER.log(Level.SEVERE, exception, () -> "Malformed url " + value + "!");
-      }
-      throw new UnsupportedOperationException(
-          "Looks like entered value " + value + ", is not url!");
-    });
-  }
+    public @NotNull Repository repositorySafe(final @NotNull String value) {
+        return this.repository(value).orElseGet(() -> {
+            try {
+                // To check is entered value URL
+                new URL(value);
+                return new UndetectedRepository(value);
+            } catch (final MalformedURLException exception) {
+                LOGGER.log(Level.SEVERE, exception, () -> "Malformed url " + value + "!");
+            }
+            throw new UnsupportedOperationException(
+                    "Looks like entered value " + value + ", is not url!");
+        });
+    }
 
 }

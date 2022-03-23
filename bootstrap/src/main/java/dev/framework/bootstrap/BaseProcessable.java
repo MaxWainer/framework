@@ -10,24 +10,24 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface BaseProcessable {
 
-  /**
-   * Injection pre-configuration for bindings
-   *
-   * @param binder Guice binder, to provide some specific modules
-   */
-  default void preconfigure(final @NotNull Binder binder) {
-  }
+    /**
+     * Injection pre-configuration for bindings
+     *
+     * @param binder Guice binder, to provide some specific modules
+     */
+    default void preconfigure(final @NotNull Binder binder) {
+    }
 
-  /**
-   * Startup logic
-   */
-  default void load() {
-  }
+    /**
+     * Startup logic
+     */
+    default void load() {
+    }
 
-  /**
-   * Disabling logic
-   */
-  default void unload() {
-  }
+    /**
+     * Disabling logic
+     */
+    default void unload() {
+    }
 
 }

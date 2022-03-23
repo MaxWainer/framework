@@ -209,22 +209,22 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Section extends Value {
 
-  @NotNull Config config();
+    @NotNull Config config();
 
-  <V> @NotNull Optional<V> deserialize(final @NotNull String path);
+    <V> @NotNull Optional<V> deserialize(final @NotNull String path);
 
-  <V> void serialize(final @NotNull V object, final @NotNull String path);
+    <V> void serialize(final @NotNull V object, final @NotNull String path);
 
-  @NotNull MapValue map(final @NotNull String... path);
+    @NotNull MapValue map(final @NotNull String... path);
 
-  @NotNull ListValue list(final @NotNull String... path);
+    @NotNull ListValue list(final @NotNull String... path);
 
-  @NotNull Value get(final @NotNull String... path);
+    @NotNull Value get(final @NotNull String... path);
 
-  @NotNull Optional<Section> parentSection();
+    @NotNull Optional<Section> parentSection();
 
-  @NotNull String currentPath();
+    @NotNull String currentPath();
 
-  @NotNull Optional<Section> subSection(final @NotNull String name);
+    @NotNull Optional<Section> subSection(final @NotNull String name);
 
 }

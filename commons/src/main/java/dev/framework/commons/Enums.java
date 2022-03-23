@@ -214,16 +214,16 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public final class Enums {
 
-  private Enums() {
-    Exceptions.instantiationError();
-  }
+    private Enums() {
+        Exceptions.instantiationError();
+    }
 
-  public static <E extends Enum<E>> List<E> reversedEnumValues(final @NotNull Class<E> eClass) {
-    final List<E> list = new ArrayList<>(EnumSet.allOf(eClass)); // getting all values
+    public static <E extends Enum<E>> List<E> reversedEnumValues(final @NotNull Class<E> eClass) {
+        final List<E> list = new ArrayList<>(EnumSet.allOf(eClass)); // getting all values
 
-    Collections.reverse(list); // reverse it
+        Collections.reverse(list); // reverse it
 
-    return list;
-  }
+        return list;
+    }
 
 }

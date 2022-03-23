@@ -4,6 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Identifiable<T> {
 
-  @NotNull T identifier();
+    @NotNull T identifier();
 
 }

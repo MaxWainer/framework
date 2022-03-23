@@ -11,41 +11,41 @@ import org.jetbrains.annotations.NotNull;
 @Table("example")
 public final class ExampleObject implements RepositoryObject<UUID> {
 
-  @PrimaryKey
-  @Column("uuid")
-  private final UUID uuid;
+    @PrimaryKey
+    @Column("uuid")
+    private final UUID uuid;
 
-  @Column("name")
-  private final String name;
+    @Column("name")
+    private final String name;
 
-  @Column("age")
-  private final int age;
+    @Column("age")
+    private final int age;
 
-  @Column("job")
-  private final String job;
+    @Column("job")
+    private final String job;
 
-  @InstanceConstructor
-  public ExampleObject(final UUID uuid, final String name, final int age, final String job) {
-    this.uuid = uuid;
-    this.name = name;
-    this.age = age;
-    this.job = job;
-  }
+    @InstanceConstructor
+    public ExampleObject(final UUID uuid, final String name, final int age, final String job) {
+        this.uuid = uuid;
+        this.name = name;
+        this.age = age;
+        this.job = job;
+    }
 
-  public String getJob() {
-    return job;
-  }
+    public String getJob() {
+        return job;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public int getAge() {
-    return age;
-  }
+    public int getAge() {
+        return age;
+    }
 
-  @Override
-  public @NotNull UUID identifier() {
-    return uuid;
-  }
+    @Override
+    public @NotNull UUID identifier() {
+        return uuid;
+    }
 }

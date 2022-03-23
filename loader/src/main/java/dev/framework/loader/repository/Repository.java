@@ -211,6 +211,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Repository {
 
-  @Nullable Path loadDependency(final @NotNull Dependency dependency, final @NotNull Path to);
+    @Nullable Path loadDependency(final @NotNull Dependency dependency, final @NotNull Path to);
 
 }

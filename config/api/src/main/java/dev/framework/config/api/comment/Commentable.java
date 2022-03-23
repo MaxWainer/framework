@@ -210,10 +210,10 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface Commentable {
 
-  @NotNull @Unmodifiable List<String> comments();
+    @NotNull @Unmodifiable List<String> comments();
 
-  void writeComment(final @NotNull String comment);
+    void writeComment(final @NotNull String comment);
 
-  void removeComment(final int index);
+    void removeComment(final int index);
 
 }

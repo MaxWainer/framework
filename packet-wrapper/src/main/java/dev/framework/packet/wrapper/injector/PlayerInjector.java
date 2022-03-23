@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface PlayerInjector {
 
-  @NotNull WrappedPlayer injectPlayer(final @NotNull UUID player);
+    @NotNull WrappedPlayer injectPlayer(final @NotNull UUID player);
 
-  void uninjectPlayer(final @NotNull UUID player);
+    void uninjectPlayer(final @NotNull UUID player);
 
 }

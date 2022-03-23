@@ -6,22 +6,22 @@ import org.jetbrains.annotations.NotNull;
 
 public interface WrappedPlayer {
 
-  @NotNull WrappedPlayerConnection playerConnection();
+    @NotNull WrappedPlayerConnection playerConnection();
 
-  @NotNull UUID uniqueId();
+    @NotNull UUID uniqueId();
 
-  default int incrementStateId() {
-    return -1;
-  }
+    default int incrementStateId() {
+        return -1;
+    }
 
-  int nextContainerId();
+    int nextContainerId();
 
-  int currentContainerId();
+    int currentContainerId();
 
-  void closeContainer();
+    void closeContainer();
 
-  void updateContainer();
+    void updateContainer();
 
-  @NotNull WrappedPlayerInventory playerInventory();
+    @NotNull WrappedPlayerInventory playerInventory();
 
 }

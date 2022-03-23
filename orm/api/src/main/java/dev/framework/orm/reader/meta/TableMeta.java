@@ -5,8 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface TableMeta extends ObjectMeta<String> {
 
-  @NotNull Set<ColumnMeta> columnMeta();
-
+    @NotNull Set<ColumnMeta> columnMeta();
 
 
 }

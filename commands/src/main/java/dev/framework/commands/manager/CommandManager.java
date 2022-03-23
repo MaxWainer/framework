@@ -210,8 +210,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CommandManager<H, S extends SenderFactory<H>> {
 
-  @NotNull S senderFactory();
+    @NotNull S senderFactory();
 
-  boolean registerCommand(final @NotNull Command command);
+    boolean registerCommand(final @NotNull Command command);
 
 }

@@ -211,24 +211,24 @@ import org.jetbrains.annotations.Nullable;
 
 public interface ToolsDataHolder {
 
-  @Nullable ToolData getToolData(final @NotNull String name);
+    @Nullable ToolData getToolData(final @NotNull String name);
 
-  default @NotNull Optional<ToolData> getToolDataSafe(final @NotNull String name) {
-    return Optional.ofNullable(getToolData(name));
-  }
+    default @NotNull Optional<ToolData> getToolDataSafe(final @NotNull String name) {
+        return Optional.ofNullable(getToolData(name));
+    }
 
-  default @NotNull ToolData getOrCreateToolData(final @NotNull String name) {
-    final ToolData toolData = getToolData(name);
+    default @NotNull ToolData getOrCreateToolData(final @NotNull String name) {
+        final ToolData toolData = getToolData(name);
 
-    return toolData == null ? addToolData(name, ToolData.create()) : toolData;
-  }
+        return toolData == null ? addToolData(name, ToolData.create()) : toolData;
+    }
 
-  @NotNull ToolData addToolData(
-      final @NotNull String name,
-      final @NotNull ToolData data);
+    @NotNull ToolData addToolData(
+            final @NotNull String name,
+            final @NotNull ToolData data);
 
-  void modifyToolData(
-      final @NotNull String name,
-      final @NotNull UnaryOperator<ToolData> operator);
+    void modifyToolData(
+            final @NotNull String name,
+            final @NotNull UnaryOperator<ToolData> operator);
 
 }

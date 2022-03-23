@@ -213,28 +213,28 @@ import org.jetbrains.annotations.Nullable;
 
 final class ToolDataImpl implements ToolData {
 
-  private final Map<String, Object> propertyMap = new ConcurrentHashMap<>();
+    private final Map<String, Object> propertyMap = new ConcurrentHashMap<>();
 
-  @Override
-  public <T> void setProperty(@NotNull String propertyName, @NotNull T value) {
-    propertyMap.put(propertyName, value);
-  }
-
-  @Override
-  public <T> boolean modifyProperty(@NotNull String propertyName,
-      @NotNull UnaryOperator<T> operator) {
-    final Optional<T> optionalValue = getPropertySafe(propertyName);
-
-    if (optionalValue.isPresent()) {
-      setProperty(propertyName, operator.apply(getProperty(propertyName)));
-      return true;
+    @Override
+    public <T> void setProperty(@NotNull String propertyName, @NotNull T value) {
+        propertyMap.put(propertyName, value);
     }
 
-    return false;
-  }
+    @Override
+    public <T> boolean modifyProperty(@NotNull String propertyName,
+                                      @NotNull UnaryOperator<T> operator) {
+        final Optional<T> optionalValue = getPropertySafe(propertyName);
 
-  @Override
-  public <T> @Nullable T getProperty(@NotNull String propertyName) {
-    return (T) propertyMap.get(propertyName);
-  }
+        if (optionalValue.isPresent()) {
+            setProperty(propertyName, operator.apply(getProperty(propertyName)));
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public <T> @Nullable T getProperty(@NotNull String propertyName) {
+        return (T) propertyMap.get(propertyName);
+    }
 }

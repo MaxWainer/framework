@@ -207,69 +207,67 @@ package dev.framework.commons.tuple;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-/** Implementation of tuples */
+/**
+ * Implementation of tuples
+ */
 public interface Tuples {
 
-  /**
-   * Create not thread safe, mutable tuple
-   *
-   * @param key   Tuple key
-   * @param value Tuple value
-   * @param <K>   Tuple key type
-   * @param <V>   Tuple value type
-   *
-   * @return Implementation of not thread safe tuple
-   */
-  @Contract(value = "_, _ -> new", pure = true)
-  static <K, V> @NotNull MutableTuple<K, V> unsafeMutable(final K key, final V value) {
-    return new UnsafeMutableTuple<>(key, value);
-  }
+    /**
+     * Create not thread safe, mutable tuple
+     *
+     * @param key   Tuple key
+     * @param value Tuple value
+     * @param <K>   Tuple key type
+     * @param <V>   Tuple value type
+     * @return Implementation of not thread safe tuple
+     */
+    @Contract(value = "_, _ -> new", pure = true)
+    static <K, V> @NotNull MutableTuple<K, V> unsafeMutable(final K key, final V value) {
+        return new UnsafeMutableTuple<>(key, value);
+    }
 
-  /**
-   * Create thread safe, mutable tuple
-   *
-   * @param key   Tuple key
-   * @param value Tuple value
-   * @param <K>   Tuple key type
-   * @param <V>   Tuple value type
-   *
-   * @return Implementation of thread safe tuple
-   */
-  @Contract("_, _ -> new")
-  static <K, V> @NotNull MutableTuple<K, V> synchronizedMutable(final K key, final V value) {
-    return new SynchronizedMutableTuple<>(key, value);
-  }
+    /**
+     * Create thread safe, mutable tuple
+     *
+     * @param key   Tuple key
+     * @param value Tuple value
+     * @param <K>   Tuple key type
+     * @param <V>   Tuple value type
+     * @return Implementation of thread safe tuple
+     */
+    @Contract("_, _ -> new")
+    static <K, V> @NotNull MutableTuple<K, V> synchronizedMutable(final K key, final V value) {
+        return new SynchronizedMutableTuple<>(key, value);
+    }
 
-  /**
-   * Create thread safe, mutable tuple
-   *
-   * @param key   Tuple key
-   * @param value Tuple value
-   * @param mutex Object which holds lock
-   * @param <K>   Tuple key type
-   * @param <V>   Tuple value type
-   *
-   * @return Implementation of thread safe tuple
-   */
-  @Contract("_, _, _ -> new")
-  static <K, V> @NotNull MutableTuple<K, V> synchronizedMutable(final K key, final V value,
-      final Object[] mutex) {
-    return new SynchronizedMutableTuple<>(key, value, mutex);
-  }
+    /**
+     * Create thread safe, mutable tuple
+     *
+     * @param key   Tuple key
+     * @param value Tuple value
+     * @param mutex Object which holds lock
+     * @param <K>   Tuple key type
+     * @param <V>   Tuple value type
+     * @return Implementation of thread safe tuple
+     */
+    @Contract("_, _, _ -> new")
+    static <K, V> @NotNull MutableTuple<K, V> synchronizedMutable(final K key, final V value,
+                                                                  final Object[] mutex) {
+        return new SynchronizedMutableTuple<>(key, value, mutex);
+    }
 
-  /**
-   * Create immutable tuple
-   *
-   * @param key   Tuple key
-   * @param value Tuple value
-   * @param <K>   Tuple key type
-   * @param <V>   Tuple value type
-   *
-   * @return Implementation of immutable tuple
-   */
-  @Contract(value = "_, _ -> new", pure = true)
-  static <K, V> @NotNull ImmutableTuple<K, V> immutable(final K key, final V value) {
-    return new ImmutableTupleImpl<>(key, value);
-  }
+    /**
+     * Create immutable tuple
+     *
+     * @param key   Tuple key
+     * @param value Tuple value
+     * @param <K>   Tuple key type
+     * @param <V>   Tuple value type
+     * @return Implementation of immutable tuple
+     */
+    @Contract(value = "_, _ -> new", pure = true)
+    static <K, V> @NotNull ImmutableTuple<K, V> immutable(final K key, final V value) {
+        return new ImmutableTupleImpl<>(key, value);
+    }
 
 }

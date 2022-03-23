@@ -210,10 +210,10 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 public final class CentralRepository extends AbstractRepository {
 
-  private static final String REPOSITORY_URL = "https://repo1.maven.org/maven2/";
+    private static final String REPOSITORY_URL = "https://repo1.maven.org/maven2/";
 
-  @Override
-  protected @NotNull String repositoryUrl() {
-    return REPOSITORY_URL;
-  }
+    @Override
+    protected @NotNull String repositoryUrl() {
+        return REPOSITORY_URL;
+    }
 }

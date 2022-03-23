@@ -209,31 +209,31 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ParserResult<T> {
 
-  public static <V> ParserResult<V> success(final @NotNull V v) {
-    return new ParserResult<>(v, null);
-  }
+    private final T result;
+    private final Component errorMessage;
 
-  public static <V> ParserResult<V> error(final @NotNull Component errorMessage) {
-    return new ParserResult<>(null, errorMessage);
-  }
+    ParserResult(final T result, final Component errorMessage) {
+        this.result = result;
+        this.errorMessage = errorMessage;
+    }
 
-  private final T result;
-  private final Component errorMessage;
+    public static <V> ParserResult<V> success(final @NotNull V v) {
+        return new ParserResult<>(v, null);
+    }
 
-  ParserResult(final T result, final Component errorMessage) {
-    this.result = result;
-    this.errorMessage = errorMessage;
-  }
+    public static <V> ParserResult<V> error(final @NotNull Component errorMessage) {
+        return new ParserResult<>(null, errorMessage);
+    }
 
-  public T result() {
-    return result;
-  }
+    public T result() {
+        return result;
+    }
 
-  public boolean error() {
-    return errorMessage != null;
-  }
+    public boolean error() {
+        return errorMessage != null;
+    }
 
-  public Component errorMessage() {
-    return errorMessage;
-  }
+    public Component errorMessage() {
+        return errorMessage;
+    }
 }

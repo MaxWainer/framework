@@ -214,34 +214,35 @@ import org.jetbrains.annotations.NotNull;
 
 final class Commands {
 
-  private static SimpleCommandMap COMMAND_MAP;
+    private static SimpleCommandMap COMMAND_MAP;
 
-  private Commands() {
-  }
-
-  public static synchronized void injectBukkitCommand(final @NotNull String pluginName, final @NotNull Command bukkitCommand) {
-    final CommandMap map = commandMap();
-
-    map.register(pluginName, bukkitCommand);
-
-    for (final String alias : new ArrayList<>(bukkitCommand.getAliases())) {
-      map.register(alias, pluginName, bukkitCommand);
-    }
-  }
-
-  private static @NotNull SimpleCommandMap commandMap() {
-    if (COMMAND_MAP == null) {
-      try {
-        final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-        commandMapField.setAccessible(true);
-
-        COMMAND_MAP = (SimpleCommandMap) commandMapField.get(Bukkit.getServer());
-      } catch (NoSuchFieldException | IllegalAccessException e) {
-        e.printStackTrace();
-      }
+    private Commands() {
     }
 
-    return COMMAND_MAP;
-  }
+    public static synchronized void injectBukkitCommand(final @NotNull String pluginName, final @NotNull Command bukkitCommand) {
+        final CommandMap map = commandMap();
+
+        map.register(pluginName, bukkitCommand);
+
+        for (final String alias : new ArrayList<>(bukkitCommand.getAliases())) {
+            map.register(alias, pluginName, bukkitCommand);
+        }
+    }
+
+    private static @NotNull
+    SimpleCommandMap commandMap() {
+        if (COMMAND_MAP == null) {
+            try {
+                final Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+
+                commandMapField.setAccessible(true);
+
+                COMMAND_MAP = (SimpleCommandMap) commandMapField.get(Bukkit.getServer());
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return COMMAND_MAP;
+    }
 }

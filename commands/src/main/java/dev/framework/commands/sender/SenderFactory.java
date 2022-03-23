@@ -208,6 +208,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface SenderFactory<H> {
 
-  @NotNull Sender wrapSender(final @NotNull H handle);
+    @NotNull Sender wrapSender(final @NotNull H handle);
 
 }

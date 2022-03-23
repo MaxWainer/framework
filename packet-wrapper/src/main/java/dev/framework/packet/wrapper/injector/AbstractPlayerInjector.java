@@ -10,66 +10,66 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractPlayerInjector implements PlayerInjector {
 
-  protected final PacketManager packetManager;
-  protected final PacketMapper packetMapper;
-  protected final PacketAdapter packetAdapter;
+    protected final PacketManager packetManager;
+    protected final PacketMapper packetMapper;
+    protected final PacketAdapter packetAdapter;
 
-  private final Map<UUID, WrappedPlayer> playersCache = new ConcurrentHashMap<>();
+    private final Map<UUID, WrappedPlayer> playersCache = new ConcurrentHashMap<>();
 
-  protected AbstractPlayerInjector(
-      final @NotNull PacketManager packetManager,
-      final @NotNull PacketMapper packetMapper,
-      final @NotNull PacketAdapter packetAdapter) {
-    this.packetManager = packetManager;
-    this.packetMapper = packetMapper;
-    this.packetAdapter = packetAdapter;
-  }
-
-  @Override
-  public @NotNull WrappedPlayer injectPlayer(final @NotNull UUID uniqueId) {
-    if (playersCache.containsKey(uniqueId)) {
-      return wrapInternal(uniqueId);
+    protected AbstractPlayerInjector(
+            final @NotNull PacketManager packetManager,
+            final @NotNull PacketMapper packetMapper,
+            final @NotNull PacketAdapter packetAdapter) {
+        this.packetManager = packetManager;
+        this.packetMapper = packetMapper;
+        this.packetAdapter = packetAdapter;
     }
 
-    final WrappedPlayer wrappedPlayer = wrapInternal(uniqueId);
+    @Override
+    public @NotNull WrappedPlayer injectPlayer(final @NotNull UUID uniqueId) {
+        if (playersCache.containsKey(uniqueId)) {
+            return wrapInternal(uniqueId);
+        }
 
-    wrappedPlayer.playerConnection()
-        .nettyPipeline()
-        .addBefore("packet_handler", uniqueId.toString(),
-            new InjectorChannelHandler(wrappedPlayer, packetMapper, packetManager, packetAdapter));
+        final WrappedPlayer wrappedPlayer = wrapInternal(uniqueId);
 
-    return wrappedPlayer;
-  }
+        wrappedPlayer.playerConnection()
+                .nettyPipeline()
+                .addBefore("packet_handler", uniqueId.toString(),
+                        new InjectorChannelHandler(wrappedPlayer, packetMapper, packetManager, packetAdapter));
 
-  @Override
-  public void uninjectPlayer(final @NotNull UUID uniqueId) {
-    final WrappedPlayer wrappedPlayer = wrapInternal(uniqueId);
-
-    playersCache.remove(wrappedPlayer.uniqueId());
-
-    final Channel channel = wrappedPlayer.playerConnection()
-        .nettyChannel();
-
-    channel
-        .eventLoop()
-        .submit(() -> {
-          channel.pipeline().remove(wrappedPlayer.uniqueId().toString());
-          return null;
-        });
-  }
-
-  private @NotNull WrappedPlayer wrapInternal(final @NotNull UUID uniqueId) {
-    if (playersCache.containsKey(uniqueId)) {
-      return playersCache.get(uniqueId);
+        return wrappedPlayer;
     }
 
-    final WrappedPlayer wrappedPlayer = wrapInternal0(uniqueId);
+    @Override
+    public void uninjectPlayer(final @NotNull UUID uniqueId) {
+        final WrappedPlayer wrappedPlayer = wrapInternal(uniqueId);
 
-    playersCache.put(uniqueId, wrappedPlayer);
+        playersCache.remove(wrappedPlayer.uniqueId());
 
-    return wrappedPlayer;
-  }
+        final Channel channel = wrappedPlayer.playerConnection()
+                .nettyChannel();
 
-  protected abstract @NotNull WrappedPlayer wrapInternal0(final @NotNull UUID uniqueId);
+        channel
+                .eventLoop()
+                .submit(() -> {
+                    channel.pipeline().remove(wrappedPlayer.uniqueId().toString());
+                    return null;
+                });
+    }
+
+    private @NotNull WrappedPlayer wrapInternal(final @NotNull UUID uniqueId) {
+        if (playersCache.containsKey(uniqueId)) {
+            return playersCache.get(uniqueId);
+        }
+
+        final WrappedPlayer wrappedPlayer = wrapInternal0(uniqueId);
+
+        playersCache.put(uniqueId, wrappedPlayer);
+
+        return wrappedPlayer;
+    }
+
+    protected abstract @NotNull WrappedPlayer wrapInternal0(final @NotNull UUID uniqueId);
 
 }

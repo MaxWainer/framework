@@ -210,50 +210,50 @@ import org.jetbrains.annotations.Nullable;
 
 public final class Measure {
 
-  final Result result;
+    final Result result;
 
-  public Measure(final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
-    final long start = System.currentTimeMillis();
+    public Measure(final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
+        final long start = System.currentTimeMillis();
 
-    Throwable exception = null;
-    try {
-      runnable.run();
-    } catch (final Throwable throwable) { // check
-      exception = throwable;
+        Throwable exception = null;
+        try {
+            runnable.run();
+        } catch (final Throwable throwable) { // check
+            exception = throwable;
+        }
+
+        final long took = System.currentTimeMillis() - start;
+
+        this.result = new Result(exception, took);
     }
 
-    final long took = System.currentTimeMillis() - start;
-
-    this.result = new Result(exception, took);
-  }
-
-  public static @NotNull Measure.Result measure(final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
-    return new Measure(runnable).result;
-  }
-
-  public static final class Result {
-
-    private final Throwable exception;
-    private final long took;
-
-    public Result(final @Nullable Throwable exception, final long took) {
-      this.exception = exception;
-      this.took = took;
+    public static @NotNull Measure.Result measure(final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
+        return new Measure(runnable).result;
     }
 
-    @Nullable
-    public Throwable exception() {
-      return this.exception;
-    }
+    public static final class Result {
 
-    public long took() {
-      return this.took;
-    }
+        private final Throwable exception;
+        private final long took;
 
-    public boolean isMeasuredWithException() {
-      return this.exception != null;
-    }
+        public Result(final @Nullable Throwable exception, final long took) {
+            this.exception = exception;
+            this.took = took;
+        }
 
-  }
+        @Nullable
+        public Throwable exception() {
+            return this.exception;
+        }
+
+        public long took() {
+            return this.took;
+        }
+
+        public boolean isMeasuredWithException() {
+            return this.exception != null;
+        }
+
+    }
 
 }

@@ -7,14 +7,14 @@ import org.jetbrains.annotations.NotNull;
 
 public interface FrameworkBootstrap extends BaseProcessable {
 
-  default void preload(final @NotNull DependencyLoader.Builder builder) {
-  }
+    default void preload(final @NotNull DependencyLoader.Builder builder) {
+    }
 
-  default void configureModules(final @NotNull ModuleInjector injector) {
-  }
+    default void configureModules(final @NotNull ModuleInjector injector) {
+    }
 
-  @NotNull FrameworkModuleManager moduleManager();
+    @NotNull FrameworkModuleManager moduleManager();
 
-  @NotNull DependencyLoader dependencyLoader();
+    @NotNull DependencyLoader dependencyLoader();
 
 }

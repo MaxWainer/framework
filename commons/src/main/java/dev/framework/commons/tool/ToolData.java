@@ -211,20 +211,20 @@ import org.jetbrains.annotations.Nullable;
 
 public interface ToolData {
 
-  static ToolData create() {
-    return new ToolDataImpl();
-  }
+    static ToolData create() {
+        return new ToolDataImpl();
+    }
 
-  <T> void setProperty(final @NotNull String propertyName, final @NotNull T value);
+    <T> void setProperty(final @NotNull String propertyName, final @NotNull T value);
 
-  <T> boolean modifyProperty(
-      final @NotNull String propertyName,
-      final @NotNull UnaryOperator<T> operator);
+    <T> boolean modifyProperty(
+            final @NotNull String propertyName,
+            final @NotNull UnaryOperator<T> operator);
 
-  <T> @Nullable T getProperty(final @NotNull String propertyName);
+    <T> @Nullable T getProperty(final @NotNull String propertyName);
 
-  default <T> @NotNull Optional<T> getPropertySafe(final @NotNull String propertyName) {
-    return Optional.ofNullable(getProperty(propertyName));
-  }
+    default <T> @NotNull Optional<T> getPropertySafe(final @NotNull String propertyName) {
+        return Optional.ofNullable(getProperty(propertyName));
+    }
 
 }

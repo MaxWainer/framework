@@ -1,8 +1,8 @@
 plugins {
-    id 'java'
-    id 'org.cadixdev.licenser' version '0.6.1'
-    id 'signing'
-    id 'checkstyle'
+  id 'java'
+  id 'org.cadixdev.licenser' version '0.6.1'
+  id 'signing'
+  id 'checkstyle'
 }
 
 group 'framework'
@@ -25,80 +25,80 @@ println DELIMITER
 println 'Configuring projects...'
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven-publish'
-    apply plugin: 'signing'
-    apply plugin: 'org.cadixdev.licenser'
-    apply plugin: 'checkstyle'
+  apply plugin: 'java'
+  apply plugin: 'maven-publish'
+  apply plugin: 'signing'
+  apply plugin: 'org.cadixdev.licenser'
+  apply plugin: 'checkstyle'
 
-    // checkstyle start
+  // checkstyle start
 
-    checkstyle {
-        toolVersion '8.36.1'
-        configFile file('.checkstyle/checkstyle.xml')
+  checkstyle {
+    toolVersion '8.36.1'
+    configFile file('.checkstyle/checkstyle.xml')
+  }
+
+  checkstyleMain {
+    source = 'src/main/java'
+  }
+
+  checkstyleTest {
+    source = 'src/test/java'
+  }
+
+  tasks.withType(Checkstyle) {
+    reports {
+      xml.required = false
+      html.required = true
     }
+  }
 
-    checkstyleMain {
-        source ='src/main/java'
-    }
+  // checkstyle end
 
-    checkstyleTest {
-        source ='src/test/java'
-    }
+  repositories {
+    mavenLocal()
+    mavenCentral()
 
-    tasks.withType(Checkstyle) {
-        reports {
-            xml.required = false
-            html.required = true
-        }
-    }
+    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/central' }
+    maven { url 'https://repo.codemc.org/repository/nms/' }
+  }
 
-    // checkstyle end
+  dependencies {
+    implementation 'org.jetbrains:annotations:23.0.0'
+    implementation 'joda-time:joda-time:2.10.13'
+    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.code.gson:gson:2.9.0'
 
-    repositories {
-        mavenLocal()
-        mavenCentral()
+    // kyori
+    implementation 'net.kyori:adventure-api:4.10.1'
+    implementation 'net.kyori:adventure-text-serializer-legacy:4.9.3'
+    implementation 'net.kyori:adventure-text-serializer-gson:4.10.1'
+    implementation 'net.kyori:adventure-text-serializer-plain:4.10.1'
 
-        maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-        maven { url 'https://oss.sonatype.org/content/repositories/central' }
-        maven { url 'https://repo.codemc.org/repository/nms/' }
-    }
+    // testing utils
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+  }
 
-    dependencies {
-        implementation 'org.jetbrains:annotations:23.0.0'
-        implementation 'joda-time:joda-time:2.10.13'
-        implementation 'com.google.guava:guava:31.1-jre'
-        implementation 'com.google.code.gson:gson:2.9.0'
+  test {
+    useJUnitPlatform()
+  }
 
-        // kyori
-        implementation 'net.kyori:adventure-api:4.10.1'
-        implementation 'net.kyori:adventure-text-serializer-legacy:4.9.3'
-        implementation 'net.kyori:adventure-text-serializer-gson:4.10.1'
-        implementation 'net.kyori:adventure-text-serializer-plain:4.10.1'
+  compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
-        // testing utils
-        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    }
+    options.encoding = 'utf-8'
+  }
 
-    test {
-        useJUnitPlatform()
-    }
+  license {
+    header = rootProject.file('HEADER.txt')
+    include '**/*.java'
+  }
 
-    compileJava {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-
-        options.encoding = 'utf-8'
-    }
-
-    license {
-        header = rootProject.file('HEADER.txt')
-        include '**/*.java'
-    }
-
-    // central publishing start
+  // central publishing start
 
 //    if (project.name.chars().filter { return it == '-' }.count() > 1) {
 //    if (publishCentral) {
@@ -208,8 +208,8 @@ subprojects {
 // println "Configured '$project.name', to publishing"
 // }
 
-    // central publishing end
+  // central publishing end
 
-    println "Configured '$project.name'!"
+  println "Configured '$project.name'!"
 }
 println DELIMITER

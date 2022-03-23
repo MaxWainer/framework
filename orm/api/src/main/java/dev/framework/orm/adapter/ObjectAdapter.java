@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ObjectAdapter<T> extends RepositoryObject<Class<T>> {
 
-  @NotNull T construct(final @NotNull JsonElement element);
+    @NotNull T construct(final @NotNull JsonElement element);
 
-  @NotNull JsonElement deconstruct(final @NotNull T t);
+    @NotNull JsonElement deconstruct(final @NotNull T t);
 
 }

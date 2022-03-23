@@ -9,23 +9,23 @@ import org.jetbrains.annotations.NotNull;
 
 public interface WrappedPlayerConnection {
 
-  @NotNull Channel nettyChannel();
+    @NotNull Channel nettyChannel();
 
-  default @NotNull ChannelPipeline nettyPipeline() {
-    return nettyChannel().pipeline();
-  }
+    default @NotNull ChannelPipeline nettyPipeline() {
+        return nettyChannel().pipeline();
+    }
 
-  void sendPacket(final @NotNull OutPacket packet);
+    void sendPacket(final @NotNull OutPacket packet);
 
-  @NotNull
-  default CompletableFuture<Void> sendPacketAsync(final @NotNull OutPacket packet) {
-    return CompletableFuture.runAsync(() -> sendPacket(packet));
-  }
+    @NotNull
+    default CompletableFuture<Void> sendPacketAsync(final @NotNull OutPacket packet) {
+        return CompletableFuture.runAsync(() -> sendPacket(packet));
+    }
 
-  @NotNull
-  default CompletableFuture<Void> sendPacketAsync(final @NotNull OutPacket packet,
-      final @NotNull Executor asyncExecutor) {
-    return CompletableFuture.runAsync(() -> sendPacket(packet), asyncExecutor);
-  }
+    @NotNull
+    default CompletableFuture<Void> sendPacketAsync(final @NotNull OutPacket packet,
+                                                    final @NotNull Executor asyncExecutor) {
+        return CompletableFuture.runAsync(() -> sendPacket(packet), asyncExecutor);
+    }
 
 }

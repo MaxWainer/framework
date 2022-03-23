@@ -7,20 +7,20 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface WrappedPlayerInventory {
 
-  @NotNull Stack<?> carriedItem();
+    @NotNull Stack<?> carriedItem();
 
-  void carriedItem(final @NotNull Stack<?> stack);
+    void carriedItem(final @NotNull Stack<?> stack);
 
-  void pickup(final @NotNull Stack<?> stack);
+    void pickup(final @NotNull Stack<?> stack);
 
-  @NotNull @Unmodifiable List<Stack<?>> items();
+    @NotNull @Unmodifiable List<Stack<?>> items();
 
-  @NotNull @Unmodifiable List<Stack<?>> armor();
+    @NotNull @Unmodifiable List<Stack<?>> armor();
 
-  @NotNull @Unmodifiable List<Stack<?>> extraSlots();
+    @NotNull @Unmodifiable List<Stack<?>> extraSlots();
 
-  default int incrementStateId() {
-    return -1;
-  }
+    default int incrementStateId() {
+        return -1;
+    }
 
 }

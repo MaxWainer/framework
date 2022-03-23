@@ -206,22 +206,22 @@ package dev.framework.commons.value;
 
 public interface GroupMappers {
 
-  static <T extends Number> GroupMapper<T> createRussianNumber() {
-    return (group, wrapped) -> {
-      final long
-          number = wrapped.longValue(), // getting actual number
-          closed = number % 10L; // closing it
+    static <T extends Number> GroupMapper<T> createRussianNumber() {
+        return (group, wrapped) -> {
+            final long
+                    number = wrapped.longValue(), // getting actual number
+                    closed = number % 10L; // closing it
 
-      final String grouped =
-          // if closed is zero or bigger or equals to 5, or number higher than 11 and lower that 20
-          (closed == 0 || closed >= 5 || (number >= 11L && number <= 20L))
-              ? group.empty() // we return empty group
-              : ((closed == 1) // if closed is 1
-                  ? group.firstGroup()    // we return first group
-                  : group.secondGroup()); // else second
+            final String grouped =
+                    // if closed is zero or bigger or equals to 5, or number higher than 11 and lower that 20
+                    (closed == 0 || closed >= 5 || (number >= 11L && number <= 20L))
+                            ? group.empty() // we return empty group
+                            : ((closed == 1) // if closed is 1
+                            ? group.firstGroup()    // we return first group
+                            : group.secondGroup()); // else second
 
-      return String.format("%s %s", number, grouped); // formatting it
-    };
-  }
+            return String.format("%s %s", number, grouped); // formatting it
+        };
+    }
 
 }

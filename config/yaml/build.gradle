@@ -2,5 +2,5 @@ group 'framework.config.yaml'
 
 dependencies {
 //    compileOnly project(':config:config-api')
-    implementation 'org.yaml:snakeyaml:1.30'
+  implementation 'org.yaml:snakeyaml:1.30'
 }

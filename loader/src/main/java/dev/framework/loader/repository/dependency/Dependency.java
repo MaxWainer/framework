@@ -208,73 +208,73 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Dependency {
 
-  private final String repository;
-  private final String groupId;
-  private final String artifactId;
-  private final String version;
+    private final String repository;
+    private final String groupId;
+    private final String artifactId;
+    private final String version;
 
-  private Dependency(
-      final @NotNull String repository,
-      final @NotNull String groupId,
-      final @NotNull String artifactId,
-      final @NotNull String version) {
-    this.repository = repository;
-    this.groupId = groupId;
-    this.artifactId = artifactId;
-    this.version = version;
-  }
-
-  @NotNull
-  public String repository() {
-    return this.repository;
-  }
-
-  @NotNull
-  public String version() {
-    return this.version;
-  }
-
-  @NotNull
-  public String artifactId() {
-    return this.artifactId;
-  }
-
-  @NotNull
-  public String groupId() {
-    return this.groupId;
-  }
-
-  @Override
-  public String toString() {
-    return "Dependency{" +
-        "repository='" + this.repository + '\'' +
-        ", groupId='" + this.groupId + '\'' +
-        ", artifactId='" + this.artifactId + '\'' +
-        ", version='" + this.version + '\'' +
-        '}';
-  }
-
-  public static @NotNull Dependency of(final @NotNull String value)
-      throws MalformatedDependencyException {
-    try {
-      final String[] data = value.split(":");
-
-      return new Dependency(data[0], data[1], data[2], data[3]);
-    } catch (final IndexOutOfBoundsException ignored) {
-      // Ignore this exception
+    private Dependency(
+            final @NotNull String repository,
+            final @NotNull String groupId,
+            final @NotNull String artifactId,
+            final @NotNull String version) {
+        this.repository = repository;
+        this.groupId = groupId;
+        this.artifactId = artifactId;
+        this.version = version;
     }
 
-    throw new MalformatedDependencyException(
-        "Entered value is not dependency " + value
-            + ", example: <repository>:com.example:example:1.0");
-  }
+    public static @NotNull Dependency of(final @NotNull String value)
+            throws MalformatedDependencyException {
+        try {
+            final String[] data = value.split(":");
 
-  public static final class MalformatedDependencyException extends RuntimeException {
+            return new Dependency(data[0], data[1], data[2], data[3]);
+        } catch (final IndexOutOfBoundsException ignored) {
+            // Ignore this exception
+        }
 
-    public MalformatedDependencyException(final @NotNull String message) {
-      super(message);
+        throw new MalformatedDependencyException(
+                "Entered value is not dependency " + value
+                        + ", example: <repository>:com.example:example:1.0");
     }
 
-  }
+    @NotNull
+    public String repository() {
+        return this.repository;
+    }
+
+    @NotNull
+    public String version() {
+        return this.version;
+    }
+
+    @NotNull
+    public String artifactId() {
+        return this.artifactId;
+    }
+
+    @NotNull
+    public String groupId() {
+        return this.groupId;
+    }
+
+    @Override
+    public String toString() {
+        return "Dependency{" +
+                "repository='" + this.repository + '\'' +
+                ", groupId='" + this.groupId + '\'' +
+                ", artifactId='" + this.artifactId + '\'' +
+                ", version='" + this.version + '\'' +
+                '}';
+    }
+
+    public static final class MalformatedDependencyException extends RuntimeException {
+
+        public MalformatedDependencyException(final @NotNull String message) {
+            super(message);
+        }
+
+    }
 
 }

@@ -5,38 +5,38 @@ import org.jetbrains.annotations.NotNull;
 
 public final class NBTInt implements NBTBase {
 
-  private final int data;
+    private final int data;
 
-  public NBTInt(final int data) {
-    this.data = data;
-  }
+    public NBTInt(final int data) {
+        this.data = data;
+    }
 
-  @Override
-  public @NotNull String asString() {
-    return Integer.toString(data);
-  }
+    @Override
+    public @NotNull String asString() {
+        return Integer.toString(data);
+    }
 
-  @Override
-  public boolean empty() {
-    return false;
-  }
+    @Override
+    public boolean empty() {
+        return false;
+    }
 
-  @Override
-  public @NotNull NBTBase copy() {
-    return new NBTInt(data);
-  }
+    @Override
+    public @NotNull NBTBase copy() {
+        return new NBTInt(data);
+    }
 
-  @Override
-  public boolean isInt() {
-    return true;
-  }
+    @Override
+    public boolean isInt() {
+        return true;
+    }
 
-  @Override
-  public NBTInt asNBTInt() {
-    return this;
-  }
+    @Override
+    public NBTInt asNBTInt() {
+        return this;
+    }
 
-  public int asInt() {
-    return data;
-  }
+    public int asInt() {
+        return data;
+    }
 }

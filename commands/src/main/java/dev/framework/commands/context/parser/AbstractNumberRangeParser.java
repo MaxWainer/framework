@@ -210,32 +210,32 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractNumberRangeParser<T extends Number> extends AbstractNumberParser<T> {
 
-  private final T from;
-  private final T to;
+    private final T from;
+    private final T to;
 
-  protected AbstractNumberRangeParser(final @NotNull T from, final @NotNull T to) {
-    this.from = from;
-    this.to = to;
-  }
-
-  @Override
-  public @NotNull ParserResult<T> checkInput(final @NotNull String raw) {
-    final T number = parseNumber0(raw);
-
-    if (number != null) { // if number not null
-      if (!checkNumbers(number)) { // if numbers check didn't pass, we return error
-        return ParserResult.error(
-            Error.PARSER_NUMBER_OUT_OF_RANGE.applyArguments(raw, from.toString(), to.toString()));
-      }
-
-      // else result
-      return ParserResult.success(number);
+    protected AbstractNumberRangeParser(final @NotNull T from, final @NotNull T to) {
+        this.from = from;
+        this.to = to;
     }
 
-    // else error
-    return ParserResult.error(Error.PARSER_NUMBER.applyArguments(raw));
-  }
+    @Override
+    public @NotNull ParserResult<T> checkInput(final @NotNull String raw) {
+        final T number = parseNumber0(raw);
 
-  protected abstract boolean checkNumbers(final @NotNull T inputNumber);
+        if (number != null) { // if number not null
+            if (!checkNumbers(number)) { // if numbers check didn't pass, we return error
+                return ParserResult.error(
+                        Error.PARSER_NUMBER_OUT_OF_RANGE.applyArguments(raw, from.toString(), to.toString()));
+            }
+
+            // else result
+            return ParserResult.success(number);
+        }
+
+        // else error
+        return ParserResult.error(Error.PARSER_NUMBER.applyArguments(raw));
+    }
+
+    protected abstract boolean checkNumbers(final @NotNull T inputNumber);
 
 }

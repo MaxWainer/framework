@@ -210,8 +210,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ConfigOptions {
 
-  @NotNull AdapterRegistry adapterRegistry();
+    @NotNull AdapterRegistry adapterRegistry();
 
-  @NotNull Path filePath();
+    @NotNull Path filePath();
 
 }

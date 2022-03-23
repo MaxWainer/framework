@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonCollection {
 
-  boolean useTopLevelAnnotation() default true;
+    boolean useTopLevelAnnotation() default true;
 }

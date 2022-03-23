@@ -210,28 +210,28 @@ import java.util.function.Supplier;
 @NotThreadSafe
 final class UnsafeLazyImpl<T> implements Lazy<T> {
 
-  private Supplier<T> initializer;
+    private Supplier<T> initializer;
 
-  private T value;
+    private T value;
 
-  UnsafeLazyImpl(final Supplier<T> initializer) {
-    this.initializer = initializer;
-  }
-
-  @Override
-  public T get() {
-    if (this.value != null) { // if not null, return initialized value
-      return this.value;
+    UnsafeLazyImpl(final Supplier<T> initializer) {
+        this.initializer = initializer;
     }
 
-    this.value = this.initializer.get(); // load value from initializer
-    this.initializer = null; // clear initializer
+    @Override
+    public T get() {
+        if (this.value != null) { // if not null, return initialized value
+            return this.value;
+        }
 
-    return this.value; // return value
-  }
+        this.value = this.initializer.get(); // load value from initializer
+        this.initializer = null; // clear initializer
 
-  @Override
-  public boolean isInitialized() {
-    return this.value != null; // check if null
-  }
+        return this.value; // return value
+    }
+
+    @Override
+    public boolean isInitialized() {
+        return this.value != null; // check if null
+    }
 }

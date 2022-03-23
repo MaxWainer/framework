@@ -212,66 +212,66 @@ import org.jetbrains.annotations.NotNull;
 
 public final class Cuboid {
 
-  private final Location firstLocation;
-  private final Location secondLocation;
+    private final Location firstLocation;
+    private final Location secondLocation;
 
-  private final int minX, minY, minZ, maxX, maxY, maxZ;
+    private final int minX, minY, minZ, maxX, maxY, maxZ;
 
-  public Cuboid(final @NotNull Location firstLocation, final @NotNull Location secondLocation) {
-    this.firstLocation = firstLocation;
-    this.secondLocation = secondLocation;
+    public Cuboid(final @NotNull Location firstLocation, final @NotNull Location secondLocation) {
+        this.firstLocation = firstLocation;
+        this.secondLocation = secondLocation;
 
-    if (!firstLocation.getWorld().equals(secondLocation.getWorld())) {
-      throw new UnsupportedOperationException();
+        if (!firstLocation.getWorld().equals(secondLocation.getWorld())) {
+            throw new UnsupportedOperationException();
+        }
+
+        this.minX = min(firstLocation.getBlockX(), secondLocation.getBlockX());
+        this.minY = min(firstLocation.getBlockY(), secondLocation.getBlockY());
+        this.minZ = min(firstLocation.getBlockZ(), secondLocation.getBlockZ());
+
+        this.maxX = max(firstLocation.getBlockX(), secondLocation.getBlockX());
+        this.maxY = max(firstLocation.getBlockY(), secondLocation.getBlockY());
+        this.maxZ = max(firstLocation.getBlockZ(), secondLocation.getBlockZ());
     }
 
-    this.minX = min(firstLocation.getBlockX(), secondLocation.getBlockX());
-    this.minY = min(firstLocation.getBlockY(), secondLocation.getBlockY());
-    this.minZ = min(firstLocation.getBlockZ(), secondLocation.getBlockZ());
+    @NotNull
+    public Location secondLocation() {
+        return secondLocation;
+    }
 
-    this.maxX = max(firstLocation.getBlockX(), secondLocation.getBlockX());
-    this.maxY = max(firstLocation.getBlockY(), secondLocation.getBlockY());
-    this.maxZ = max(firstLocation.getBlockZ(), secondLocation.getBlockZ());
-  }
+    @NotNull
+    public Location firstLocation() {
+        return firstLocation;
+    }
 
-  @NotNull
-  public Location secondLocation() {
-    return secondLocation;
-  }
+    public boolean clashesWith(final @NotNull Cuboid other) {
+        final boolean first = in(other.firstLocation);
+        final boolean second = in(other.secondLocation);
 
-  @NotNull
-  public Location firstLocation() {
-    return firstLocation;
-  }
+        return !first && !second;
+    }
 
-  public boolean clashesWith(final @NotNull Cuboid other) {
-    final boolean first = in(other.firstLocation);
-    final boolean second = in(other.secondLocation);
+    public boolean in(final @NotNull Location location) {
+        final int
+                x = location.getBlockX(),
+                y = location.getBlockY(),
+                z = location.getBlockZ();
 
-    return !first && !second;
-  }
+        return
+                x >= this.minX && x <= this.maxX
+                        && y >= this.minY && y <= this.maxY
+                        && z >= this.minZ && z <= this.maxZ;
+    }
 
-  public boolean in(final @NotNull Location location) {
-    final int
-        x = location.getBlockX(),
-        y = location.getBlockY(),
-        z = location.getBlockZ();
-
-    return
-        x >= this.minX && x <= this.maxX
-        && y >= this.minY && y <= this.maxY
-        && z >= this.minZ && z <= this.maxZ;
-  }
-
-  @Override
-  public String toString() {
-    return "[" +
-        "minX=" + minX +
-        ", minY=" + minY +
-        ", minZ=" + minZ +
-        ", maxX=" + maxX +
-        ", maxY=" + maxY +
-        ", maxZ=" + maxZ +
-        ']';
-  }
+    @Override
+    public String toString() {
+        return "[" +
+                "minX=" + minX +
+                ", minY=" + minY +
+                ", minZ=" + minZ +
+                ", maxX=" + maxX +
+                ", maxY=" + maxY +
+                ", maxZ=" + maxZ +
+                ']';
+    }
 }

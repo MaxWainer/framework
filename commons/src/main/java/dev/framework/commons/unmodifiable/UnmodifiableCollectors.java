@@ -13,31 +13,31 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public final class UnmodifiableCollectors {
 
-  private UnmodifiableCollectors() {
-    Exceptions.instantiationError();
-  }
+    private UnmodifiableCollectors() {
+        Exceptions.instantiationError();
+    }
 
-  public static <T> Collector<T, ?, Set<T>> set() {
-    return set0(HashSet::new);
-  }
+    public static <T> Collector<T, ?, Set<T>> set() {
+        return set0(HashSet::new);
+    }
 
-  public static <T> Collector<T, ?, Set<T>> linkedSet() {
-    return set0(LinkedHashSet::new);
-  }
+    public static <T> Collector<T, ?, Set<T>> linkedSet() {
+        return set0(LinkedHashSet::new);
+    }
 
-  private static <T> Collector<T, ?, Set<T>> set0(final @NotNull Supplier<Set<T>> setFactory) {
-    return Collector.of(setFactory,
-        Set::add,
-        (left, right) -> {
-          if (left.size() < right.size()) {
-            right.addAll(left);
-            return right;
-          } else {
-            left.addAll(right);
-            return left;
-          }
-        }, Collections::unmodifiableSet,
-        Collector.Characteristics.UNORDERED);
-  }
+    private static <T> Collector<T, ?, Set<T>> set0(final @NotNull Supplier<Set<T>> setFactory) {
+        return Collector.of(setFactory,
+                Set::add,
+                (left, right) -> {
+                    if (left.size() < right.size()) {
+                        right.addAll(left);
+                        return right;
+                    } else {
+                        left.addAll(right);
+                        return left;
+                    }
+                }, Collections::unmodifiableSet,
+                Collector.Characteristics.UNORDERED);
+    }
 
 }

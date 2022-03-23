@@ -209,8 +209,8 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 @NonExtendable
 public interface ImmutableTuple<K, V> {
 
-  K key();
+    K key();
 
-  V value();
+    V value();
 
 }

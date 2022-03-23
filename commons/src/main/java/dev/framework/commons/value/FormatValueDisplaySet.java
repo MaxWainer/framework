@@ -214,9 +214,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface FormatValueDisplaySet<U> {
 
-  @Nullable FormatValueDisplayGroup group(final @NotNull U unit);
+    @Nullable FormatValueDisplayGroup group(final @NotNull U unit);
 
-  boolean supported(final @NotNull U unit);
+    boolean supported(final @NotNull U unit);
 
 
 }

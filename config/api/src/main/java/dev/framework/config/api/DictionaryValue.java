@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface DictionaryValue extends Value {
 
-  @NotNull
-  @Unmodifiable
-  List<ImmutableTuple<String, Value>> listValues();
+    @NotNull
+    @Unmodifiable
+    List<ImmutableTuple<String, Value>> listValues();
 }

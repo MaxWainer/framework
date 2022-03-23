@@ -206,6 +206,6 @@ package dev.framework.commons;
 
 public interface TopValue<T extends Number> {
 
-  T comparableValue();
+    T comparableValue();
 
 }

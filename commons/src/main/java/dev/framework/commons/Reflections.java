@@ -216,73 +216,71 @@ import org.jetbrains.annotations.Nullable;
 @UtilityClass
 public final class Reflections {
 
-  private Reflections() {
-    Exceptions.instantiationError();
-  }
-
-  private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
-
-  private static final Map<Class<?>, Map<String, MethodHandle>> FIELDS = new HashMap<>();
-  private static final Map<Class<?>, Map<String, MethodHandle>> METHODS = new HashMap<>();
-
-  @Nullable
-  public static <T> T findField(
-      final @NotNull Class<?> clazz,
-      final @NotNull String fieldName,
-      final @NotNull Class<?> fieldType,
-      final @NotNull Object object
-  ) {
-    try {
-      // finding getter (field)
-      final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
-
-      return (T) handle.invoke(object); // invoking it
-    } catch (final Throwable throwable) {
-      SneakyThrows.sneakyThrows(throwable);
+    private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+    private static final Map<Class<?>, Map<String, MethodHandle>> FIELDS = new HashMap<>();
+    private static final Map<Class<?>, Map<String, MethodHandle>> METHODS = new HashMap<>();
+    private Reflections() {
+        Exceptions.instantiationError();
     }
 
-    return null;
-  }
+    @Nullable
+    public static <T> T findField(
+            final @NotNull Class<?> clazz,
+            final @NotNull String fieldName,
+            final @NotNull Class<?> fieldType,
+            final @NotNull Object object
+    ) {
+        try {
+            // finding getter (field)
+            final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
 
-  public static MethodHandle methodHandle(final Class<?> clazz, final String methodName,
-      final MethodType methodType) {
-    try {
-      final Map<String, MethodHandle> methodHandleMap = METHODS.computeIfAbsent(clazz,
-          $ -> new HashMap<>());
+            return (T) handle.invoke(object); // invoking it
+        } catch (final Throwable throwable) {
+            SneakyThrows.sneakyThrows(throwable);
+        }
 
-      if (methodHandleMap.containsKey(methodName)) {
-        return methodHandleMap.get(methodName);
-      } else {
-        final MethodHandle handle = LOOKUP.findVirtual(clazz, methodName, methodType);
-
-        methodHandleMap.put(methodName, handle);
-
-        return handle;
-      }
-    } catch (
-        NoSuchMethodException | IllegalAccessException e) {
-      throw new RuntimeException(e);
+        return null;
     }
-  }
 
-  public static MethodHandle fieldHandle(final Class<?> clazz, final String fieldName,
-      final Class<?> fieldType) {
-    try {
-      final Map<String, MethodHandle> methodHandleMap = FIELDS.computeIfAbsent(clazz,
-          $ -> new HashMap<>());
+    public static MethodHandle methodHandle(final Class<?> clazz, final String methodName,
+                                            final MethodType methodType) {
+        try {
+            final Map<String, MethodHandle> methodHandleMap = METHODS.computeIfAbsent(clazz,
+                    $ -> new HashMap<>());
 
-      if (methodHandleMap.containsKey(fieldName)) {
-        return methodHandleMap.get(fieldName);
-      } else {
-        final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
+            if (methodHandleMap.containsKey(methodName)) {
+                return methodHandleMap.get(methodName);
+            } else {
+                final MethodHandle handle = LOOKUP.findVirtual(clazz, methodName, methodType);
 
-        methodHandleMap.put(fieldName, handle);
+                methodHandleMap.put(methodName, handle);
 
-        return handle;
-      }
-    } catch (Throwable e) {
-      throw new RuntimeException(e);
+                return handle;
+            }
+        } catch (
+                NoSuchMethodException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
+
+    public static MethodHandle fieldHandle(final Class<?> clazz, final String fieldName,
+                                           final Class<?> fieldType) {
+        try {
+            final Map<String, MethodHandle> methodHandleMap = FIELDS.computeIfAbsent(clazz,
+                    $ -> new HashMap<>());
+
+            if (methodHandleMap.containsKey(fieldName)) {
+                return methodHandleMap.get(fieldName);
+            } else {
+                final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
+
+                methodHandleMap.put(fieldName, handle);
+
+                return handle;
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

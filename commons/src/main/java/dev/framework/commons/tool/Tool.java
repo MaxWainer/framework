@@ -209,6 +209,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Tool<H> extends RepositoryObject<String> {
 
-  void handleClick(final @NotNull ToolsDataHolder toolHolder, final @NotNull H interactingData);
+    void handleClick(final @NotNull ToolsDataHolder toolHolder, final @NotNull H interactingData);
 
 }

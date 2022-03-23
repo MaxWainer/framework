@@ -12,6 +12,6 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MustBeSerialized {
 
-  @NotNull
-  Class<? extends ObjectAdapter> value() default DummyObjectAdapter.class;
+    @NotNull
+    Class<? extends ObjectAdapter> value() default DummyObjectAdapter.class;
 }

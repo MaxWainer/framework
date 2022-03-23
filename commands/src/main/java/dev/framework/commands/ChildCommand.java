@@ -212,18 +212,18 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface ChildCommand extends Command, ArgumentSchemaHolder {
 
-  default boolean shadow() {
-    return false;
-  }
+    default boolean shadow() {
+        return false;
+    }
 
-  @Override
-  default @NotNull @Unmodifiable Set<Command> childCommands() {
-    throw new UnsupportedOperationException(); // child commands can't have child `Pog`
-  }
+    @Override
+    default @NotNull @Unmodifiable Set<Command> childCommands() {
+        throw new UnsupportedOperationException(); // child commands can't have child `Pog`
+    }
 
-  @Override
-  default void sendUsage(final @NotNull Sender sender) {
-    throw new UnsupportedOperationException(); // there is no usage for them
-    // might add for better command formatting in the future, but not rn
-  }
+    @Override
+    default void sendUsage(final @NotNull Sender sender) {
+        throw new UnsupportedOperationException(); // there is no usage for them
+        // might add for better command formatting in the future, but not rn
+    }
 }

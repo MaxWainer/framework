@@ -224,36 +224,36 @@ import org.jetbrains.annotations.NotNull;
 @NonExtendable
 public interface Lazy<T> extends Supplier<T> {
 
-  static <V> Lazy<V> unsafeLazy(final @NotNull Supplier<V> supplier) {
-    return new UnsafeLazyImpl<>(supplier);
-  }
+    static <V> Lazy<V> unsafeLazy(final @NotNull Supplier<V> supplier) {
+        return new UnsafeLazyImpl<>(supplier);
+    }
 
-  static <V> Lazy<V> lazy(final @NotNull Supplier<V> supplier) {
-    return new SynchronizedLazyImpl<>(supplier);
-  }
+    static <V> Lazy<V> lazy(final @NotNull Supplier<V> supplier) {
+        return new SynchronizedLazyImpl<>(supplier);
+    }
 
-  static <V> Lazy<V> lazy(final @NotNull Supplier<V> supplier, final @NotNull Object[] mutex) {
-    return new SynchronizedLazyImpl<>(supplier, mutex);
-  }
+    static <V> Lazy<V> lazy(final @NotNull Supplier<V> supplier, final @NotNull Object[] mutex) {
+        return new SynchronizedLazyImpl<>(supplier, mutex);
+    }
 
-  static <V> Lazy<V> initialized(final V value) {
-    return new LazyImpl<>(value);
-  }
+    static <V> Lazy<V> initialized(final V value) {
+        return new LazyImpl<>(value);
+    }
 
-  static <V> Lazy<V> lazy(final @NotNull LazyScope scope, final @NotNull Supplier<V> supplier) {
-    return scope == LazyScope.UNSAFE ? unsafeLazy(supplier) : lazy(supplier);
-  }
+    static <V> Lazy<V> lazy(final @NotNull LazyScope scope, final @NotNull Supplier<V> supplier) {
+        return scope == LazyScope.UNSAFE ? unsafeLazy(supplier) : lazy(supplier);
+    }
 
-  boolean isInitialized();
+    boolean isInitialized();
 
-  /**
-   * @return
-   */
-  @Override
-  T get();
+    /**
+     * @return
+     */
+    @Override
+    T get();
 
-  enum LazyScope {
-    UNSAFE, SYNCHRONIZED
-  }
+    enum LazyScope {
+        UNSAFE, SYNCHRONIZED
+    }
 
 }

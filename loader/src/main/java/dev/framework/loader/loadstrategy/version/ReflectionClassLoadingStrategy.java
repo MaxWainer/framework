@@ -214,42 +214,42 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ReflectionClassLoadingStrategy extends AbstractClassLoadingStrategy {
 
-  public static final ClassLoadingStrategyFactory FACTORY = new ReflectionClassLoadingStrategyFactory();
+    public static final ClassLoadingStrategyFactory FACTORY = new ReflectionClassLoadingStrategyFactory();
 
-  private static final Method ADD_URL_METHOD;
+    private static final Method ADD_URL_METHOD;
 
-  static {
-    try {
-      final Class<?> clazz = URLClassLoader.class;
+    static {
+        try {
+            final Class<?> clazz = URLClassLoader.class;
 
-      ADD_URL_METHOD = clazz.getDeclaredMethod("addURL", URL.class);
-      ADD_URL_METHOD.setAccessible(true);
-    } catch (final NoSuchMethodException exception) {
-      throw new RuntimeException(exception);
+            ADD_URL_METHOD = clazz.getDeclaredMethod("addURL", URL.class);
+            ADD_URL_METHOD.setAccessible(true);
+        } catch (final NoSuchMethodException exception) {
+            throw new RuntimeException(exception);
+        }
     }
-  }
 
-  private ReflectionClassLoadingStrategy(
-      @NotNull final URLClassLoader providedClassLoader) {
-    super(providedClassLoader);
-  }
-
-  @Override
-  public void addURL(@NotNull final URL url) {
-    try {
-      ADD_URL_METHOD.invoke(this.providedClassLoader, url);
-    } catch (final IllegalAccessException | InvocationTargetException exception) {
-      LOGGER.log(Level.SEVERE, "An exception acquired while adding url! (Reflection strategy)", exception);
+    private ReflectionClassLoadingStrategy(
+            @NotNull final URLClassLoader providedClassLoader) {
+        super(providedClassLoader);
     }
-  }
-
-  private static final class ReflectionClassLoadingStrategyFactory implements
-      ClassLoadingStrategyFactory {
 
     @Override
-    public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
-      return new ReflectionClassLoadingStrategy(classLoader);
+    public void addURL(@NotNull final URL url) {
+        try {
+            ADD_URL_METHOD.invoke(this.providedClassLoader, url);
+        } catch (final IllegalAccessException | InvocationTargetException exception) {
+            LOGGER.log(Level.SEVERE, "An exception acquired while adding url! (Reflection strategy)", exception);
+        }
     }
-  }
+
+    private static final class ReflectionClassLoadingStrategyFactory implements
+            ClassLoadingStrategyFactory {
+
+        @Override
+        public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
+            return new ReflectionClassLoadingStrategy(classLoader);
+        }
+    }
 
 }

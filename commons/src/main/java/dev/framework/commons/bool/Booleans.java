@@ -215,32 +215,31 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public final class Booleans {
 
-  private Booleans() {
-    Exceptions.instantiationError();
-  }
+    public static final List<String> ALLOWED_STRINGS = Arrays.asList("true", "false", "no", "yes",
+            "1", "0"); // all our allowed boolean strings
+    private static final Map<String, Boolean> MAPPERS = new HashMap<>();
 
-  public static final List<String> ALLOWED_STRINGS = Arrays.asList("true", "false", "no", "yes",
-      "1", "0"); // all our allowed boolean strings
-
-  private static final Map<String, Boolean> MAPPERS = new HashMap<>();
-
-  static {
-    MAPPERS.put("true", true);
-    MAPPERS.put("false", false);
-    MAPPERS.put("yes", true);
-    MAPPERS.put("no", false);
-    MAPPERS.put("1", true);
-    MAPPERS.put("0", false);
-  }
-
-  public static Boolean parseBooleanStrict(final @NotNull String input) {
-    final Boolean result = MAPPERS.get(input); // getting from mappers our input
-
-    if (result == null) { // if null, we throw exception
-      throw new BooleanFormatException();
+    static {
+        MAPPERS.put("true", true);
+        MAPPERS.put("false", false);
+        MAPPERS.put("yes", true);
+        MAPPERS.put("no", false);
+        MAPPERS.put("1", true);
+        MAPPERS.put("0", false);
     }
 
-    return result; // else result
-  }
+    private Booleans() {
+        Exceptions.instantiationError();
+    }
+
+    public static Boolean parseBooleanStrict(final @NotNull String input) {
+        final Boolean result = MAPPERS.get(input); // getting from mappers our input
+
+        if (result == null) { // if null, we throw exception
+            throw new BooleanFormatException();
+        }
+
+        return result; // else result
+    }
 
 }

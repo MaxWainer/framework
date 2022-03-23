@@ -212,18 +212,18 @@ import org.bukkit.entity.HumanEntity;
 
 public interface BukkitSuggestions {
 
-  static List<String> worlds() {
-    return Bukkit.getWorlds()
-        .stream()
-        .map(World::getName)
-        .collect(Collectors.toList());
-  }
+    static List<String> worlds() {
+        return Bukkit.getWorlds()
+                .stream()
+                .map(World::getName)
+                .collect(Collectors.toList());
+    }
 
-  static List<String> onlinePlayers() {
-    return Bukkit.getOnlinePlayers()
-        .stream()
-        .map(HumanEntity::getName)
-        .collect(Collectors.toList());
-  }
+    static List<String> onlinePlayers() {
+        return Bukkit.getOnlinePlayers()
+                .stream()
+                .map(HumanEntity::getName)
+                .collect(Collectors.toList());
+    }
 
 }

@@ -10,45 +10,47 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractBukkitBootstrap extends JavaPlugin implements FrameworkBootstrap {
 
-  private BootstrapPreprocessor preprocessor;
+    private BootstrapPreprocessor preprocessor;
 
-  @Override
-  public void onLoad() {
-    // create dependency loader
-    final DependencyLoader.Builder dependencyBuilder = DependencyLoader.builder()
-        .classLoader(this.getClassLoader())
-        .dataFolder(this.getDataFolder())
-        .logger(this.getLogger());
+    @Override
+    public void onLoad() {
+        // create dependency loader
+        final DependencyLoader.Builder dependencyBuilder = DependencyLoader.builder()
+                .classLoader(this.getClassLoader())
+                .dataFolder(this.getDataFolder())
+                .logger(this.getLogger());
 
-    this.preprocessor = BootstrapPreprocessor.fromBase(
-        PreprocessorBase.of(this, dependencyBuilder));
+        this.preprocessor = BootstrapPreprocessor.fromBase(
+                PreprocessorBase.of(this, dependencyBuilder));
 
-    this.preprocessor.onLoad();
+        this.preprocessor.onLoad();
 
-    // set instance
-    BukkitBootstrapProvider.initialize(this);
-  }
+        // set instance
+        BukkitBootstrapProvider.initialize(this);
+    }
 
-  @Override
-  public void onEnable() {
-    this.preprocessor.onEnable();
-  }
+    @Override
+    public void onEnable() {
+        this.preprocessor.onEnable();
+    }
 
-  @Override
-  public void onDisable() {
-    this.preprocessor.onDisable();
+    @Override
+    public void onDisable() {
+        this.preprocessor.onDisable();
 
-    // reset instance
-    BukkitBootstrapProvider.reset();
-  }
+        // reset instance
+        BukkitBootstrapProvider.reset();
+    }
 
-  @Override
-  public @NotNull FrameworkModuleManager moduleManager() {
-    return this.preprocessor.moduleManager();
-  }
+    @Override
+    public @NotNull
+    FrameworkModuleManager moduleManager() {
+        return this.preprocessor.moduleManager();
+    }
 
-  @Override
-  public @NotNull DependencyLoader dependencyLoader() {
-    return this.preprocessor.dependencyLoader();
-  }
+    @Override
+    public @NotNull
+    DependencyLoader dependencyLoader() {
+        return this.preprocessor.dependencyLoader();
+    }
 }

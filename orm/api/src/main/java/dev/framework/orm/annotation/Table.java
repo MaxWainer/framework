@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Table {
 
-  @NotNull String value();
+    @NotNull String value();
 
-  @NotNull OptionPair[] options() default {
-      @OptionPair(key = "engine", value = "InnoDB")
-  };
+    @NotNull OptionPair[] options() default {
+            @OptionPair(key = "engine", value = "InnoDB")
+    };
 }

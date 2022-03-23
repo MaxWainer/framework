@@ -1,9 +1,9 @@
 group 'framework.bootstrap'
 
 dependencies {
-    compileOnly project(':framework-commons')
-    compileOnly project(':framework-loader')
-    compileOnly project(':framework-commands')
+  compileOnly project(':framework-commons')
+  compileOnly project(':framework-loader')
+  compileOnly project(':framework-commands')
 
-    compileOnly 'com.google.inject:guice:5.1.0'
+  compileOnly 'com.google.inject:guice:5.1.0'
 }

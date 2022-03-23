@@ -1,7 +1,7 @@
 group 'framework.packet.wrapper'
 
 dependencies {
-    compileOnly project(':framework-commons')
-    compileOnly project(':framework-stack-wrapper')
-    compileOnly 'io.netty:netty-all:5.0.0.Alpha2'
+  compileOnly project(':framework-commons')
+  compileOnly project(':framework-stack-wrapper')
+  compileOnly 'io.netty:netty-all:5.0.0.Alpha2'
 }

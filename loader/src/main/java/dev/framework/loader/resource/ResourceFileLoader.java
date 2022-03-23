@@ -218,28 +218,28 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 public final class ResourceFileLoader {
 
-  private ResourceFileLoader() {
-    Exceptions.instantiationError();
-  }
+    private ResourceFileLoader() {
+        Exceptions.instantiationError();
+    }
 
-  public static ResourceFile readFile(
-      final @NotNull Reader reader) throws IOException {
-    final JsonObject jsonObject = new JsonParser().parse(reader)
-        .getAsJsonObject(); // older GSON version support
+    public static ResourceFile readFile(
+            final @NotNull Reader reader) throws IOException {
+        final JsonObject jsonObject = new JsonParser().parse(reader)
+                .getAsJsonObject(); // older GSON version support
 
-    final ImmutableMap<Dependency, String> dependencies = ImmutableMap.copyOf(
-        jsonObject.getAsJsonObject("dependencies") // list all dependencies
-            .entrySet()
-            .stream()
-            .collect(Collectors.toMap(
-                entry ->
-                    Dependency.of(entry.getKey()), // get from key our dependency
-                entry ->
-                    entry.getValue().getAsString()) // second will be relocating path
-            )
-    );
+        final ImmutableMap<Dependency, String> dependencies = ImmutableMap.copyOf(
+                jsonObject.getAsJsonObject("dependencies") // list all dependencies
+                        .entrySet()
+                        .stream()
+                        .collect(Collectors.toMap(
+                                entry ->
+                                        Dependency.of(entry.getKey()), // get from key our dependency
+                                entry ->
+                                        entry.getValue().getAsString()) // second will be relocating path
+                        )
+        );
 
-    return new ResourceFile(dependencies);
-  }
+        return new ResourceFile(dependencies);
+    }
 
 }

@@ -8,39 +8,39 @@ import org.jetbrains.annotations.NotNull;
 @TargetGradleModule(":bukkit:bukkit-implementation")
 public final class BukkitBootstrapProvider {
 
-  static BukkitBootstrapProvider INSTANCE;
+    static BukkitBootstrapProvider INSTANCE;
 
-  private final AbstractBukkitBootstrap bootstrap;
+    private final AbstractBukkitBootstrap bootstrap;
 
-  private BukkitBootstrapProvider(
-      final @NotNull AbstractBukkitBootstrap bootstrap) {
-    this.bootstrap = bootstrap;
-  }
-
-  @NotNull
-  public AbstractBukkitBootstrap bootstrap() {
-    return bootstrap;
-  }
-
-  static void reset() {
-    INSTANCE = null;
-  }
-
-  // initializers
-  static void initialize(final @NotNull AbstractBukkitBootstrap bootstrap) {
-    if (INSTANCE != null) {
-      throw new IllegalArgumentException("INSTANCE already set!");
+    private BukkitBootstrapProvider(
+            final @NotNull AbstractBukkitBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
     }
 
-    INSTANCE = new BukkitBootstrapProvider(bootstrap);
-  }
-
-  public static BukkitBootstrapProvider instance() {
-    if (INSTANCE == null) {
-      throw new UnsupportedOperationException("Bootstrap isn't loaded!");
+    static void reset() {
+        INSTANCE = null;
     }
 
-    return INSTANCE;
-  }
+    // initializers
+    static void initialize(final @NotNull AbstractBukkitBootstrap bootstrap) {
+        if (INSTANCE != null) {
+            throw new IllegalArgumentException("INSTANCE already set!");
+        }
+
+        INSTANCE = new BukkitBootstrapProvider(bootstrap);
+    }
+
+    public static BukkitBootstrapProvider instance() {
+        if (INSTANCE == null) {
+            throw new UnsupportedOperationException("Bootstrap isn't loaded!");
+        }
+
+        return INSTANCE;
+    }
+
+    @NotNull
+    public AbstractBukkitBootstrap bootstrap() {
+        return bootstrap;
+    }
 
 }

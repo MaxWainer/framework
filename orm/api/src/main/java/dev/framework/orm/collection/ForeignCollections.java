@@ -6,9 +6,9 @@ import dev.framework.commons.annotation.UtilityClass;
 @UtilityClass
 public final class ForeignCollections {
 
-  private ForeignCollections() {
-    Exceptions.instantiationError();
-  }
+    private ForeignCollections() {
+        Exceptions.instantiationError();
+    }
 
 
 }

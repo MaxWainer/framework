@@ -213,13 +213,13 @@ import org.jetbrains.annotations.NotNull;
 
 final class BooleanParser implements ContextParser<Boolean> {
 
-  @Override
-  public @NotNull ParserResult<Boolean> checkInput(final @NotNull String raw) {
-    try {
-      return ParserResult.success(Booleans.parseBooleanStrict(raw));
-    } catch (final BooleanFormatException ignored) {
-    }
+    @Override
+    public @NotNull ParserResult<Boolean> checkInput(final @NotNull String raw) {
+        try {
+            return ParserResult.success(Booleans.parseBooleanStrict(raw));
+        } catch (final BooleanFormatException ignored) {
+        }
 
-    return ParserResult.error(Error.PARSER_BOOLEAN.applyArguments(raw));
-  }
+        return ParserResult.error(Error.PARSER_BOOLEAN.applyArguments(raw));
+    }
 }

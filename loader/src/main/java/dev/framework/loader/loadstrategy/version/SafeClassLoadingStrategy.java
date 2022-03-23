@@ -211,25 +211,25 @@ import org.jetbrains.annotations.NotNull;
 
 public final class SafeClassLoadingStrategy extends AbstractClassLoadingStrategy {
 
-  public static final ClassLoadingStrategyFactory FACTORY = new SafeClassLoadingStrategyFactory();
+    public static final ClassLoadingStrategyFactory FACTORY = new SafeClassLoadingStrategyFactory();
 
-  private SafeClassLoadingStrategy(
-      @NotNull final URLClassLoader providedClassLoader) {
-    super(providedClassLoader);
-  }
-
-  @Override
-  public void addURL(@NotNull final URL url) {
-
-  }
-
-  private static final class SafeClassLoadingStrategyFactory implements
-      ClassLoadingStrategyFactory {
+    private SafeClassLoadingStrategy(
+            @NotNull final URLClassLoader providedClassLoader) {
+        super(providedClassLoader);
+    }
 
     @Override
-    public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
-      return new SafeClassLoadingStrategy(classLoader);
+    public void addURL(@NotNull final URL url) {
+
     }
-  }
+
+    private static final class SafeClassLoadingStrategyFactory implements
+            ClassLoadingStrategyFactory {
+
+        @Override
+        public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
+            return new SafeClassLoadingStrategy(classLoader);
+        }
+    }
 
 }

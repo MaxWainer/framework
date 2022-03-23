@@ -6,6 +6,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface PacketAdapter {
 
-  @Nullable Class<? extends WrappedPacket> adapt(final @NotNull Class<?> internalClass);
+    @Nullable Class<? extends WrappedPacket> adapt(final @NotNull Class<?> internalClass);
 
 }

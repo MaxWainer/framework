@@ -205,9 +205,9 @@
 package dev.framework.loader.repository.implementation;
 
 import dev.framework.commons.LoggerCompat;
+import dev.framework.loader.repository.Repository;
 import dev.framework.loader.repository.dependency.Dependencies;
 import dev.framework.loader.repository.dependency.Dependency;
-import dev.framework.loader.repository.Repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -221,85 +221,85 @@ import org.jetbrains.annotations.Nullable;
 
 abstract class AbstractRepository implements Repository {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+    private static final Logger LOGGER = LoggerCompat.getLogger();
 
-  @Override
-  public @Nullable Path loadDependency(@NotNull final Dependency dependency,
-      @NotNull final Path to) {
-    try {
-      // Build file name
-      final String fileName = Dependencies.fileNameOf(dependency);
+    private static void loadFromUrl(
+            final HttpURLConnection connection,
+            final Path destinationDirectory,
+            final Path dependencyFile) throws IOException {
+        // Checking is destinationDirectory directory
+        if (!Files.isDirectory(destinationDirectory)) {
+            throw new IllegalArgumentException("destinationDirectory is not directory");
+        }
 
-      // Resolve dependency file
-      final Path dependencyFile = to.resolve(fileName);
-      final Path relocatedDependencyFile = to.resolve(
-          Dependencies.fileNameOf(dependency, "relocated"));
-
-      if (Files.exists(relocatedDependencyFile)) {
-        return relocatedDependencyFile;
-      }
-
-      // If exists, return it
-      if (Files.exists(dependencyFile)) {
-        return dependencyFile;
-      }
-
-      LOGGER.info(() -> "Trying loading dependency " + dependency.artifactId() + "...");
-
-      final long start = System.currentTimeMillis();
-
-      // Building url
-      final String stringUrl = this.repositoryUrl()
-          + dependency.groupId().replace("{}", "/") + '/'
-          + dependency.artifactId().replace("{}", "/") + '/'
-          + dependency.version() + '/'
-          + fileName;
-
-      // Create url
-      final URL url = new URL(stringUrl);
-
-      // Create and open url connection
-      final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-
-      // We need get from connection data
-      urlConnection.setRequestMethod("GET");
-      // Enable do input
-      urlConnection.setDoInput(true);
-      // Connecting
-      urlConnection.connect();
-
-      // Loading from url
-      loadFromUrl(urlConnection, to, dependencyFile);
-
-      // All good, printing loading time
-      LOGGER.info(() -> "Successfully loaded dependency " + dependency.artifactId() + ", in " + (
-          System.currentTimeMillis() - start) + "ms!");
-      return dependencyFile;
-    } catch (final IOException exception) {
-      // Something went wrong, print info
-      throw new UnsupportedOperationException(
-          "An exception acquired while loading dependency " + dependency.artifactId() + "!",
-          exception);
-    }
-  }
-
-  @NotNull
-  protected abstract String repositoryUrl();
-
-  private static void loadFromUrl(
-      final HttpURLConnection connection,
-      final Path destinationDirectory,
-      final Path dependencyFile) throws IOException {
-    // Checking is destinationDirectory directory
-    if (!Files.isDirectory(destinationDirectory)) {
-      throw new IllegalArgumentException("destinationDirectory is not directory");
+        // We should use here try-with-resource construction
+        try (final InputStream inputStream = connection.getInputStream()) {
+            // Copying from input stream to destination directory
+            Files.copy(inputStream, dependencyFile, StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
-    // We should use here try-with-resource construction
-    try (final InputStream inputStream = connection.getInputStream()) {
-      // Copying from input stream to destination directory
-      Files.copy(inputStream, dependencyFile, StandardCopyOption.REPLACE_EXISTING);
+    @Override
+    public @Nullable Path loadDependency(@NotNull final Dependency dependency,
+                                         @NotNull final Path to) {
+        try {
+            // Build file name
+            final String fileName = Dependencies.fileNameOf(dependency);
+
+            // Resolve dependency file
+            final Path dependencyFile = to.resolve(fileName);
+            final Path relocatedDependencyFile = to.resolve(
+                    Dependencies.fileNameOf(dependency, "relocated"));
+
+            if (Files.exists(relocatedDependencyFile)) {
+                return relocatedDependencyFile;
+            }
+
+            // If exists, return it
+            if (Files.exists(dependencyFile)) {
+                return dependencyFile;
+            }
+
+            LOGGER.info(() -> "Trying loading dependency " + dependency.artifactId() + "...");
+
+            final long start = System.currentTimeMillis();
+
+            // Building url
+            final String stringUrl = this.repositoryUrl()
+                    + dependency.groupId().replace("{}", "/") + '/'
+                    + dependency.artifactId().replace("{}", "/") + '/'
+                    + dependency.version() + '/'
+                    + fileName;
+
+            // Create url
+            final URL url = new URL(stringUrl);
+
+            // Create and open url connection
+            final HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+            // We need get from connection data
+            urlConnection.setRequestMethod("GET");
+            // Enable do input
+            urlConnection.setDoInput(true);
+            // Connecting
+            urlConnection.connect();
+
+            // Loading from url
+            loadFromUrl(urlConnection, to, dependencyFile);
+
+            // All good, printing loading time
+            LOGGER.info(() -> "Successfully loaded dependency " + dependency.artifactId() + ", in " + (
+                    System.currentTimeMillis() - start) + "ms!");
+            return dependencyFile;
+        } catch (final IOException exception) {
+            // Something went wrong, print info
+            throw new UnsupportedOperationException(
+                    "An exception acquired while loading dependency " + dependency.artifactId() + "!",
+                    exception);
+        }
     }
-  }
+
+    @NotNull
+    protected abstract String repositoryUrl();
 
 }

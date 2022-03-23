@@ -6,12 +6,12 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface ModuleInjector {
 
-  static ModuleInjector create() {
-    return new ModuleInjectorImpl();
-  }
+    static ModuleInjector create() {
+        return new ModuleInjectorImpl();
+    }
 
-  void inject(final @NotNull FrameworkModule module);
+    void inject(final @NotNull FrameworkModule module);
 
-  @NotNull @Unmodifiable Set<FrameworkModule> injectableModules();
+    @NotNull @Unmodifiable Set<FrameworkModule> injectableModules();
 
 }

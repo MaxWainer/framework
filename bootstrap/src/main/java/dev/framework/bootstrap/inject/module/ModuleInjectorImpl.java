@@ -7,15 +7,15 @@ import org.jetbrains.annotations.Unmodifiable;
 
 final class ModuleInjectorImpl implements ModuleInjector {
 
-  private final Set<FrameworkModule> modules = new LinkedHashSet<>();
+    private final Set<FrameworkModule> modules = new LinkedHashSet<>();
 
-  @Override
-  public void inject(final @NotNull FrameworkModule module) {
-    this.modules.add(module);
-  }
+    @Override
+    public void inject(final @NotNull FrameworkModule module) {
+        this.modules.add(module);
+    }
 
-  @Override
-  public @NotNull @Unmodifiable Set<FrameworkModule> injectableModules() {
-    return this.modules;
-  }
+    @Override
+    public @NotNull @Unmodifiable Set<FrameworkModule> injectableModules() {
+        return this.modules;
+    }
 }

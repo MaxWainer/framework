@@ -204,36 +204,36 @@
 
 package dev.framework.commons.value.number.count;
 
-import dev.framework.commons.value.FormatValueDisplayGroup;
-import org.jetbrains.annotations.NotNull;
 import dev.framework.commons.value.AbstractFormatValue;
 import dev.framework.commons.value.FormatValueConfig;
+import dev.framework.commons.value.FormatValueDisplayGroup;
 import dev.framework.commons.value.FormatValueDisplaySet;
 import dev.framework.commons.value.GroupMapper;
+import org.jetbrains.annotations.NotNull;
 
 final class CountFormatValueImpl extends AbstractFormatValue<Integer, NumberUnit> implements
-    CountFormatValue {
+        CountFormatValue {
 
-  CountFormatValueImpl(final int delegate) {
-    super(delegate, NumberUnit.DUMMY);
-  }
+    CountFormatValueImpl(final int delegate) {
+        super(delegate, NumberUnit.DUMMY);
+    }
 
-  CountFormatValueImpl(final int delegate, final @NotNull FormatValueConfig<NumberUnit> config) {
-    super(delegate, NumberUnit.DUMMY, config);
-  }
+    CountFormatValueImpl(final int delegate, final @NotNull FormatValueConfig<NumberUnit> config) {
+        super(delegate, NumberUnit.DUMMY, config);
+    }
 
-  @Override
-  public @NotNull NumberUnit baseUnit() {
-    return NumberUnit.DUMMY;
-  }
+    @Override
+    public @NotNull NumberUnit baseUnit() {
+        return NumberUnit.DUMMY;
+    }
 
-  @Override
-  public @NotNull String applyFormat(
-      final @NotNull GroupMapper<Integer> mapper,
-      final @NotNull FormatValueDisplaySet<NumberUnit> displaySet) {
-    final FormatValueDisplayGroup group = displaySet.group(NumberUnit.DUMMY);
-    assert group != null;
+    @Override
+    public @NotNull String applyFormat(
+            final @NotNull GroupMapper<Integer> mapper,
+            final @NotNull FormatValueDisplaySet<NumberUnit> displaySet) {
+        final FormatValueDisplayGroup group = displaySet.group(NumberUnit.DUMMY);
+        assert group != null;
 
-    return mapper.apply(group, delegate);
-  }
+        return mapper.apply(group, delegate);
+    }
 }

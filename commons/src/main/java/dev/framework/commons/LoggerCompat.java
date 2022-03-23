@@ -210,24 +210,24 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public final class LoggerCompat {
 
-  private LoggerCompat() {
-    Exceptions.instantiationError();
-  }
+    private LoggerCompat() {
+        Exceptions.instantiationError();
+    }
 
-  public static Logger getLogger() {
-    // Getting caller name
-    final String callerName = getCallerClassName();
+    public static Logger getLogger() {
+        // Getting caller name
+        final String callerName = getCallerClassName();
 
-    // Creating logger for caller class
-    return Logger.getLogger(callerName);
-  }
+        // Creating logger for caller class
+        return Logger.getLogger(callerName);
+    }
 
-  private static String getCallerClassName() {
-    // Getting stack tract from current thread
-    final StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+    private static String getCallerClassName() {
+        // Getting stack tract from current thread
+        final StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 
-    // Getting from elements class name
-    return elements[3].getClassName();
-  }
+        // Getting from elements class name
+        return elements[3].getClassName();
+    }
 
 }

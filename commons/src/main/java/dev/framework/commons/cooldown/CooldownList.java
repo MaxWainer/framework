@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CooldownList<T> {
 
-  @NotNull TimePair cooldownTime();
+    @NotNull TimePair cooldownTime();
 
-  boolean check(final @NotNull T t);
+    boolean check(final @NotNull T t);
 
 }

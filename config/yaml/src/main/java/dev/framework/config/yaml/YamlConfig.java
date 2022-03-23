@@ -8,23 +8,23 @@ import org.jetbrains.annotations.NotNull;
 
 final class YamlConfig implements Config {
 
-  @Override
-  public @NotNull ConfigOptions options() {
-    return null;
-  }
+    @Override
+    public @NotNull ConfigOptions options() {
+        return null;
+    }
 
-  @Override
-  public @NotNull Path file() {
-    return null;
-  }
+    @Override
+    public @NotNull Path file() {
+        return null;
+    }
 
-  @Override
-  public @NotNull InputStream openStream() {
-    return null;
-  }
+    @Override
+    public @NotNull InputStream openStream() {
+        return null;
+    }
 
-  @Override
-  public void close() throws Exception {
+    @Override
+    public void close() throws Exception {
 
-  }
+    }
 }

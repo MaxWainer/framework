@@ -208,7 +208,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ContextParser<T> {
 
-  @NotNull ParserResult<T> checkInput(
-      final @NotNull String raw);
+    @NotNull ParserResult<T> checkInput(
+            final @NotNull String raw);
 
 }

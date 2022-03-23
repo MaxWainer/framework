@@ -210,6 +210,6 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface MessageMapper {
 
-  @NotNull Component applyArguments(final @NotNull Object ...args);
+    @NotNull Component applyArguments(final @NotNull Object... args);
 
 }

@@ -211,82 +211,82 @@ import org.jetbrains.annotations.NotNull;
 
 public interface CommandStyleConfig {
 
-  static CommandStyleConfig get() {
-    return CommandStyleConfigImpl.INSTANCE;
-  }
+    static CommandStyleConfig get() {
+        return CommandStyleConfigImpl.INSTANCE;
+    }
 
-  static void updateFromProperties(final @NotNull Properties properties) {
-    get().initialize(initializer().fromProperties(properties));
-  }
+    static void updateFromProperties(final @NotNull Properties properties) {
+        get().initialize(initializer().fromProperties(properties));
+    }
 
-  static NamedTextColor systemPrimaryColor() {
-    return get().primaryColor();
-  }
+    static NamedTextColor systemPrimaryColor() {
+        return get().primaryColor();
+    }
 
-  static NamedTextColor systemSecondaryColor() {
-    return get().secondaryColor();
-  }
+    static NamedTextColor systemSecondaryColor() {
+        return get().secondaryColor();
+    }
 
-  static NamedTextColor systemTipColor() {
-    return get().tipColor();
-  }
+    static NamedTextColor systemTipColor() {
+        return get().tipColor();
+    }
 
-  static NamedTextColor systemWarnColor() {
-    return get().warnColor();
-  }
+    static NamedTextColor systemWarnColor() {
+        return get().warnColor();
+    }
 
-  static NamedTextColor systemErrorColor() {
-    return get().errorColor();
-  }
+    static NamedTextColor systemErrorColor() {
+        return get().errorColor();
+    }
 
-  static NamedTextColor systemSoftErrorColor() {
-    return get().softErrorColor();
-  }
+    static NamedTextColor systemSoftErrorColor() {
+        return get().softErrorColor();
+    }
 
-  static NamedTextColor systemDelimiterColor() {
-    return get().delimiterColor();
-  }
+    static NamedTextColor systemDelimiterColor() {
+        return get().delimiterColor();
+    }
 
-  static CommandStyleConfig.Initializer initializer() {
-    return new InitializerImpl();
-  }
+    static CommandStyleConfig.Initializer initializer() {
+        return new InitializerImpl();
+    }
 
-  @NotNull NamedTextColor primaryColor();
+    @NotNull NamedTextColor primaryColor();
 
-  @NotNull NamedTextColor secondaryColor();
+    @NotNull NamedTextColor secondaryColor();
 
-  @NotNull NamedTextColor errorColor();
+    @NotNull NamedTextColor errorColor();
 
-  @NotNull NamedTextColor softErrorColor();
+    @NotNull NamedTextColor softErrorColor();
 
-  @NotNull NamedTextColor warnColor();
+    @NotNull NamedTextColor warnColor();
 
-  @NotNull NamedTextColor tipColor();
+    @NotNull NamedTextColor tipColor();
 
-  @NotNull NamedTextColor delimiterColor();
+    @NotNull NamedTextColor delimiterColor();
 
-  void initialize(final @NotNull Initializer initializer);
+    void initialize(final @NotNull Initializer initializer);
 
-  interface Initializer {
+    interface Initializer {
 
-    Initializer primaryColor(final @NotNull NamedTextColor color);
+        Initializer primaryColor(final @NotNull NamedTextColor color);
 
-    Initializer secondaryColor(final @NotNull NamedTextColor color);
+        Initializer secondaryColor(final @NotNull NamedTextColor color);
 
-    Initializer errorColor(final @NotNull NamedTextColor color);
+        Initializer errorColor(final @NotNull NamedTextColor color);
 
-    Initializer warnColor(final @NotNull NamedTextColor color);
+        Initializer warnColor(final @NotNull NamedTextColor color);
 
-    Initializer tipColor(final @NotNull NamedTextColor color);
+        Initializer tipColor(final @NotNull NamedTextColor color);
 
-    Initializer softErrorColor(final @NotNull NamedTextColor color);
+        Initializer softErrorColor(final @NotNull NamedTextColor color);
 
-    Initializer delimiterColor(final @NotNull NamedTextColor color);
+        Initializer delimiterColor(final @NotNull NamedTextColor color);
 
-    Initializer fromProperties(final @NotNull Properties properties);
+        Initializer fromProperties(final @NotNull Properties properties);
 
-    @NotNull CommandStyleConfig toConfig();
+        @NotNull CommandStyleConfig toConfig();
 
-  }
+    }
 
 }

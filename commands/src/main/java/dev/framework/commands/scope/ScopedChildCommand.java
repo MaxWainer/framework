@@ -213,14 +213,14 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface ScopedChildCommand<T> extends ChildCommand, ScopedExecutor<T> {
 
-  @Override
-  default void execute(final @NotNull Sender sender, final @NotNull CommandContext context) {
-    throw new UnsupportedOperationException(); // we don't actually execute it
-  }
+    @Override
+    default void execute(final @NotNull Sender sender, final @NotNull CommandContext context) {
+        throw new UnsupportedOperationException(); // we don't actually execute it
+    }
 
-  @Override
-  default @NotNull @Unmodifiable List<String> suggestScoped(final @NotNull Sender sender,
-      @NotNull final T scope, final @NotNull CommandContext context) {
-    return suggestions(sender, context); // just didn't provide it
-  }
+    @Override
+    default @NotNull @Unmodifiable List<String> suggestScoped(final @NotNull Sender sender,
+                                                              @NotNull final T scope, final @NotNull CommandContext context) {
+        return suggestions(sender, context); // just didn't provide it
+    }
 }

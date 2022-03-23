@@ -5,16 +5,16 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Repository<I, T extends RepositoryObject> {
 
-  @NotNull Optional<@NotNull T> find(final @NotNull I i);
+    @NotNull Optional<@NotNull T> find(final @NotNull I i);
 
-  void register(final @NotNull I i, final @NotNull T t);
+    void register(final @NotNull I i, final @NotNull T t);
 
-  void delete(final @NotNull I i);
+    void delete(final @NotNull I i);
 
-  void update(final @NotNull I i, final @NotNull T t);
+    void update(final @NotNull I i, final @NotNull T t);
 
-  default boolean exists(final @NotNull I i) {
-    return find(i).isPresent();
-  }
+    default boolean exists(final @NotNull I i) {
+        return find(i).isPresent();
+    }
 
 }

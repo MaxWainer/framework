@@ -10,27 +10,27 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface FrameworkModule extends BaseProcessable {
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  default void preconfigure(final @NotNull Binder binder) {
-    BaseProcessable.super.preconfigure(binder);
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default void preconfigure(final @NotNull Binder binder) {
+        BaseProcessable.super.preconfigure(binder);
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  default void load() {
-    BaseProcessable.super.load();
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default void load() {
+        BaseProcessable.super.load();
+    }
 
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  default void unload() {
-    BaseProcessable.super.unload();
-  }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    default void unload() {
+        BaseProcessable.super.unload();
+    }
 }

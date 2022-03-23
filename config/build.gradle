@@ -1,5 +1,5 @@
 allprojects {
-    dependencies {
-        compileOnly project(':framework-commons')
-    }
+  dependencies {
+    compileOnly project(':framework-commons')
+  }
 }

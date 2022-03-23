@@ -217,23 +217,23 @@ import org.jetbrains.annotations.NotNull;
 @UtilityClass
 public final class Sets {
 
-  private Sets() {
-    Exceptions.instantiationError();
-  }
+    private Sets() {
+        Exceptions.instantiationError();
+    }
 
-  public static <T> Set<T> newLinkedHashSet(final @NotNull T @NonNls ... values) {
-    return new LinkedHashSet<>(Arrays.asList(values));
-  }
+    public static <T> Set<T> newLinkedHashSet(final @NotNull T @NonNls ... values) {
+        return new LinkedHashSet<>(Arrays.asList(values));
+    }
 
-  public static <T> Set<T> newHashSet(final @NotNull T @NonNls ... values) {
-    return new HashSet<>(Arrays.asList(values));
-  }
+    public static <T> Set<T> newHashSet(final @NotNull T @NonNls ... values) {
+        return new HashSet<>(Arrays.asList(values));
+    }
 
-  public static <T> Set<T> newLinkedHashSet(final @NotNull Stream<T> stream) {
-    return stream.collect(Collectors.toCollection(LinkedHashSet::new));
-  }
+    public static <T> Set<T> newLinkedHashSet(final @NotNull Stream<T> stream) {
+        return stream.collect(Collectors.toCollection(LinkedHashSet::new));
+    }
 
-  public static <T> Set<T> newHashSet(final @NotNull Stream<T> stream) {
-    return stream.collect(Collectors.toCollection(HashSet::new));
-  }
+    public static <T> Set<T> newHashSet(final @NotNull Stream<T> stream) {
+        return stream.collect(Collectors.toCollection(HashSet::new));
+    }
 }

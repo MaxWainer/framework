@@ -1,67 +1,73 @@
+import java.nio.file.Files
+
 rootProject.name = 'framework'
 
 println 'Searching for subprojects...'
 
 class BlacklistFileFilter implements FileFilter {
 
-    static final def INSTANCE = new BlacklistFileFilter()
+  static final def INSTANCE = new BlacklistFileFilter()
 
-    static final def NAME_BLACKLIST = [
-            '.github',
-            '.images',
-            'gradle',
-            'src',
-            '.git',
-            '.idea',
-            '.gradle',
-            'src',
-            'test',
-            'resource',
-            'build',
-            'java',
-            'main',
-            'dev',
-            'annotationProcessor',
-            'sources',
-            '.checkstyle'
-    ]
+  static final def NAME_BLACKLIST = [
+      '.github',
+      '.images',
+      'gradle',
+      'src',
+      '.git',
+      '.idea',
+      '.gradle',
+      'src',
+      'test',
+      'resource',
+      'build',
+      'java',
+      'main',
+      'dev',
+      'annotationProcessor',
+      'sources',
+      '.checkstyle'
+  ]
 
-    @Override
-    boolean accept(File pathname) {
-        final def name = pathname.name
+  @Override
+  boolean accept(File pathname) {
+    final def name = pathname.name
 
-        return NAME_BLACKLIST.contains(name)
-    }
+    return NAME_BLACKLIST.contains(name)
+  }
 }
 
 rootDir.eachDir {
-    if (BlacklistFileFilter.INSTANCE.accept(it)) return
+    if (BlacklistFileFilter.INSTANCE.accept(it)) {
+        return
+    }
 
-    deepInclude(it)
+  deepInclude(it)
 }
 
 final def deepInclude(File dir) {
-    if (BlacklistFileFilter.INSTANCE.accept(dir)) return
-
-    dir.eachDir {
-        deepInclude(it)
+    if (BlacklistFileFilter.INSTANCE.accept(dir)) {
+        return
     }
 
-    final def fullPath = dir.toString()
+  dir.eachDir {
+    deepInclude(it)
+  }
 
-    final def frameworkIndex = fullPath.indexOf('framework')
+  final def fullPath = dir.toString()
 
-    final def substring = fullPath.substring(frameworkIndex)
-    final def including = substring.substring('framework'.length()).replace('/', ':')
-    final def colon = including.substring(1)
-    final def customName = substring.replace('/', '-')
+  final def frameworkIndex = fullPath.indexOf('framework')
 
-    println '-------------------------------'
-    include(colon)
-    println "Founded project: $substring"
-    project(including).name = customName
-    println "Renaming to: $customName"
-    println '-------------------------------'
+  final def substring = fullPath.substring(frameworkIndex)
+  final def including = substring.substring('framework'.length()).replace(File.separator, ':')
+  final def colon = including.substring(1)
+  final def customName = substring.replace(File.separator, '-')
+
+  println '-------------------------------'
+  include(colon)
+  println "Founded project: $substring"
+  project(including).name = customName
+  println "Renaming to: $customName"
+  println '-------------------------------'
 }
 
 println 'Founded all subprojects! Starting configuring process...'

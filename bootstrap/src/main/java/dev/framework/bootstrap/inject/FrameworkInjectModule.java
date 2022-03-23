@@ -12,25 +12,25 @@ import org.jetbrains.annotations.NotNull;
 @TargetGradleModule(":boostrap")
 public final class FrameworkInjectModule extends AbstractModule {
 
-  private final FrameworkBootstrap bootstrap;
+    private final FrameworkBootstrap bootstrap;
 
-  public FrameworkInjectModule(final @NotNull FrameworkBootstrap bootstrap) {
-    this.bootstrap = bootstrap;
-  }
-
-  @Override
-  protected void configure() {
-    this.bind(Types.contravarianceType(this.bootstrap)).toInstance(this.bootstrap); // bind providing class
-
-    // bind bootstrap
-    this.bootstrap.preconfigure(this.binder());
-
-    // bind modules
-    for (final FrameworkModule module : this.bootstrap.moduleManager().modules()) {
-      this.bind(Types.contravarianceType(module)).toInstance(module); // first, add it
-
-      module.preconfigure(this.binder()); // then, preconfigure
+    public FrameworkInjectModule(final @NotNull FrameworkBootstrap bootstrap) {
+        this.bootstrap = bootstrap;
     }
-  }
+
+    @Override
+    protected void configure() {
+        this.bind(Types.contravarianceType(this.bootstrap)).toInstance(this.bootstrap); // bind providing class
+
+        // bind bootstrap
+        this.bootstrap.preconfigure(this.binder());
+
+        // bind modules
+        for (final FrameworkModule module : this.bootstrap.moduleManager().modules()) {
+            this.bind(Types.contravarianceType(module)).toInstance(module); // first, add it
+
+            module.preconfigure(this.binder()); // then, preconfigure
+        }
+    }
 
 }

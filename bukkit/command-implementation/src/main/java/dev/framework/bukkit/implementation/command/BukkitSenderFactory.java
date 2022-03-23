@@ -212,14 +212,15 @@ import org.jetbrains.annotations.NotNull;
 
 final class BukkitSenderFactory implements SenderFactory<CommandSender> {
 
-  private final BukkitAudiences audiences;
+    private final BukkitAudiences audiences;
 
-  BukkitSenderFactory(final @NotNull BukkitAudiences audiences) {
-    this.audiences = audiences;
-  }
+    BukkitSenderFactory(final @NotNull BukkitAudiences audiences) {
+        this.audiences = audiences;
+    }
 
-  @Override
-  public @NotNull Sender wrapSender(@NotNull final CommandSender handle) {
-    return new BukkitSender(audiences.sender(handle), handle);
-  }
+    @Override
+    public @NotNull
+    Sender wrapSender(@NotNull final CommandSender handle) {
+        return new BukkitSender(audiences.sender(handle), handle);
+    }
 }

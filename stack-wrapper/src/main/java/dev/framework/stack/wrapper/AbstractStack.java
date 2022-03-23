@@ -7,39 +7,39 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractStack<T> implements Stack<T> {
 
-  protected final T providingStack;
+    protected final T providingStack;
 
-  protected NBTCompound compound = new NBTCompound();
+    protected NBTCompound compound = new NBTCompound();
 
-  protected AbstractStack(final @NotNull T providingStack) {
-    this.providingStack = providingStack;
-  }
+    protected AbstractStack(final @NotNull T providingStack) {
+        this.providingStack = providingStack;
+    }
 
-  @Override
-  public @Nullable NBTCompound tag() {
-    return compound;
-  }
+    @Override
+    public @Nullable NBTCompound tag() {
+        return compound;
+    }
 
-  @Override
-  public @NotNull NBTCompound tagOrCreate() {
-    return compound == null ? new NBTCompound() : compound;
-  }
+    @Override
+    public @NotNull NBTCompound tagOrCreate() {
+        return compound == null ? new NBTCompound() : compound;
+    }
 
-  @Override
-  public void updateTag(final @NotNull NBTCompound compound) {
-    this.compound = compound;
-  }
+    @Override
+    public void updateTag(final @NotNull NBTCompound compound) {
+        this.compound = compound;
+    }
 
-  @Override
-  public void supplyTag(final @NotNull UnaryOperator<NBTCompound> operator) {
-    this.compound = operator.apply(compound);
-  }
+    @Override
+    public void supplyTag(final @NotNull UnaryOperator<NBTCompound> operator) {
+        this.compound = operator.apply(compound);
+    }
 
-  @Override
-  public @NotNull T asProvidingStack() {
-    return updateStack();
-  }
+    @Override
+    public @NotNull T asProvidingStack() {
+        return updateStack();
+    }
 
-  protected abstract T updateStack();
+    protected abstract T updateStack();
 
 }

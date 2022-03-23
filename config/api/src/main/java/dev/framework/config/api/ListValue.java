@@ -210,8 +210,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ListValue extends Value, Iterable<Value> {
 
-  void update(
-      final @NotNull Predicate<Value> filter,
-      final @NotNull UnaryOperator<Value> replacer);
+    void update(
+            final @NotNull Predicate<Value> filter,
+            final @NotNull UnaryOperator<Value> replacer);
 
 }

@@ -7,14 +7,14 @@ import org.jetbrains.annotations.Nullable;
 
 public interface Stack<T> {
 
-  @Nullable NBTCompound tag();
+    @Nullable NBTCompound tag();
 
-  @NotNull NBTCompound tagOrCreate();
+    @NotNull NBTCompound tagOrCreate();
 
-  void updateTag(final @NotNull NBTCompound compound);
+    void updateTag(final @NotNull NBTCompound compound);
 
-  void supplyTag(final @NotNull UnaryOperator<NBTCompound> operator);
+    void supplyTag(final @NotNull UnaryOperator<NBTCompound> operator);
 
-  @NotNull T asProvidingStack();
+    @NotNull T asProvidingStack();
 
 }

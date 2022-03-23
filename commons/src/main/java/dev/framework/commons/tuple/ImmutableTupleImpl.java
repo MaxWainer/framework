@@ -209,21 +209,21 @@ import dev.framework.commons.concurrent.annotation.ThreadSafe;
 @ThreadSafe
 final class ImmutableTupleImpl<K, V> implements ImmutableTuple<K, V> {
 
-  private final K key;
-  private final V value;
+    private final K key;
+    private final V value;
 
-  ImmutableTupleImpl(final K key, final V value) {
-    this.key = key;
-    this.value = value;
-  }
+    ImmutableTupleImpl(final K key, final V value) {
+        this.key = key;
+        this.value = value;
+    }
 
-  @Override
-  public K key() {
-    return this.key;
-  }
+    @Override
+    public K key() {
+        return this.key;
+    }
 
-  @Override
-  public V value() {
-    return this.value;
-  }
+    @Override
+    public V value() {
+        return this.value;
+    }
 }

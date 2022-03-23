@@ -217,61 +217,61 @@ import sun.misc.Unsafe;
 
 public final class TheUnsafeClassLoadingStrategy extends AbstractClassLoadingStrategy {
 
-  public static final ClassLoadingStrategyFactory FACTORY = new TheUnsafeClassLoadingStrategyFactory();
+    public static final ClassLoadingStrategyFactory FACTORY = new TheUnsafeClassLoadingStrategyFactory();
 
-  private static final MethodHandles.Lookup LOOKUP;
-  private static final Unsafe UNSAFE;
+    private static final MethodHandles.Lookup LOOKUP;
+    private static final Unsafe UNSAFE;
 
-  static {
-    try {
-      // Access theUnsafe
-      final Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-      theUnsafeField.setAccessible(true);
+    static {
+        try {
+            // Access theUnsafe
+            final Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            theUnsafeField.setAccessible(true);
 
-      // Cast and create
-      UNSAFE = (Unsafe) theUnsafeField.get(null);
+            // Cast and create
+            UNSAFE = (Unsafe) theUnsafeField.get(null);
 
-      // MethodHandles.lookup(); > Not trusted, we need TRUSTED Lookup!
-      final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            // MethodHandles.lookup(); > Not trusted, we need TRUSTED Lookup!
+            final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
 
-      // Get field base
-      final Object implLookupBase = UNSAFE.staticFieldBase(implLookupField);
-      // Get field offset
-      final long implLookupOffset = UNSAFE.staticFieldOffset(implLookupField);
+            // Get field base
+            final Object implLookupBase = UNSAFE.staticFieldBase(implLookupField);
+            // Get field offset
+            final long implLookupOffset = UNSAFE.staticFieldOffset(implLookupField);
 
-      // Getting object
-      LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(implLookupBase, implLookupOffset);
-    } catch (final IllegalAccessException | NoSuchFieldException exception) {
-      throw new RuntimeException(exception);
+            // Getting object
+            LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(implLookupBase, implLookupOffset);
+        } catch (final IllegalAccessException | NoSuchFieldException exception) {
+            throw new RuntimeException(exception);
+        }
     }
-  }
 
-  private TheUnsafeClassLoadingStrategy(
-      @NotNull final URLClassLoader providedClassLoader) {
-    super(providedClassLoader);
-  }
-
-  @Override
-  public void addURL(@NotNull final URL url) {
-    try {
-      // Getting method handle using lookup
-      final MethodHandle addUrlMethodHandle = LOOKUP.findVirtual(URLClassLoader.class, "addURL",
-          MethodType.methodType(void.class, URL.class));
-
-      // Invoking method
-      addUrlMethodHandle.invoke(this.providedClassLoader, url);
-    } catch (final Throwable exception) {
-      SneakyThrows.sneakyThrows(exception);
+    private TheUnsafeClassLoadingStrategy(
+            @NotNull final URLClassLoader providedClassLoader) {
+        super(providedClassLoader);
     }
-  }
-
-  private static final class TheUnsafeClassLoadingStrategyFactory implements
-      ClassLoadingStrategyFactory {
 
     @Override
-    public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
-      return new TheUnsafeClassLoadingStrategy(classLoader);
+    public void addURL(@NotNull final URL url) {
+        try {
+            // Getting method handle using lookup
+            final MethodHandle addUrlMethodHandle = LOOKUP.findVirtual(URLClassLoader.class, "addURL",
+                    MethodType.methodType(void.class, URL.class));
+
+            // Invoking method
+            addUrlMethodHandle.invoke(this.providedClassLoader, url);
+        } catch (final Throwable exception) {
+            SneakyThrows.sneakyThrows(exception);
+        }
     }
-  }
+
+    private static final class TheUnsafeClassLoadingStrategyFactory implements
+            ClassLoadingStrategyFactory {
+
+        @Override
+        public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
+            return new TheUnsafeClassLoadingStrategy(classLoader);
+        }
+    }
 
 }

@@ -10,20 +10,20 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
 
-  @NotNull String value();
+    @NotNull String value();
 
-  @NotNull ColumnOptions options() default @ColumnOptions;
+    @NotNull ColumnOptions options() default @ColumnOptions;
 
-  @interface ColumnOptions {
+    @interface ColumnOptions {
 
-    int size() default -1;
+        int size() default -1;
 
-    boolean nullable() default false;
+        boolean nullable() default false;
 
-    boolean autoIncrement() default false;
+        boolean autoIncrement() default false;
 
-    @NotNull OptionPair[] options() default {};
+        @NotNull OptionPair[] options() default {};
 
-  }
+    }
 
 }

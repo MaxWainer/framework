@@ -209,6 +209,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ConfigFactory {
 
-  @NotNull Config createConfig(final @NotNull ConfigOptions options);
+    @NotNull Config createConfig(final @NotNull ConfigOptions options);
 
 }

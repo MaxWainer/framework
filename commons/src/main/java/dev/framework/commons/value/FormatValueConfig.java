@@ -213,47 +213,47 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface FormatValueConfig<U> {
 
-  static <T> Builder<T> builder() {
-    return new BuilderImpl<>();
-  }
+    static <T> Builder<T> builder() {
+        return new BuilderImpl<>();
+    }
 
-  static <T> FormatValueConfig<T> simple() {
-    return FormatValueConfig.<T>builder()
-        .build();
-  }
+    static <T> FormatValueConfig<T> simple() {
+        return FormatValueConfig.<T>builder()
+                .build();
+    }
 
-  boolean allowZero();
+    boolean allowZero();
 
-  @NotNull @Unmodifiable Set<U> excludedUnits();
+    @NotNull @Unmodifiable Set<U> excludedUnits();
 
-  @NotNull CharSequence prefix();
+    @NotNull CharSequence prefix();
 
-  @NotNull CharSequence suffix();
+    @NotNull CharSequence suffix();
 
-  @NotNull CharSequence delimiter();
+    @NotNull CharSequence delimiter();
 
-  default boolean allowed(final @NotNull U u) {
-    return !excludedUnits().contains(u);
-  }
+    default boolean allowed(final @NotNull U u) {
+        return !excludedUnits().contains(u);
+    }
 
-  default boolean disallowed(final @NotNull U u) {
-    return !allowed(u);
-  }
+    default boolean disallowed(final @NotNull U u) {
+        return !allowed(u);
+    }
 
-  interface Builder<V> extends Buildable<FormatValueConfig<V>> {
+    interface Builder<V> extends Buildable<FormatValueConfig<V>> {
 
-    Builder<V> exclude(final @NotNull V @NonNls ...units);
+        Builder<V> exclude(final @NotNull V @NonNls ... units);
 
-    Builder<V> allow(final @NotNull V @NonNls ...units);
+        Builder<V> allow(final @NotNull V @NonNls ... units);
 
-    Builder<V> prefix(final @NotNull CharSequence prefix);
+        Builder<V> prefix(final @NotNull CharSequence prefix);
 
-    Builder<V> suffix(final @NotNull CharSequence suffix);
+        Builder<V> suffix(final @NotNull CharSequence suffix);
 
-    Builder<V> delimiter(final @NotNull CharSequence delimiter);
+        Builder<V> delimiter(final @NotNull CharSequence delimiter);
 
-    Builder<V> allowZero(final boolean allowZero);
+        Builder<V> allowZero(final boolean allowZero);
 
-  }
+    }
 
 }

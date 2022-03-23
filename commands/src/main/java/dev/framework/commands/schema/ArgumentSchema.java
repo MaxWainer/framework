@@ -211,27 +211,29 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ArgumentSchema {
 
-  static ArgumentSchema empty() { return ArgumentSchemaImpl.EMPTY; }
-
-  static ArgumentSchema.Builder builder() {
-    return new BuilderImpl();
-  }
-
-  @NotNull Set<Argument> arguments();
-
-  interface Builder extends Buildable<ArgumentSchema> {
-
-    Builder assertArgument(final @NotNull Argument argument);
-
-    default Builder assertArgument(final @NotNull String name, final boolean optional,
-        final @NotNull String description) {
-      return assertArgument(new Argument(name, optional, description));
+    static ArgumentSchema empty() {
+        return ArgumentSchemaImpl.EMPTY;
     }
 
-    default Builder assertArgument(final @NotNull String name, final boolean optional,
-        final @NotNull String... description) {
-      return assertArgument(name, optional, String.join("\n", description));
+    static ArgumentSchema.Builder builder() {
+        return new BuilderImpl();
     }
-  }
+
+    @NotNull Set<Argument> arguments();
+
+    interface Builder extends Buildable<ArgumentSchema> {
+
+        Builder assertArgument(final @NotNull Argument argument);
+
+        default Builder assertArgument(final @NotNull String name, final boolean optional,
+                                       final @NotNull String description) {
+            return assertArgument(new Argument(name, optional, description));
+        }
+
+        default Builder assertArgument(final @NotNull String name, final boolean optional,
+                                       final @NotNull String... description) {
+            return assertArgument(name, optional, String.join("\n", description));
+        }
+    }
 
 }

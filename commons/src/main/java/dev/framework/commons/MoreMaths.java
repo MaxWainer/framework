@@ -209,15 +209,15 @@ import dev.framework.commons.annotation.UtilityClass;
 @UtilityClass
 public final class MoreMaths {
 
-  private MoreMaths() {
-    Exceptions.instantiationError();
-  }
+    private MoreMaths() {
+        Exceptions.instantiationError();
+    }
 
-  // maxValue - 100
-  //        X
-  // x - percentageToGet
-  public static double percentage(final double maxValue, final int percentageToGet) {
-    return (maxValue * percentageToGet) / 100;
-  }
+    // maxValue - 100
+    //        X
+    // x - percentageToGet
+    public static double percentage(final double maxValue, final int percentageToGet) {
+        return (maxValue * percentageToGet) / 100;
+    }
 
 }

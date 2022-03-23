@@ -209,7 +209,7 @@ import org.jetbrains.annotations.ApiStatus.NonExtendable;
 @NonExtendable
 public interface MutableTuple<K, V> extends ImmutableTuple<K, V> {
 
-  void updateKey(final K key);
+    void updateKey(final K key);
 
-  void updateValue(final V value);
+    void updateValue(final V value);
 }

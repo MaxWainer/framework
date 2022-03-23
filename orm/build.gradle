@@ -1,8 +1,8 @@
 group 'framework.orm'
 
 allprojects {
-    dependencies {
-        compileOnly project(':framework-commons')
-        testCompileOnly project(':framework-commons')
-    }
+  dependencies {
+    compileOnly project(':framework-commons')
+    testCompileOnly project(':framework-commons')
+  }
 }

@@ -4,6 +4,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface StackFactory<T> {
 
-  @NotNull Stack<T> createStack(final @NotNull T providingStack);
+    @NotNull Stack<T> createStack(final @NotNull T providingStack);
 
 }

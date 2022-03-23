@@ -214,46 +214,46 @@ import org.jetbrains.annotations.Nullable;
 
 public final class MoreFiles {
 
-  private MoreFiles() {
-    Exceptions.instantiationError();
-  }
-
-  @NotNull
-  public static Path cloneFromResource(
-      final @NotNull Path targetFolder,
-      final @NotNull String fileName)
-      throws IOException {
-    final InputStream resource = MoreFiles
-        .class
-        .getClassLoader()
-        .getResourceAsStream('/' + fileName); // getting resource from classloader
-
-    if (resource == null) { // if null, we throw an exception
-      throw new IOException("Missing resource file: " + fileName);
+    private MoreFiles() {
+        Exceptions.instantiationError();
     }
 
-    final Path target = targetFolder.resolve(fileName); // resolve from target folder our file
+    @NotNull
+    public static Path cloneFromResource(
+            final @NotNull Path targetFolder,
+            final @NotNull String fileName)
+            throws IOException {
+        final InputStream resource = MoreFiles
+                .class
+                .getClassLoader()
+                .getResourceAsStream('/' + fileName); // getting resource from classloader
 
-    if (!Files.exists(target)) { // if it not exists, we copy from resource input stream
-      Files.copy(resource, target);
+        if (resource == null) { // if null, we throw an exception
+            throw new IOException("Missing resource file: " + fileName);
+        }
+
+        final Path target = targetFolder.resolve(fileName); // resolve from target folder our file
+
+        if (!Files.exists(target)) { // if it not exists, we copy from resource input stream
+            Files.copy(resource, target);
+        }
+
+        return target; // return target
     }
 
-    return target; // return target
-  }
+    @Nullable
+    public static Properties quickProperties(final @NotNull Path file) throws IOException {
+        if (!file.toString().endsWith(".properties")) { // if our path isn't ends with properties,
+            return null; // return null
+        }
 
-  @Nullable
-  public static Properties quickProperties(final @NotNull Path file) throws IOException {
-    if (!file.toString().endsWith(".properties")) { // if our path isn't ends with properties,
-      return null; // return null
+        try (final InputStream stream = Files.newInputStream(file)) { // else open stream
+            final Properties properties = new Properties(); // create properties
+
+            properties.load(stream); // load
+
+            return properties;
+        }
     }
-
-    try (final InputStream stream = Files.newInputStream(file)) { // else open stream
-      final Properties properties = new Properties(); // create properties
-
-      properties.load(stream); // load
-
-      return properties;
-    }
-  }
 
 }

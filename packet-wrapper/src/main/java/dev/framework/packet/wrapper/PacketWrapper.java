@@ -8,12 +8,12 @@ import org.jetbrains.annotations.NotNull;
 
 public interface PacketWrapper {
 
-  @NotNull PlayerInjector playerInjector();
+    @NotNull PlayerInjector playerInjector();
 
-  @NotNull PacketMapper packetMapper();
+    @NotNull PacketMapper packetMapper();
 
-  @NotNull PacketManager packetManager();
+    @NotNull PacketManager packetManager();
 
-  @NotNull PacketAdapter packetAdapter();
+    @NotNull PacketAdapter packetAdapter();
 
 }

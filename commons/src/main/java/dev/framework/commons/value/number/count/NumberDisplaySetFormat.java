@@ -209,31 +209,31 @@ import dev.framework.commons.value.FormatValueDisplaySet;
 import org.jetbrains.annotations.NotNull;
 
 public final class NumberDisplaySetFormat implements
-    FormatValueDisplaySet<NumberUnit> {
+        FormatValueDisplaySet<NumberUnit> {
 
-  private final FormatValueDisplayGroup group;
+    private final FormatValueDisplayGroup group;
 
-  public NumberDisplaySetFormat(
-      final @NotNull FormatValueDisplayGroup group) {
-    this.group = group;
-  }
+    public NumberDisplaySetFormat(
+            final @NotNull FormatValueDisplayGroup group) {
+        this.group = group;
+    }
 
-  @NotNull
-  public FormatValueDisplayGroup group() {
-    return group;
-  }
+    public static NumberDisplaySetFormat of(final @NotNull FormatValueDisplayGroup group) {
+        return new NumberDisplaySetFormat(group);
+    }
 
-  public static NumberDisplaySetFormat of(final  @NotNull FormatValueDisplayGroup group) {
-    return new NumberDisplaySetFormat(group);
-  }
+    @NotNull
+    public FormatValueDisplayGroup group() {
+        return group;
+    }
 
-  @Override
-  public @NotNull FormatValueDisplayGroup group(final @NotNull NumberUnit unit) {
-    return group;
-  }
+    @Override
+    public @NotNull FormatValueDisplayGroup group(final @NotNull NumberUnit unit) {
+        return group;
+    }
 
-  @Override
-  public boolean supported(final @NotNull NumberUnit unit) {
-    return true;
-  }
+    @Override
+    public boolean supported(final @NotNull NumberUnit unit) {
+        return true;
+    }
 }

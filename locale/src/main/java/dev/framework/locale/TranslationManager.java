@@ -212,17 +212,17 @@ import org.jetbrains.annotations.NotNull;
 
 public final class TranslationManager {
 
-  private static final Locale RUSSIAN = new Locale("ru");
+    private static final Locale RUSSIAN = new Locale("ru");
 
-  public TranslationManager(final @NotNull String projectName) {
-    final TranslationRegistry registry = TranslationRegistry.create(
-        Key.key("framework", "main"));
+    public TranslationManager(final @NotNull String projectName) {
+        final TranslationRegistry registry = TranslationRegistry.create(
+                Key.key("framework", "main"));
 
-    registry.defaultLocale(RUSSIAN);
+        registry.defaultLocale(RUSSIAN);
 
-    GlobalTranslator.get().addSource(registry);
+        GlobalTranslator.get().addSource(registry);
 
-    registry.registerAll(RUSSIAN,
-        new JsonResourceBundle(projectName + '_' + RUSSIAN.getLanguage()), false);
-  }
+        registry.registerAll(RUSSIAN,
+                new JsonResourceBundle(projectName + '_' + RUSSIAN.getLanguage()), false);
+    }
 }

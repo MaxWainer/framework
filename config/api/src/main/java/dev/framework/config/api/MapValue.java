@@ -211,8 +211,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MapValue extends Value, Iterable<Entry<String, Object>> {
 
-  void update(
-      final @NotNull Predicate<String> keyPredicate,
-      final @NotNull UnaryOperator<Object> valueUpdater);
+    void update(
+            final @NotNull Predicate<String> keyPredicate,
+            final @NotNull UnaryOperator<Object> valueUpdater);
 
 }

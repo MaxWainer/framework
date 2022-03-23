@@ -9,24 +9,24 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface FrameworkModuleManager {
 
-  static FrameworkModuleManager fromInjector(final @NotNull ModuleInjector injector) {
-    return new FrameworkModuleManagerImpl(injector);
-  }
+    static FrameworkModuleManager fromInjector(final @NotNull ModuleInjector injector) {
+        return new FrameworkModuleManagerImpl(injector);
+    }
 
-  @NotNull Optional<FrameworkModule> findModule(
-      final @NotNull Class<? extends FrameworkModule> moduleClass);
+    @NotNull Optional<FrameworkModule> findModule(
+            final @NotNull Class<? extends FrameworkModule> moduleClass);
 
-  default @NotNull FrameworkModule findModuleOrThrow(
-      final @NotNull Class<? extends FrameworkModule> moduleClass) throws UnknownModuleException {
-    return findModule(moduleClass).orElseThrow(() -> new UnknownModuleException(moduleClass));
-  }
+    default @NotNull FrameworkModule findModuleOrThrow(
+            final @NotNull Class<? extends FrameworkModule> moduleClass) throws UnknownModuleException {
+        return findModule(moduleClass).orElseThrow(() -> new UnknownModuleException(moduleClass));
+    }
 
-  @NotNull Measure.Result load();
+    @NotNull Measure.Result load();
 
-  @NotNull Measure.Result unload();
+    @NotNull Measure.Result unload();
 
-  @NotNull Measure.Result reload();
+    @NotNull Measure.Result reload();
 
-  @NotNull @Unmodifiable Set<FrameworkModule> modules();
+    @NotNull @Unmodifiable Set<FrameworkModule> modules();
 
 }

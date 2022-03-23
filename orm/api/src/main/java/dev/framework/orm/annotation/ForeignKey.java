@@ -11,12 +11,12 @@ import org.jetbrains.annotations.NotNull;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ForeignKey {
 
-  @NotNull
-  String local();
+    @NotNull
+    String local();
 
-  @NotNull
-  String foreign();
+    @NotNull
+    String foreign();
 
-  @NotNull
-  Class<? extends RepositoryObject> targetTable();
+    @NotNull
+    Class<? extends RepositoryObject> targetTable();
 }

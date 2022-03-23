@@ -1,4 +1,5 @@
 # framework
+
 Current version: 0.0.1
 
 Discord: [Discord](https://discord.gg/teSGwVf64R)
@@ -12,6 +13,7 @@ Open issue if you have any suggestions or smth like that
 Mainly, framework created with intent on dependency injection, and require `guice` for work
 
 ### Using:
+
 - Gradle
   ```groovy
     repositories {

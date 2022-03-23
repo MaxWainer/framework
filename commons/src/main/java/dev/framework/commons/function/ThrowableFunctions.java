@@ -6,36 +6,36 @@ import dev.framework.commons.annotation.UtilityClass;
 @UtilityClass
 public final class ThrowableFunctions {
 
-  private ThrowableFunctions() {
-    Exceptions.instantiationError();
-  }
+    private ThrowableFunctions() {
+        Exceptions.instantiationError();
+    }
 
-  @FunctionalInterface
-  public interface ThrowableRunnable<T extends Throwable> {
+    @FunctionalInterface
+    public interface ThrowableRunnable<T extends Throwable> {
 
-    void run() throws T;
+        void run() throws T;
 
-  }
+    }
 
-  @FunctionalInterface
-  public interface ThrowableConsumer<V, T extends Throwable> {
+    @FunctionalInterface
+    public interface ThrowableConsumer<V, T extends Throwable> {
 
-    void consume(final V v) throws T;
+        void consume(final V v) throws T;
 
-  }
+    }
 
-  @FunctionalInterface
-  public interface ThrowableFunction<I, O, T extends Throwable> {
+    @FunctionalInterface
+    public interface ThrowableFunction<I, O, T extends Throwable> {
 
-    O apply(final I i) throws T;
+        O apply(final I i) throws T;
 
-  }
+    }
 
-  @FunctionalInterface
-  public interface ThrowableTransformer<I, O, T extends Throwable> {
+    @FunctionalInterface
+    public interface ThrowableTransformer<I, O, T extends Throwable> {
 
-    O transform(final I i) throws T;
+        O transform(final I i) throws T;
 
-  }
+    }
 
 }

@@ -7,37 +7,36 @@ import org.jetbrains.annotations.NotNull;
 
 public interface BootstrapPreprocessor {
 
-  static BootstrapPreprocessor fromBase(final @NotNull PreprocessorBase base) {
-    return new BootstrapPreprocessorImpl(base);
-  }
-
-  void onEnable();
-
-  void onDisable();
-
-  void onLoad();
-
-  @NotNull FrameworkModuleManager moduleManager();
-
-  @NotNull DependencyLoader dependencyLoader();
-
-  class PreprocessorBase {
-
-    public static PreprocessorBase of(
-        final @NotNull FrameworkBootstrap bootstrap,
-        final @NotNull Builder builder) {
-      return new PreprocessorBase(bootstrap, builder);
+    static BootstrapPreprocessor fromBase(final @NotNull PreprocessorBase base) {
+        return new BootstrapPreprocessorImpl(base);
     }
 
-    final FrameworkBootstrap bootstrap;
-    final DependencyLoader.Builder builder;
+    void onEnable();
 
-    PreprocessorBase(
-        final @NotNull FrameworkBootstrap bootstrap,
-        final @NotNull Builder builder) {
-      this.bootstrap = bootstrap;
-      this.builder = builder;
+    void onDisable();
+
+    void onLoad();
+
+    @NotNull FrameworkModuleManager moduleManager();
+
+    @NotNull DependencyLoader dependencyLoader();
+
+    class PreprocessorBase {
+
+        final FrameworkBootstrap bootstrap;
+        final DependencyLoader.Builder builder;
+        PreprocessorBase(
+                final @NotNull FrameworkBootstrap bootstrap,
+                final @NotNull Builder builder) {
+            this.bootstrap = bootstrap;
+            this.builder = builder;
+        }
+
+        public static PreprocessorBase of(
+                final @NotNull FrameworkBootstrap bootstrap,
+                final @NotNull Builder builder) {
+            return new PreprocessorBase(bootstrap, builder);
+        }
     }
-  }
 
 }
