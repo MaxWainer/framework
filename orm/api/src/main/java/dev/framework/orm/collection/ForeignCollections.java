@@ -213,6 +213,4 @@ public final class ForeignCollections {
   private ForeignCollections() {
     Exceptions.instantiationError();
   }
-
-
 }

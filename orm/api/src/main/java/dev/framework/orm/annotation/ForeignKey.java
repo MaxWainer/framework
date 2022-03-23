@@ -216,7 +216,7 @@ import org.jetbrains.annotations.NotNull;
 public @interface ForeignKey {
 
   @NotNull
-  String foreign();
+  String foreignField();
 
   @NotNull
   Class<? extends RepositoryObject> targetTable();

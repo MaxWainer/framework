@@ -208,5 +208,4 @@ public interface ForeignCollection<T> extends Iterable<T> {
 
   int size();
 
-
 }

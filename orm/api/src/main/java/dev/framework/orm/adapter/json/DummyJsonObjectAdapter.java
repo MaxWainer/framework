@@ -202,11 +202,29 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.repository;
+package dev.framework.orm.adapter.json;
 
-import dev.framework.commons.repository.Repository;
-import dev.framework.orm.adapter.ObjectAdapter;
+import com.google.gson.JsonElement;
+import org.jetbrains.annotations.NotNull;
 
-public interface AdapterRepository extends Repository<Class<?>, ObjectAdapter<?>> {
+public final class DummyJsonObjectAdapter implements JsonObjectAdapter {
 
+  public static final DummyJsonObjectAdapter INSTANCE = new DummyJsonObjectAdapter();
+
+  @NotNull
+  @Override
+  public Object identifier() {
+    throw new UnsupportedOperationException("It's dummy object adapter");
+  }
+
+  @NotNull
+  @Override
+  public Object construct(@NotNull JsonElement element) {
+    throw new UnsupportedOperationException("It's dummy object adapter");
+  }
+
+  @Override
+  public @NotNull JsonElement deconstruct(@NotNull Object o) {
+    throw new UnsupportedOperationException("It's dummy object adapter");
+  }
 }

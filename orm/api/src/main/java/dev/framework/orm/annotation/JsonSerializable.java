@@ -202,93 +202,20 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.test;
+package dev.framework.orm.annotation;
 
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.annotation.Column;
-import dev.framework.orm.annotation.Column.ColumnOptions;
-import dev.framework.orm.annotation.ForeignKey;
-import dev.framework.orm.annotation.InstanceConstructor;
-import dev.framework.orm.annotation.JsonCollection;
-import dev.framework.orm.annotation.JsonSerializable;
-import dev.framework.orm.annotation.ObjectVersion;
-import dev.framework.orm.annotation.PrimaryKey;
-import dev.framework.orm.annotation.Table;
-import dev.framework.orm.collection.ForeignCollection;
-import java.util.List;
-import java.util.UUID;
+import dev.framework.orm.adapter.json.DummyJsonObjectAdapter;
+import dev.framework.orm.adapter.json.JsonObjectAdapter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.jetbrains.annotations.NotNull;
 
-@Table("person")
-@ObjectVersion(major = 0, minor = 0, revision = 1)
-public final class Person implements RepositoryObject<UUID> {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface JsonSerializable {
 
-  @PrimaryKey
-  @Column("uuid")
-  private final UUID uuid;
-
-  @Column("name")
-  private final String name;
-
-  @Column("age")
-  private final int age;
-
-  @Column(
-      value = "job",
-      options = @ColumnOptions(nullable = true)
-  )
-  private final String job;
-
-  @Column("friends")
-  @JsonSerializable
-  @JsonCollection
-  private final List<Person> friends;
-
-  @Column("bills_pool_id")
-  @ForeignKey(
-      foreignField = "pool_id",
-      targetTable = Bill.class
-  )
-  private final ForeignCollection<Bill> bills;
-
-  @InstanceConstructor
-  public Person(
-      final UUID uuid,
-      final String name,
-      final int age,
-      final String job,
-      final List<Person> friends,
-      final ForeignCollection<Bill> bills) {
-    this.uuid = uuid;
-    this.name = name;
-    this.age = age;
-    this.job = job;
-    this.friends = friends;
-    this.bills = bills;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public int getAge() {
-    return age;
-  }
-
-  public String getJob() {
-    return job;
-  }
-
-  public ForeignCollection<Bill> getBills() {
-    return bills;
-  }
-
-  public List<Person> getFriends() {
-    return friends;
-  }
-
-  @Override
-  public @NotNull UUID identifier() {
-    return uuid;
-  }
+  @NotNull
+  Class<? extends JsonObjectAdapter> value() default DummyJsonObjectAdapter.class;
 }

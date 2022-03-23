@@ -208,8 +208,8 @@ import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
 import dev.framework.commons.function.ThrowableFunctions.ThrowableSupplier;
 import dev.framework.orm.appender.StatementAppender;
 import dev.framework.orm.query.QueryResult;
+import dev.framework.orm.set.ResultSetReader;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
 import org.intellij.lang.annotations.Language;
@@ -229,11 +229,11 @@ public interface ConnectionSource extends AutoCloseable {
   <V> @NotNull QueryResult<V> executeWithResult(
       final @NotNull @Language("SQL") String query,
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
-      final @NotNull ThrowableSupplier<ResultSet, SQLException> resultSupplier);
+      final @NotNull ThrowableSupplier<ResultSetReader, SQLException> resultSupplier);
 
   <V> @NotNull QueryResult<V> executeMultiQueryWithResult(
       final @NotNull @Language("SQL") String[] query,
       final @NotNull ThrowableConsumer<Iterator<StatementAppender>, SQLException> appender,
-      final @NotNull ThrowableSupplier<Iterator<ResultSet>, SQLException> resultSupplier);
+      final @NotNull ThrowableSupplier<Iterator<ResultSetReader>, SQLException> resultSupplier);
 
 }

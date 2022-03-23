@@ -204,6 +204,8 @@
 
 package dev.framework.orm.annotation;
 
+import dev.framework.orm.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.adapter.simple.DummyColumnTypeAdapter;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -216,6 +218,8 @@ public @interface Column {
 
   @NotNull String value();
 
+  @NotNull Class<? extends ColumnTypeAdapter> typeAdapter() default DummyColumnTypeAdapter.class;
+
   @NotNull ColumnOptions options() default @ColumnOptions;
 
   @interface ColumnOptions {
@@ -225,6 +229,8 @@ public @interface Column {
     boolean nullable() default false;
 
     boolean autoIncrement() default false;
+
+    boolean useUtf() default false;
 
     @NotNull OptionPair[] options() default {};
 

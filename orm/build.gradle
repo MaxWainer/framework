@@ -4,5 +4,7 @@ allprojects {
   dependencies {
     compileOnly project(':framework-commons')
     testCompileOnly project(':framework-commons')
+
+    compileOnly 'com.zaxxer:HikariCP:4.0.3'
   }
 }

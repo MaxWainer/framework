@@ -202,20 +202,11 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.annotation;
+package dev.framework.orm.repository;
 
-import dev.framework.orm.adapter.DummyObjectAdapter;
-import dev.framework.orm.adapter.ObjectAdapter;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.jetbrains.annotations.NotNull;
+import dev.framework.commons.repository.Repository;
+import dev.framework.orm.adapter.json.JsonObjectAdapter;
 
-@Target(ElementType.FIELD)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface MustBeSerialized {
+public interface JsonAdapterRepository extends Repository<Class<?>, JsonObjectAdapter<?>> {
 
-  @NotNull
-  Class<? extends ObjectAdapter> value() default DummyObjectAdapter.class;
 }

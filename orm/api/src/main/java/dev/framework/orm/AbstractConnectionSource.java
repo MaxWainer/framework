@@ -202,29 +202,71 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.adapter;
+package dev.framework.orm;
 
-import com.google.gson.JsonElement;
+import com.zaxxer.hikari.HikariDataSource;
+import dev.framework.commons.SneakyThrows;
+import dev.framework.commons.function.ThrowableFunctions;
+import dev.framework.orm.appender.StatementAppender;
+import dev.framework.orm.query.QueryResult;
+import dev.framework.orm.set.ResultSetReader;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
 import org.jetbrains.annotations.NotNull;
 
-public final class DummyObjectAdapter implements ObjectAdapter {
+public abstract class AbstractConnectionSource implements ConnectionSource {
 
-  public static final DummyObjectAdapter INSTANCE = new DummyObjectAdapter();
+  private final HikariDataSource dataSource;
 
-  @NotNull
-  @Override
-  public Object identifier() {
-    throw new UnsupportedOperationException("It's dummy object adapter");
-  }
+  private Connection connection;
 
-  @NotNull
-  @Override
-  public Object construct(@NotNull JsonElement element) {
-    throw new UnsupportedOperationException("It's dummy object adapter");
+  protected AbstractConnectionSource() {
+    this.dataSource = createDataSource();
   }
 
   @Override
-  public @NotNull JsonElement deconstruct(@NotNull Object o) {
-    throw new UnsupportedOperationException("It's dummy object adapter");
+  public @NotNull Connection connection() {
+    if (this.connection == null) {
+      try {
+        this.connection = this.dataSource.getConnection();
+      } catch (SQLException e) {
+        SneakyThrows.sneakyThrows(e);
+      }
+    }
+
+    return this.connection;
   }
+
+  @Override
+  public @NotNull <V> QueryResult<V> executeMultiQueryWithResult(@NotNull String[] query,
+      @NotNull ThrowableFunctions.ThrowableConsumer<Iterator<StatementAppender>, SQLException> appender,
+      @NotNull ThrowableFunctions.ThrowableSupplier<Iterator<ResultSetReader>, SQLException> resultSupplier) {
+    return null;
+  }
+
+  @Override
+  public @NotNull <V> QueryResult<V> executeWithResult(@NotNull String query,
+      @NotNull ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender,
+      @NotNull ThrowableFunctions.ThrowableSupplier<ResultSetReader, SQLException> resultSupplier) {
+    return null;
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> execute(@NotNull String query) {
+    return null;
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> execute(@NotNull String query,
+      @NotNull ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender) {
+    return new QueryResultImpl<>(() -> {
+
+    }, executorService());
+  }
+
+  protected abstract HikariDataSource createDataSource();
+  protected abstract ExecutorService executorService();
+
 }

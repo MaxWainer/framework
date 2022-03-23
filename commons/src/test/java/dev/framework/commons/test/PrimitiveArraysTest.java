@@ -202,93 +202,91 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.test;
+package dev.framework.commons.test;
 
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.annotation.Column;
-import dev.framework.orm.annotation.Column.ColumnOptions;
-import dev.framework.orm.annotation.ForeignKey;
-import dev.framework.orm.annotation.InstanceConstructor;
-import dev.framework.orm.annotation.JsonCollection;
-import dev.framework.orm.annotation.JsonSerializable;
-import dev.framework.orm.annotation.ObjectVersion;
-import dev.framework.orm.annotation.PrimaryKey;
-import dev.framework.orm.annotation.Table;
-import dev.framework.orm.collection.ForeignCollection;
-import java.util.List;
-import java.util.UUID;
-import org.jetbrains.annotations.NotNull;
+import dev.framework.commons.PrimitiveArrays;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-@Table("person")
-@ObjectVersion(major = 0, minor = 0, revision = 1)
-public final class Person implements RepositoryObject<UUID> {
+class PrimitiveArraysTest {
 
-  @PrimaryKey
-  @Column("uuid")
-  private final UUID uuid;
+  @Test
+  void intTest() {
+    final int[] modifiable = new int[]{1, 2, 3, 4};
+    final int[] excepted = new int[]{1, 2, 3, 4, 5};
 
-  @Column("name")
-  private final String name;
+    final int[] modified = PrimitiveArrays.appendHead(modifiable, 5);
 
-  @Column("age")
-  private final int age;
-
-  @Column(
-      value = "job",
-      options = @ColumnOptions(nullable = true)
-  )
-  private final String job;
-
-  @Column("friends")
-  @JsonSerializable
-  @JsonCollection
-  private final List<Person> friends;
-
-  @Column("bills_pool_id")
-  @ForeignKey(
-      foreignField = "pool_id",
-      targetTable = Bill.class
-  )
-  private final ForeignCollection<Bill> bills;
-
-  @InstanceConstructor
-  public Person(
-      final UUID uuid,
-      final String name,
-      final int age,
-      final String job,
-      final List<Person> friends,
-      final ForeignCollection<Bill> bills) {
-    this.uuid = uuid;
-    this.name = name;
-    this.age = age;
-    this.job = job;
-    this.friends = friends;
-    this.bills = bills;
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  public String getName() {
-    return name;
+  @Test
+  void doubleTest() {
+    final double[] modifiable = new double[]{1.3, 2.3, 3.3, 4.3};
+    final double[] excepted = new double[]{1.3, 2.3, 3.3, 4.3, 5.3};
+
+    final double[] modified = PrimitiveArrays.appendHead(modifiable, 5.3);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  public int getAge() {
-    return age;
+  @Test
+  void floatTest() {
+    final float[] modifiable = new float[]{1.3321f, 2.3321f, 3.3321f, 4.3321f};
+    final float[] excepted = new float[]{1.3321f, 2.3321f, 3.3321f, 4.3321f, 5.3321f};
+
+    final float[] modified = PrimitiveArrays.appendHead(modifiable, 5.3321f);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  public String getJob() {
-    return job;
+  @Test
+  void shortTest() {
+    final short[] modifiable = new short[]{1, 2, 3, 4};
+    final short[] excepted = new short[]{1, 2, 3, 4, 5};
+
+    final short[] modified = PrimitiveArrays.appendHead(modifiable, (short) 5);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  public ForeignCollection<Bill> getBills() {
-    return bills;
+  @Test
+  void charTest() {
+    final char[] modifiable = new char[]{1, 2, 3, 4};
+    final char[] excepted = new char[]{1, 2, 3, 4, 5};
+
+    final char[] modified = PrimitiveArrays.appendHead(modifiable, (char) 5);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  public List<Person> getFriends() {
-    return friends;
+  @Test
+  void byteTest() {
+    final byte[] modifiable = new byte[]{1, 2, 3, 4};
+    final byte[] excepted = new byte[]{1, 2, 3, 4, 5};
+
+    final byte[] modified = PrimitiveArrays.appendHead(modifiable, (byte) 5);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 
-  @Override
-  public @NotNull UUID identifier() {
-    return uuid;
+  @Test
+  void longTest() {
+    final long[] modifiable = new long[]{1, 2, 3, 4};
+    final long[] excepted = new long[]{1, 2, 3, 4, 5};
+
+    final long[] modified = PrimitiveArrays.appendHead(modifiable, 5L);
+
+    Assertions.assertArrayEquals(excepted, modified);
+  }
+
+  @Test
+  void booleanTest() {
+    final boolean[] modifiable = new boolean[]{true, false, true, false};
+    final boolean[] excepted = new boolean[]{true, false, true, false, true};
+
+    final boolean[] modified = PrimitiveArrays.appendHead(modifiable, true);
+
+    Assertions.assertArrayEquals(excepted, modified);
   }
 }
