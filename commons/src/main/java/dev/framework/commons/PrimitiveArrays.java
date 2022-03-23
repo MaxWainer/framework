@@ -217,7 +217,8 @@ public final class PrimitiveArrays {
     Exceptions.instantiationError();
   }
 
-  public static <T> T[] appendHead(final @NotNull T @NonNls [] array, final @UnknownNullability T toAppend) {
+  public static <T> T[] appendHead(final @NotNull T @NonNls [] array,
+      final @UnknownNullability T toAppend) {
     final int destSize = array.length + 1;
     final T[] result = Arrays.copyOf(array, destSize);
 

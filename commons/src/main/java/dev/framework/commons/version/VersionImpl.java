@@ -244,7 +244,9 @@ final class VersionImpl implements Version {
 
   @Override
   public int compareTo(@NotNull Version o) {
-    if (!(o instanceof VersionImpl)) return -1;
+    if (!(o instanceof VersionImpl)) {
+      return -1;
+    }
     final VersionImpl oImp = (VersionImpl) o;
 
     return Integer.compare(versionSum(), oImp.versionSum());

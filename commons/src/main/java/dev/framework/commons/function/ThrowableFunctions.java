@@ -231,11 +231,12 @@ public final class ThrowableFunctions {
   @FunctionalInterface
   public interface ThrowableConsumer<V, T extends Throwable> {
 
-    void consume(final V v) throws T;
-
     static <S, D extends Throwable> ThrowableConsumer<S, D> empty() {
-      return $ -> {};
+      return $ -> {
+      };
     }
+
+    void consume(final V v) throws T;
 
   }
 

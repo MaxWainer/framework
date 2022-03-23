@@ -267,6 +267,7 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
   }
 
   protected abstract HikariDataSource createDataSource();
+
   protected abstract ExecutorService executorService();
 
 }
