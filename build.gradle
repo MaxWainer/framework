@@ -73,7 +73,7 @@ subprojects {
 
     // kyori
     implementation 'net.kyori:adventure-api:4.10.1'
-    implementation 'net.kyori:adventure-text-serializer-legacy:4.9.3'
+    implementation 'net.kyori:adventure-text-serializer-legacy:4.10.1'
     implementation 'net.kyori:adventure-text-serializer-gson:4.10.1'
     implementation 'net.kyori:adventure-text-serializer-plain:4.10.1'
 
