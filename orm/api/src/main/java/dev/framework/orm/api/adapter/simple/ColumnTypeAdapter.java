@@ -202,65 +202,21 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api.adapter.simple;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+public interface ColumnTypeAdapter<S, T> extends RepositoryObject<Class<T>> {
 
-  private final ORMFacade facade;
+  @NotNull S to(final @NotNull T t);
 
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
-  }
+  @NotNull T from(final @NotNull S data);
 
-  @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+  int requiredStringSize();
 
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
-
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
-
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
-
-    final String temporaryTableFillQuery = String.format("");
-
-    final String newTableQuery = String.format("");
-
-    final String newTableFillQuery = String.format("");
-
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
-  }
-
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
+  default boolean utf8Required() {
+    return false;
   }
 
 }

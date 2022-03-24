@@ -202,65 +202,107 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api;
 
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
+import com.zaxxer.hikari.HikariDataSource;
+import dev.framework.commons.SneakyThrows;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableBiConsumer;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableBiFunction;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
+import dev.framework.orm.api.appender.StatementAppender;
+import dev.framework.orm.api.query.QueryResult;
+import dev.framework.orm.api.set.ResultSetReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Set;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+public abstract class AbstractConnectionSource implements ConnectionSource {
 
-  private final ORMFacade facade;
+  private final ORMFacade ormFacade;
 
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
+  private final HikariDataSource dataSource;
+
+  private Connection connection;
+
+  protected AbstractConnectionSource(final @NotNull ORMFacade ormFacade) {
+    this.ormFacade = ormFacade;
+    this.dataSource = createDataSource();
   }
 
   @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+  public @NotNull Connection connection() {
+    if (this.connection == null) {
+      try {
+        this.connection = this.dataSource.getConnection();
+      } catch (SQLException e) {
+        SneakyThrows.sneakyThrows(e);
+      }
+    }
 
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
-
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
-
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
-
-    final String temporaryTableFillQuery = String.format("");
-
-    final String newTableQuery = String.format("");
-
-    final String newTableFillQuery = String.format("");
-
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
+    return this.connection;
   }
 
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
+  @Override
+  public @NotNull <V> QueryResult<Set<V>> executeMultiQuery(@NotNull String[] query,
+      @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender) {
+    return null;
   }
+
+  @Override
+  public @NotNull <V> QueryResult<Set<V>> executeMultiQueryWithResult(@NotNull String[] query,
+      @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender,
+      @NotNull ThrowableBiFunction<ResultSetReader, Integer, @Nullable V, SQLException> resultMapper) {
+    return null;
+  }
+
+  @Override
+  public @NotNull <V> QueryResult<V> executeWithResult(@NotNull String query,
+      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
+      @NotNull ThrowableFunction<ResultSetReader, V, SQLException> resultMapper) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection.prepareStatement(query)) {
+        appender.consume(new StatementAppenderImpl(statement, ormFacade));
+
+        return resultMapper.apply(new ResultSetReaderImpl(statement.executeQuery(), ormFacade));
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> execute(@NotNull String query) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection.prepareStatement(query)) {
+        statement.executeUpdate();
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> execute(@NotNull String query,
+      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection.prepareStatement(query)) {
+        appender.consume(new StatementAppenderImpl(statement, ormFacade));
+
+        statement.executeUpdate();
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
+  }
+
+  protected abstract HikariDataSource createDataSource();
+
+  protected abstract ExecutorService executorService();
 
 }

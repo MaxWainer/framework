@@ -202,65 +202,38 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api.annotation;
 
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.adapter.simple.DummyColumnTypeAdapter;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Column {
 
-  private final ORMFacade facade;
+  @NotNull String value();
 
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
-  }
+  @NotNull Class<? extends ColumnTypeAdapter> typeAdapter() default DummyColumnTypeAdapter.class;
 
-  @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+  @NotNull ColumnOptions options() default @ColumnOptions;
 
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
+  @interface ColumnOptions {
 
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
+    int size() default -1;
 
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
+    boolean nullable() default false;
 
-    final String temporaryTableFillQuery = String.format("");
+    boolean autoIncrement() default false;
 
-    final String newTableQuery = String.format("");
+    boolean useUtf() default false;
 
-    final String newTableFillQuery = String.format("");
+    @NotNull OptionPair[] options() default {};
 
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
-  }
-
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
   }
 
 }

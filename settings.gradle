@@ -69,3 +69,4 @@ final def deepInclude(File dir) {
 }
 
 println 'Founded all subprojects! Starting configuring process...'
+

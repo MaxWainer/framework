@@ -205,16 +205,16 @@
 package dev.framework.orm.test;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.annotation.Column;
-import dev.framework.orm.annotation.Column.ColumnOptions;
-import dev.framework.orm.annotation.ForeignKey;
-import dev.framework.orm.annotation.InstanceConstructor;
-import dev.framework.orm.annotation.JsonCollection;
-import dev.framework.orm.annotation.JsonSerializable;
-import dev.framework.orm.annotation.ObjectVersion;
-import dev.framework.orm.annotation.PrimaryKey;
-import dev.framework.orm.annotation.Table;
-import dev.framework.orm.collection.ForeignCollection;
+import dev.framework.orm.api.annotation.Column;
+import dev.framework.orm.api.annotation.Column.ColumnOptions;
+import dev.framework.orm.api.annotation.ForeignKey;
+import dev.framework.orm.api.annotation.InstanceConstructor;
+import dev.framework.orm.api.annotation.JsonCollection;
+import dev.framework.orm.api.annotation.JsonSerializable;
+import dev.framework.orm.api.annotation.ObjectVersion;
+import dev.framework.orm.api.annotation.PrimaryKey;
+import dev.framework.orm.api.annotation.Table;
+import dev.framework.orm.api.collection.ForeignCollection;
 import java.util.List;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;

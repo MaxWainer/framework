@@ -202,65 +202,31 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api.adapters;
 
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import java.time.Instant;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+public final class JavaInstantLongColumnTypeAdapter implements ColumnTypeAdapter<Long, Instant> {
 
-  private final ORMFacade facade;
-
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
+  @Override
+  public @NotNull Long to(@NotNull Instant instant) {
+    return instant.getEpochSecond();
   }
 
   @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
-
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
-
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
-
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
-
-    final String temporaryTableFillQuery = String.format("");
-
-    final String newTableQuery = String.format("");
-
-    final String newTableFillQuery = String.format("");
-
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
+  public @NotNull Instant from(@NotNull Long data) {
+    return Instant.ofEpochSecond(data);
   }
 
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
+  @Override
+  public int requiredStringSize() {
+    return 0;
   }
 
+  @Override
+  public @NotNull Class<Instant> identifier() {
+    return Instant.class;
+  }
 }

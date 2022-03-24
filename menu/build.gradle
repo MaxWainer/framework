@@ -1,0 +1,5 @@
+dependencies {
+  compileOnly project(':framework-commons')
+  compileOnly project(':framework-packet-wrapper')
+  compileOnly project(':framework-stack-wrapper')
+}

@@ -241,9 +241,23 @@ public final class ThrowableFunctions {
   }
 
   @FunctionalInterface
+  public interface ThrowableBiConsumer<F, S, T extends Throwable> {
+
+    void consume(final F f, final S s) throws T;
+
+  }
+
+  @FunctionalInterface
   public interface ThrowableFunction<I, O, T extends Throwable> {
 
     O apply(final I i) throws T;
+
+  }
+
+  @FunctionalInterface
+  public interface ThrowableBiFunction<F, S, O, T extends Throwable> {
+
+    O apply(final F f, final S s) throws T;
 
   }
 

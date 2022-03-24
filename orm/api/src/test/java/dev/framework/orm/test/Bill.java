@@ -205,12 +205,12 @@
 package dev.framework.orm.test;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.adapters.JavaInstantParsedColumnTypeAdapter;
-import dev.framework.orm.annotation.Column;
-import dev.framework.orm.annotation.Column.ColumnOptions;
-import dev.framework.orm.annotation.ObjectVersion;
-import dev.framework.orm.annotation.PrimaryKey;
-import dev.framework.orm.annotation.Table;
+import dev.framework.orm.api.adapters.JavaInstantParsedColumnTypeAdapter;
+import dev.framework.orm.api.annotation.Column;
+import dev.framework.orm.api.annotation.Column.ColumnOptions;
+import dev.framework.orm.api.annotation.ObjectVersion;
+import dev.framework.orm.api.annotation.PrimaryKey;
+import dev.framework.orm.api.annotation.Table;
 import java.time.Instant;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;

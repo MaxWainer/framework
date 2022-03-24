@@ -202,65 +202,32 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
+    implements ObjectRepository<I, T> {
 
-  private final ORMFacade facade;
-
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
+  @Override
+  public @NotNull Optional<@NotNull T> find(@NotNull I i) {
+    return Optional.empty();
   }
 
   @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+  public void register(@NotNull I i, @NotNull T t) {
 
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
-
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
-
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
-
-    final String temporaryTableFillQuery = String.format("");
-
-    final String newTableQuery = String.format("");
-
-    final String newTableFillQuery = String.format("");
-
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
   }
 
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
+  @Override
+  public void delete(@NotNull I i) {
+
   }
 
+  @Override
+  public void update(@NotNull I i, @NotNull T t) {
+
+  }
 }

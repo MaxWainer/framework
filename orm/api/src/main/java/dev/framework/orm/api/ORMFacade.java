@@ -202,65 +202,33 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.api;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.data.ObjectData;
+import dev.framework.orm.api.data.ObjectDataGenerator;
 import dev.framework.orm.api.data.meta.TableMeta;
+import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.update.TableUpdater;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+public interface ORMFacade {
 
-  private final ORMFacade facade;
+  <I, O extends RepositoryObject<I>> @NotNull ObjectRepository<I, O> findRepository(
+      final @NotNull Class<? extends O> clazz);
 
-  public SQLiteTableUpdater(final @NotNull ORMFacade facade) {
-    this.facade = facade;
-  }
+  @NotNull TableUpdater tableUpdater();
 
-  @Override
-  public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+  @NotNull ConnectionSource connectionSource();
 
-    // create columns string (old)
-    final String columnsString = createColumnsString(data.tableMeta());
+  @NotNull ObjectData findData(final @NotNull Class<? extends RepositoryObject> clazz);
 
-    final String tempTableName = facade.dialectProvider()
-        .protectValue("_TEMP_" + data.tableMeta().identifier());
-    final String tableName = facade.dialectProvider()
-        .protectValue(data.tableMeta().identifier());
+  void replaceData(
+      final @NotNull ObjectData oldData,
+      final @NotNull TableMeta newMeta);
 
-    // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
-        columnsString
-    );
+  @NotNull ObjectDataGenerator dataGenerator();
 
-    final String temporaryTableFillQuery = String.format("");
-
-    final String newTableQuery = String.format("");
-
-    final String newTableFillQuery = String.format("");
-
-    final String temporaryTableDelete = String.format("");
-
-    facade.replaceData(data, newMeta);
-  }
-
-  private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {
-    return String.format(
-        "(%s)",
-        tableMeta
-            .columnMeta()
-            .stream()
-            .map(meta -> facade.dialectProvider().columnMetaToString(meta))
-            .collect(Collectors.joining(", "))
-    );
-  }
+  @NotNull DialectProvider dialectProvider();
 
 }
