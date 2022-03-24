@@ -210,7 +210,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.nio.charset.StandardCharsets;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
@@ -222,17 +224,19 @@ public @interface Column {
 
   @NotNull ColumnOptions options() default @ColumnOptions;
 
+  @UnknownNullability String defaultValue() default "NULL";
+
   @interface ColumnOptions {
 
     int size() default -1;
 
     boolean nullable() default false;
 
+    boolean unique() default false;
+
     boolean autoIncrement() default false;
 
-    boolean useUtf() default false;
-
-    @NotNull OptionPair[] options() default {};
+    @NotNull String charset() default "UTF-8";
 
   }
 

@@ -204,9 +204,8 @@
 
 package dev.framework.orm.api.repository;
 
-import dev.framework.commons.repository.Repository;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 
-public interface ColumnTypeAdapterRepository extends Repository<Class<?>, ColumnTypeAdapter<?, ?>> {
+public interface ColumnTypeAdapterRepository extends SimpleRepository<ColumnTypeAdapter<?, ?>> {
 
 }

@@ -202,13 +202,51 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api.data;
+package dev.framework.orm.implementation.sql;
 
-import dev.framework.commons.repository.RepositoryObject;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import dev.framework.orm.api.AbstractConnectionSource;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
 import org.jetbrains.annotations.NotNull;
 
-public interface ObjectDataGenerator {
+public abstract class AbstractSQLConnectionSource extends AbstractConnectionSource {
 
-  @NotNull ObjectData generateData(final @NotNull Class<? extends RepositoryObject> clazz);
+  AbstractSQLConnectionSource(
+      @NotNull ConnectionCredentials connectionCredentials,
+      @NotNull ORMFacade ormFacade) {
+    super(connectionCredentials, ormFacade);
+  }
+
+  @Override
+  protected HikariDataSource createDataSource(
+      @NotNull ConnectionCredentials connectionCredentials) {
+    final HikariConfig config = new HikariConfig();
+
+    final String link = connectionCredentials.connectionLink();
+
+    config.setJdbcUrl(link);
+
+    config.setDriverClassName(driverClassName(link));
+
+    config.setPassword(connectionCredentials.password());
+    config.setUsername(connectionCredentials.username());
+
+    for (final Entry<String, Object> entry : connectionCredentials.options().entrySet()) {
+      config.addDataSourceProperty(entry.getKey(), entry.getValue());
+    }
+
+    return new HikariDataSource(config);
+  }
+
+  @Override
+  protected ExecutorService executorService() {
+    return null;
+  }
+
+  protected abstract @NotNull String driverClassName(final @NotNull String link);
 
 }

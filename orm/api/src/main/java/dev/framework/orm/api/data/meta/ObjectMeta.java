@@ -204,8 +204,8 @@
 
 package dev.framework.orm.api.data.meta;
 
-import dev.framework.commons.Identifiable;
+import dev.framework.commons.repository.RepositoryObject;
 
-public interface ObjectMeta<T> extends Identifiable<T> {
+public interface ObjectMeta<T> extends RepositoryObject<T> {
 
 }

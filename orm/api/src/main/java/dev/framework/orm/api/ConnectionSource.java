@@ -206,14 +206,11 @@ package dev.framework.orm.api;
 
 import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
 import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableBiFunction;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableBiConsumer;
 import dev.framework.orm.api.appender.StatementAppender;
 import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Set;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -233,16 +230,5 @@ public interface ConnectionSource extends AutoCloseable {
       final @NotNull @Language("SQL") String query,
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
       final @NotNull ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper);
-
-  // multi
-
-  <V> @NotNull QueryResult<Set<V>> executeMultiQuery(
-      final @NotNull @Language("SQL") String[] query,
-      final @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender);
-
-  <V> @NotNull QueryResult<Set<V>> executeMultiQueryWithResult(
-      final @NotNull @Language("SQL") String[] query,
-      final @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender,
-      final @NotNull ThrowableBiFunction<ResultSetReader, Integer, @Nullable V, SQLException> resultMapper);
 
 }

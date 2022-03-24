@@ -216,7 +216,26 @@ public @interface Table {
 
   @NotNull String value();
 
-  @NotNull OptionPair[] options() default {
-      @OptionPair(key = "engine", value = "InnoDB")
-  };
+  @NotNull TableOptions options() default @TableOptions;
+
+  @interface TableOptions {
+
+    @NotNull String engine() default "InnoDB";
+
+    @NotNull String standardCharset() default "UTF-8";
+
+    @NotNull RowFormatType rowFormat() default RowFormatType.DEFAULT;
+
+    @NotNull CompressionType compression() default CompressionType.NONE;
+
+  }
+
+  enum CompressionType {
+    ZLIB, LZ4, NONE
+  }
+
+  enum RowFormatType {
+    DEFAULT, DYNAMIC, FIXED, COMPRESSED, REDUNDANT, COMPACT
+  }
+
 }

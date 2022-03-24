@@ -212,7 +212,7 @@ import dev.framework.orm.api.update.TableUpdater;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteTableUpdater implements TableUpdater {
+final class SQLiteTableUpdater implements TableUpdater {
 
   private final ORMFacade facade;
 
@@ -224,7 +224,8 @@ public final class SQLiteTableUpdater implements TableUpdater {
   public void updateTable(
       final @NotNull Class<? extends RepositoryObject> possibleClass,
       final @NotNull TableMeta newMeta) {
-    final ObjectData data = facade.findData(possibleClass);
+    final ObjectData data = facade.findData(possibleClass)
+        .orElseThrow(RuntimeException::new);
 
     // create columns string (old)
     final String columnsString = createColumnsString(data.tableMeta());
@@ -256,7 +257,7 @@ public final class SQLiteTableUpdater implements TableUpdater {
     return String.format(
         "(%s)",
         tableMeta
-            .columnMeta()
+            .columnMetaSet()
             .stream()
             .map(meta -> facade.dialectProvider().columnMetaToString(meta))
             .collect(Collectors.joining(", "))

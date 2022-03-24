@@ -206,21 +206,18 @@ package dev.framework.orm.api;
 
 import com.zaxxer.hikari.HikariDataSource;
 import dev.framework.commons.SneakyThrows;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableBiConsumer;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableBiFunction;
 import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
 import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
 import dev.framework.orm.api.appender.StatementAppender;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Set;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractConnectionSource implements ConnectionSource {
 
@@ -230,9 +227,11 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
 
   private Connection connection;
 
-  protected AbstractConnectionSource(final @NotNull ORMFacade ormFacade) {
+  protected AbstractConnectionSource(
+      final @NotNull ConnectionCredentials connectionCredentials,
+      final @NotNull ORMFacade ormFacade) {
     this.ormFacade = ormFacade;
-    this.dataSource = createDataSource();
+    this.dataSource = createDataSource(connectionCredentials);
   }
 
   @Override
@@ -246,19 +245,6 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
     }
 
     return this.connection;
-  }
-
-  @Override
-  public @NotNull <V> QueryResult<Set<V>> executeMultiQuery(@NotNull String[] query,
-      @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender) {
-    return null;
-  }
-
-  @Override
-  public @NotNull <V> QueryResult<Set<V>> executeMultiQueryWithResult(@NotNull String[] query,
-      @NotNull ThrowableBiConsumer<StatementAppender, Integer, SQLException> appender,
-      @NotNull ThrowableBiFunction<ResultSetReader, Integer, @Nullable V, SQLException> resultMapper) {
-    return null;
   }
 
   @Override
@@ -301,7 +287,14 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
     }, executorService());
   }
 
-  protected abstract HikariDataSource createDataSource();
+  @Override
+  public void close() throws Exception {
+    this.connection().close(); // close connection
+    this.dataSource.close(); // close datasource
+  }
+
+  protected abstract HikariDataSource createDataSource(
+      final @NotNull ConnectionCredentials connectionCredentials);
 
   protected abstract ExecutorService executorService();
 

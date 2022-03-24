@@ -204,14 +204,22 @@
 
 package dev.framework.orm.api.data;
 
+import dev.framework.commons.Delegatable;
+import dev.framework.commons.Identifiable;
+import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
 import dev.framework.orm.api.data.meta.TableMeta;
+import java.lang.reflect.Constructor;
 import org.jetbrains.annotations.NotNull;
 
-public interface ObjectData {
+public interface ObjectData extends Delegatable<Class<? extends RepositoryObject>> {
 
   @NotNull TableMeta tableMeta();
 
+  void replaceTableMeta(final @NotNull TableMeta meta);
+
   @NotNull Version version();
+
+  @NotNull Constructor<?> targetConstructor();
 
 }

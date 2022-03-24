@@ -204,9 +204,15 @@
 
 package dev.framework.orm.api.repository;
 
-import dev.framework.commons.repository.Repository;
+import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
+import dev.framework.orm.api.exception.UnknownAdapterException;
+import org.jetbrains.annotations.NotNull;
 
-public interface JsonAdapterRepository extends Repository<Class<?>, JsonObjectAdapter<?>> {
+public interface JsonAdapterRepository extends SimpleRepository<JsonObjectAdapter<?>> {
+
+  <T extends RepositoryObject> @NotNull T fromJson(final @NotNull String json, final @NotNull Class<T> type) throws UnknownAdapterException;
+
+  <T extends RepositoryObject> @NotNull String toJson(final @NotNull T t) throws UnknownAdapterException;
 
 }

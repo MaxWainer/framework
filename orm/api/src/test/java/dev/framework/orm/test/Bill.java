@@ -208,6 +208,7 @@ import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.adapters.JavaInstantParsedColumnTypeAdapter;
 import dev.framework.orm.api.annotation.Column;
 import dev.framework.orm.api.annotation.Column.ColumnOptions;
+import dev.framework.orm.api.annotation.InstanceConstructor;
 import dev.framework.orm.api.annotation.ObjectVersion;
 import dev.framework.orm.api.annotation.PrimaryKey;
 import dev.framework.orm.api.annotation.Table;
@@ -238,6 +239,7 @@ public final class Bill implements RepositoryObject<UUID> {
   @Column(value = "currency", options = @ColumnOptions(size = 1))
   private final char currency;
 
+  @InstanceConstructor
   public Bill(
       final UUID transactionUuid,
       final int poolId,

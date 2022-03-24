@@ -202,9 +202,13 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api.option;
+package dev.framework.orm.api.data;
 
-public interface OptionPairParser {
+import dev.framework.commons.repository.RepositoryObject;
+import org.jetbrains.annotations.NotNull;
 
+public interface ObjectDataFactory {
+
+  @NotNull ObjectData createFromClass(final @NotNull Class<? extends RepositoryObject> clazz);
 
 }

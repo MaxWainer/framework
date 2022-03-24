@@ -204,12 +204,33 @@
 
 package dev.framework.commons.version;
 
+import dev.framework.commons.NumberParser;
+import java.util.regex.Pattern;
 import org.jetbrains.annotations.NotNull;
 
 public interface Version extends Comparable<Version> {
 
   static Version of(final int major, final int minor, final int revision) {
     return new VersionImpl(major, minor, revision);
+  }
+
+  static Version parseSequence(final @NotNull CharSequence sequence)
+      throws MalformedVersionException {
+
+    final String[] split = sequence.toString().split(Pattern.quote("."));
+
+    if (split.length != 3) {
+      throw new MalformedVersionException("version: " + sequence);
+    }
+
+    return of(
+        NumberParser.parseInt(split[0])
+            .numberOrThrow(() -> new MalformedVersionException("not number at 0")),
+        NumberParser.parseInt(split[1])
+            .numberOrThrow(() -> new MalformedVersionException("not number at 1")),
+        NumberParser.parseInt(split[1])
+            .numberOrThrow(() -> new MalformedVersionException("not number at 2"))
+    );
   }
 
   int major();

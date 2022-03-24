@@ -206,29 +206,43 @@ package dev.framework.orm.api;
 
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.ObjectDataGenerator;
+import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.exception.MissingRepositoryException;
+import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
+import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.update.TableUpdater;
+import java.io.Closeable;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
-public interface ORMFacade {
+public interface ORMFacade extends Closeable {
 
   <I, O extends RepositoryObject<I>> @NotNull ObjectRepository<I, O> findRepository(
-      final @NotNull Class<? extends O> clazz);
+      final @NotNull Class<? extends O> clazz) throws MissingRepositoryException;
+
+  <I, O extends RepositoryObject<I>> void registerRepository(
+      final @NotNull Class<? extends O> clazz, final @NotNull ObjectRepository<I, O> repository);
+
+  @NotNull JsonAdapterRepository jsonAdapters();
+
+  @NotNull ColumnTypeAdapterRepository columnTypeAdapters();
 
   @NotNull TableUpdater tableUpdater();
 
   @NotNull ConnectionSource connectionSource();
 
-  @NotNull ObjectData findData(final @NotNull Class<? extends RepositoryObject> clazz);
+  @NotNull Optional<ObjectData> findData(final @NotNull Class<? extends RepositoryObject> clazz);
 
   void replaceData(
-      final @NotNull ObjectData oldData,
+      final @NotNull ObjectData data,
       final @NotNull TableMeta newMeta);
 
-  @NotNull ObjectDataGenerator dataGenerator();
+  @NotNull ObjectDataFactory dataFactory();
 
   @NotNull DialectProvider dialectProvider();
+
+  void open();
 
 }

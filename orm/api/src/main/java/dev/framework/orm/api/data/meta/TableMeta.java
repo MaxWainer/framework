@@ -204,14 +204,47 @@
 
 package dev.framework.orm.api.data.meta;
 
-import dev.framework.commons.version.Version;
+import dev.framework.orm.api.annotation.Table;
+import dev.framework.orm.api.annotation.Table.TableOptions;
+import java.lang.reflect.Constructor;
+import java.util.Iterator;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
-public interface TableMeta extends ObjectMeta<String> {
+public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
 
-  @NotNull Set<ColumnMeta> columnMeta();
+  @NotNull Set<ColumnMeta> columnMetaSet();
 
-  @NotNull Version version();
+  @NotNull BaseTable baseTable();
+
+  default @NotNull TableMeta.BaseTable.BaseTableOptions options() {
+    return baseTable().options();
+  }
+
+  @NotNull
+  @Override
+  default Iterator<ColumnMeta> iterator() {
+    return columnMetaSet().iterator();
+  }
+
+  interface BaseTable {
+
+    @NotNull String tableName();
+
+    @NotNull BaseTableOptions options();
+
+    interface BaseTableOptions {
+
+      @NotNull String engine();
+
+      @NotNull String standardCharset();
+
+      @NotNull Table.RowFormatType rowFormat();
+
+      @NotNull Table.CompressionType compression();
+
+    }
+
+  }
 
 }

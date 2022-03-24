@@ -204,7 +204,103 @@
 
 package dev.framework.orm.api.data.meta;
 
+import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.annotation.ForeignKey;
+import java.lang.reflect.Field;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
+
 public interface ColumnMeta extends ObjectMeta<String> {
 
+  boolean foreign();
+
+  boolean primaryKey();
+
+  boolean map();
+
+  boolean collection();
+
+  boolean jsonSerializable();
+
+  @NotNull BaseJsonMap mapOptions();
+
+  @NotNull BaseJsonCollection collectionOptions();
+
+  @NotNull BaseForeignKey foreignKeyOptions();
+
+  @NotNull BaseJsonSerializable serializerOptions();
+
+  @NotNull BaseColumn baseColumn();
+
+  @NotNull BaseGenericType genericType();
+
+  @NotNull Field field();
+
+  default @NotNull ColumnMeta.BaseColumn.BaseColumnOptions options() {
+    return baseColumn().options();
+  }
+
+  interface BaseGenericType {
+
+    @NotNull Class<?>[] value();
+  }
+
+  interface BaseJsonMap {
+
+    boolean useTopLevelAnnotation();
+
+  }
+
+  interface BaseJsonCollection {
+
+    boolean useTopLevelAnnotation();
+
+  }
+
+  interface BaseForeignKey {
+
+    @NotNull
+    String foreignField();
+
+    @NotNull
+    Class<? extends RepositoryObject> targetTable();
+
+    @NotNull ForeignKey.Action onDelete();
+
+    @NotNull ForeignKey.Action onUpdate();
+
+  }
+
+  interface BaseJsonSerializable {
+
+    Class<? extends JsonObjectAdapter> value();
+  }
+
+  interface BaseColumn {
+
+    @NotNull String value();
+
+    @NotNull Class<? extends ColumnTypeAdapter> typeAdapter();
+
+    @NotNull BaseColumnOptions options();
+
+    @UnknownNullability String defaultValue();
+
+    interface BaseColumnOptions {
+
+      int size();
+
+      boolean nullable();
+
+      boolean unique();
+
+      boolean autoIncrement();
+
+      @NotNull String charset();
+    }
+
+  }
 
 }

@@ -205,9 +205,11 @@
 package dev.framework.commons;
 
 import dev.framework.commons.annotation.UtilityClass;
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -222,6 +224,30 @@ public final class Reflections {
 
   private Reflections() {
     Exceptions.instantiationError();
+  }
+
+  public static @Nullable Constructor<?> findConstructorWithAnnotation(
+      final @NotNull Class<?> clazz, final @NotNull Class<? extends Annotation> annotation) {
+    for (final Constructor<?> constructor : clazz.getConstructors()) {
+      if (constructor.isAnnotationPresent(annotation)) {
+        return constructor;
+      }
+    }
+
+    return null;
+  }
+
+  public static @NotNull Constructor<?> findConstructorWithAnnotationOrThrow(
+      final @NotNull Class<?> clazz, final @NotNull Class<? extends Annotation> annotation) {
+    final Constructor<?> constructor = findConstructorWithAnnotation(clazz, annotation);
+
+    if (constructor == null) {
+      throw new UnsupportedOperationException(
+          "Missing constructor with annotation " + annotation.getName() + ", in class "
+              + clazz.getName());
+    }
+
+    return constructor;
   }
 
   @Nullable

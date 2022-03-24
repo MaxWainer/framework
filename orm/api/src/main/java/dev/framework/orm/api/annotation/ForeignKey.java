@@ -220,4 +220,13 @@ public @interface ForeignKey {
 
   @NotNull
   Class<? extends RepositoryObject> targetTable();
+
+  @NotNull Action onDelete() default Action.NO_ACTION;
+
+  @NotNull Action onUpdate() default Action.NO_ACTION;
+
+  enum Action {
+    RESTRICT, CASCADE, SET_NULL, NO_ACTION, SET_DEFAULT
+  }
+
 }

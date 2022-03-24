@@ -204,7 +204,13 @@
 
 package dev.framework.orm.api.set;
 
+import java.sql.SQLException;
+import org.jetbrains.annotations.NotNull;
+
 public interface ResultSetReader {
 
+  boolean next() throws SQLException;
+
+  @NotNull String readString(final @NotNull String column) throws SQLException;
 
 }

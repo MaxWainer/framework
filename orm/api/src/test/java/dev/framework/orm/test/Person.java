@@ -208,13 +208,13 @@ import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.annotation.Column;
 import dev.framework.orm.api.annotation.Column.ColumnOptions;
 import dev.framework.orm.api.annotation.ForeignKey;
+import dev.framework.orm.api.annotation.GenericType;
 import dev.framework.orm.api.annotation.InstanceConstructor;
 import dev.framework.orm.api.annotation.JsonCollection;
 import dev.framework.orm.api.annotation.JsonSerializable;
 import dev.framework.orm.api.annotation.ObjectVersion;
 import dev.framework.orm.api.annotation.PrimaryKey;
 import dev.framework.orm.api.annotation.Table;
-import dev.framework.orm.api.collection.ForeignCollection;
 import java.util.List;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
@@ -242,6 +242,7 @@ public final class Person implements RepositoryObject<UUID> {
   @Column("friends")
   @JsonSerializable
   @JsonCollection
+  @GenericType(Person.class)
   private final List<Person> friends;
 
   @Column("bills_pool_id")
@@ -249,7 +250,7 @@ public final class Person implements RepositoryObject<UUID> {
       foreignField = "pool_id",
       targetTable = Bill.class
   )
-  private final ForeignCollection<Bill> bills;
+  private final List<Bill> bills;
 
   @InstanceConstructor
   public Person(
@@ -258,7 +259,7 @@ public final class Person implements RepositoryObject<UUID> {
       final int age,
       final String job,
       final List<Person> friends,
-      final ForeignCollection<Bill> bills) {
+      final List<Bill> bills) {
     this.uuid = uuid;
     this.name = name;
     this.age = age;
@@ -279,7 +280,7 @@ public final class Person implements RepositoryObject<UUID> {
     return job;
   }
 
-  public ForeignCollection<Bill> getBills() {
+  public List<Bill> getBills() {
     return bills;
   }
 
