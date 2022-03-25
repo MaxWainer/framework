@@ -46,8 +46,6 @@ final class SQLiteDialectProvider implements DialectProvider {
     final String columnName = '`' + column.value() + '`';
     final String rawType = adaptType(meta);
 
-    System.out.println(rawType);
-
     final BaseColumnOptions options = meta.options();
 
     return String.format(
