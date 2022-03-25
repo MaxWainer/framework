@@ -279,11 +279,10 @@ abstract class AbstractBlindMap<K, V> implements BlindMap<K, V> {
     delegate.replace(key, newValue);
   }
 
-  @NotNull
   @Override
-  public Iterator<ImmutableTuple<K, V>> iterator() {
+  public @NotNull @Unmodifiable Set<ImmutableTuple<K, V>> entrySet() {
     return delegate.entrySet().stream()
         .map(entry -> Tuples.immutable(entry.getKey(), entry.getValue()))
-        .collect(UnmodifiableCollectors.set()).iterator();
+        .collect(UnmodifiableCollectors.set());
   }
 }

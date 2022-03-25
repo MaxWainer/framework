@@ -209,6 +209,8 @@ import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.exception.MetaConstructionException;
+import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
@@ -226,7 +228,7 @@ public interface ORMFacade extends Closeable {
       final @NotNull Class<? extends O> clazz, final @NotNull ObjectRepository<I, O> repository);
 
   <I, O extends RepositoryObject<I>> void registerRepository(
-      final @NotNull Class<? extends O> clazz);
+      final @NotNull Class<? extends O> clazz) throws MissingAnnotationException, MetaConstructionException;
 
   @NotNull JsonAdapterRepository jsonAdapters();
 

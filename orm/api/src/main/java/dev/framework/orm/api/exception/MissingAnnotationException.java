@@ -202,100 +202,15 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.api.exception;
 
-import com.zaxxer.hikari.HikariDataSource;
-import dev.framework.commons.SneakyThrows;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
-import dev.framework.orm.api.appender.StatementAppender;
-import dev.framework.orm.api.credentials.ConnectionCredentials;
-import dev.framework.orm.api.query.QueryResult;
-import dev.framework.orm.api.set.ResultSetReader;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutorService;
+import java.lang.annotation.Annotation;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractConnectionSource implements ConnectionSource {
+public final class MissingAnnotationException extends Exception {
 
-  private final ORMFacade ormFacade;
-
-  private final HikariDataSource dataSource;
-
-  private Connection connection;
-
-  protected AbstractConnectionSource(
-      final @NotNull ConnectionCredentials connectionCredentials,
-      final @NotNull ORMFacade ormFacade) {
-    this.ormFacade = ormFacade;
-    this.dataSource = createDataSource(connectionCredentials);
+  public MissingAnnotationException(final @NotNull Class<? extends Annotation> annotation) {
+    super("Missing annotation @" + annotation.getName());
   }
-
-  @Override
-  public @NotNull Connection connection() {
-    if (this.connection == null) {
-      try {
-        this.connection = this.dataSource.getConnection();
-      } catch (SQLException e) {
-        SneakyThrows.sneakyThrows(e);
-      }
-    }
-
-    return this.connection;
-  }
-
-  @Override
-  public @NotNull <V> QueryResult<V> executeWithResult(@NotNull String query,
-      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
-      @NotNull ThrowableFunction<ResultSetReader, V, SQLException> resultMapper) {
-    return new QueryResultImpl<>(() -> {
-      try (final PreparedStatement statement = connection.prepareStatement(query)) {
-        appender.consume(new StatementAppenderImpl(statement, ormFacade));
-
-        return resultMapper.apply(new ResultSetReaderImpl(statement.executeQuery(), ormFacade));
-      } catch (SQLException e) {
-        throw new CompletionException(e);
-      }
-    }, executorService());
-  }
-
-  @Override
-  public @NotNull QueryResult<Void> execute(@NotNull String query) {
-    return new QueryResultImpl<>(() -> {
-      try (final PreparedStatement statement = connection.prepareStatement(query)) {
-        statement.executeUpdate();
-      } catch (SQLException e) {
-        throw new CompletionException(e);
-      }
-    }, executorService());
-  }
-
-  @Override
-  public @NotNull QueryResult<Void> execute(@NotNull String query,
-      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender) {
-    return new QueryResultImpl<>(() -> {
-      try (final PreparedStatement statement = connection.prepareStatement(query)) {
-        appender.consume(new StatementAppenderImpl(statement, ormFacade));
-
-        statement.executeUpdate();
-      } catch (SQLException e) {
-        throw new CompletionException(e);
-      }
-    }, executorService());
-  }
-
-  @Override
-  public void close() throws Exception {
-    this.connection().close(); // close connection
-    this.dataSource.close(); // close datasource
-  }
-
-  protected abstract HikariDataSource createDataSource(
-      final @NotNull ConnectionCredentials connectionCredentials);
-
-  protected abstract ExecutorService executorService();
 
 }

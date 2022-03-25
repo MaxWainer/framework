@@ -206,6 +206,7 @@ package dev.framework.commons.map;
 
 import dev.framework.commons.function.Compositor;
 import java.util.Optional;
+import java.util.function.Predicate;
 import org.jetbrains.annotations.NotNull;
 
 public interface OptionalMap<K, V> extends BlindMap<K, V> {
@@ -214,6 +215,13 @@ public interface OptionalMap<K, V> extends BlindMap<K, V> {
 
   default boolean exists(final @NotNull K key) {
     return get(key).isPresent();
+  }
+
+  default Optional<V> findValue(final @NotNull Predicate<V> predicate) {
+    return values()
+        .stream()
+        .filter(predicate)
+        .findFirst();
   }
 
   default void useIfExists(final @NotNull K key,

@@ -208,14 +208,20 @@ import dev.framework.commons.annotation.UtilityClass;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sun.misc.Unsafe;
 
 @UtilityClass
 public final class Reflections {
@@ -223,6 +229,33 @@ public final class Reflections {
   private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
   private static final Map<Class<?>, Map<String, MethodHandle>> FIELDS = new HashMap<>();
   private static final Map<Class<?>, Map<String, MethodHandle>> METHODS = new HashMap<>();
+
+  private static final MethodHandles.Lookup TRUSTED_LOOKUP;
+  private static final Unsafe UNSAFE;
+
+  static {
+    try {
+      // Access theUnsafe
+      final Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+      theUnsafeField.setAccessible(true);
+
+      // Cast and create
+      UNSAFE = (Unsafe) theUnsafeField.get(null);
+
+      // MethodHandles.lookup(); > Not trusted, we need TRUSTED Lookup!
+      final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+
+      // Get field base
+      final Object implLookupBase = UNSAFE.staticFieldBase(implLookupField);
+      // Get field offset
+      final long implLookupOffset = UNSAFE.staticFieldOffset(implLookupField);
+
+      // Getting object
+      TRUSTED_LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(implLookupBase, implLookupOffset);
+    } catch (final IllegalAccessException | NoSuchFieldException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
 
   private Reflections() {
     Exceptions.instantiationError();
@@ -253,6 +286,20 @@ public final class Reflections {
     }
 
     throw new UnsupportedOperationException("No any annotated field matching predicate!");
+  }
+
+  public static @NotNull Class<?> @NonNls [] genericTypes(final @NotNull Class<?> clazz) {
+    final Type genericSuperclass = clazz.getGenericSuperclass();
+
+    return Arrays.stream(((ParameterizedType) genericSuperclass).getActualTypeArguments())
+        .map(it -> {
+          try {
+            return Class.forName(it.getTypeName());
+          } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .toArray(Class[]::new);
   }
 
   public static @NotNull Constructor<?> findConstructorWithAnnotationOrThrow(
@@ -328,4 +375,7 @@ public final class Reflections {
     }
   }
 
+  public static Lookup trustedLookup() {
+    return TRUSTED_LOOKUP;
+  }
 }

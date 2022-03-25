@@ -221,8 +221,8 @@ public final class JavaInstantParsedColumnTypeAdapter implements StringColumnTyp
   }
 
   @Override
-  public int requiredStringSize() {
-    return 0;
+  public @NotNull Class<String> primitiveType() {
+    return String.class;
   }
 
   @Override

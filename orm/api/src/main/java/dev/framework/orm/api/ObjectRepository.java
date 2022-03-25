@@ -206,7 +206,15 @@ package dev.framework.orm.api;
 
 import dev.framework.commons.repository.Repository;
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.data.ObjectData;
+import org.jetbrains.annotations.NotNull;
 
 public interface ObjectRepository<I, T extends RepositoryObject<I>> extends Repository<I, T> {
+
+  void createTable();
+
+  void cascadeUpdate();
+
+  @NotNull ObjectData targetData();
 
 }

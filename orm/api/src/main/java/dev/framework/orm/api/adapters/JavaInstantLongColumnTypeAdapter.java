@@ -226,11 +226,6 @@ public final class JavaInstantLongColumnTypeAdapter implements ColumnTypeAdapter
   }
 
   @Override
-  public int requiredStringSize() {
-    return 0;
-  }
-
-  @Override
   public @NotNull Class<Instant> identifier() {
     return Instant.class;
   }

@@ -207,6 +207,7 @@ package dev.framework.orm.api.repository;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.exception.UnknownAdapterException;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public interface JsonAdapterRepository extends SimpleRepository<JsonObjectAdapter<?>> {
@@ -214,5 +215,7 @@ public interface JsonAdapterRepository extends SimpleRepository<JsonObjectAdapte
   <T extends RepositoryObject> @NotNull T fromJson(final @NotNull String json, final @NotNull Class<T> type) throws UnknownAdapterException;
 
   <T extends RepositoryObject> @NotNull String toJson(final @NotNull T t) throws UnknownAdapterException;
+
+  @NotNull Optional<JsonObjectAdapter<?>> adapterInstance(final @NotNull Class<? extends JsonObjectAdapter> clazz);
 
 }

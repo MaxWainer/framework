@@ -206,7 +206,7 @@ package dev.framework.orm.implementation.sql;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.framework.orm.api.AbstractConnectionSource;
+import dev.framework.orm.implementation.AbstractConnectionSource;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.credentials.ConnectionCredentials;
 import java.util.Map.Entry;

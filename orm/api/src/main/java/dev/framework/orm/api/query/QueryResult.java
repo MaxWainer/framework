@@ -213,8 +213,8 @@ public interface QueryResult<T> {
 
   @NotNull CompletableFuture<T> result();
 
-  default void join() {
-    result().join();
+  default T join() {
+    return result().join();
   }
 
   default CompletableFuture<Void> composeWith(final @NotNull QueryResult<?>... otherResults) {

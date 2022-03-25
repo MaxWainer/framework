@@ -206,6 +206,7 @@ package dev.framework.commons.map;
 
 import dev.framework.commons.tuple.ImmutableTuple;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -233,6 +234,10 @@ public interface BlindMap<K, V> extends Iterable<ImmutableTuple<K, V>> {
 
   @NotNull
   @Unmodifiable
+  Set<ImmutableTuple<K, V>> entrySet();
+
+  @NotNull
+  @Unmodifiable
   Set<K> keySet();
 
   @NotNull
@@ -240,5 +245,11 @@ public interface BlindMap<K, V> extends Iterable<ImmutableTuple<K, V>> {
   Collection<V> values();
 
   void clear();
+
+  @NotNull
+  @Override
+  default Iterator<ImmutableTuple<K, V>> iterator() {
+    return entrySet().iterator();
+  }
 
 }

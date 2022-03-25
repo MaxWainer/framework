@@ -248,7 +248,7 @@ public final class Person implements RepositoryObject<UUID> {
   @Column("bills_pool_id")
   @ForeignKey(
       foreignField = "pool_id",
-      targetTable = Bill.class
+      targetTable = "bills"
   )
   private final List<Bill> bills;
 

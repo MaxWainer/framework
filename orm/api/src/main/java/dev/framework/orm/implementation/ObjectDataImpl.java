@@ -202,55 +202,58 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.implementation;
 
+import dev.framework.commons.concurrent.SynchronizeableObject;
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.appender.StatementAppender;
-import dev.framework.orm.api.exception.UnknownAdapterException;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import dev.framework.commons.version.Version;
+import dev.framework.orm.api.data.ObjectData;
+import dev.framework.orm.api.data.meta.TableMeta;
+import java.lang.reflect.Constructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
-final class StatementAppenderImpl implements StatementAppender {
+final class ObjectDataImpl implements ObjectData {
 
-  private final PreparedStatement preparedStatement;
-  private final ORMFacade facade;
+  private final Class<? extends RepositoryObject> delegate;
+  private final Version version;
+  private final Constructor<?> targetConstructor;
 
-  private int counter = 1;
+  private SynchronizeableObject<TableMeta> meta;
 
-  StatementAppenderImpl(
-      final @NotNull PreparedStatement preparedStatement, final @NotNull ORMFacade facade) {
-    this.preparedStatement = preparedStatement;
-    this.facade = facade;
+  ObjectDataImpl(
+      final @NotNull Class<? extends RepositoryObject> delegate,
+      final @NotNull Version version,
+      final @NotNull TableMeta meta,
+      final @NotNull Constructor<?> targetConstructor) {
+    this.delegate = delegate;
+    this.version = version;
+    this.meta = SynchronizeableObject.create(meta);
+    this.targetConstructor = targetConstructor;
   }
 
   @Override
-  public StatementAppender nextString(@NotNull String content) throws SQLException {
-    preparedStatement.setString(counter++, content);
-    return this;
+  public @UnknownNullability Class<? extends RepositoryObject> delegate() {
+    return delegate;
   }
 
   @Override
-  public StatementAppender nextLong(long content) throws SQLException {
-    preparedStatement.setLong(counter++, content);
-    return this;
+  public @NotNull TableMeta tableMeta() {
+    return meta.get();
   }
 
   @Override
-  public StatementAppender nextDouble(double content) throws SQLException {
-    preparedStatement.setDouble(counter++, content);
-    return this;
+  public void replaceTableMeta(@NotNull TableMeta meta) {
+    this.meta.replace(meta);
   }
 
   @Override
-  public StatementAppender nextInt(int content) throws SQLException {
-    preparedStatement.setInt(counter++, content);
-    return this;
+  public @NotNull Version version() {
+    return version;
   }
 
   @Override
-  public <T extends RepositoryObject> StatementAppender nextAdaptive(@NotNull T t)
-      throws SQLException, UnknownAdapterException {
-    return nextString(facade.jsonAdapters().toJson(t));
+  public @NotNull Constructor<?> targetConstructor() {
+    return targetConstructor;
   }
 }

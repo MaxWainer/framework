@@ -205,6 +205,7 @@
 package dev.framework.orm.api.appender;
 
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -214,13 +215,30 @@ public interface StatementAppender {
 
   StatementAppender nextString(final @NotNull String content) throws SQLException;
 
+  StatementAppender next(final @NotNull Object content) throws SQLException;
+
   StatementAppender nextLong(final long content) throws SQLException;
 
   StatementAppender nextDouble(final double content) throws SQLException;
 
   StatementAppender nextInt(final int content) throws SQLException;
 
-  <T extends RepositoryObject> StatementAppender nextAdaptive(final @NotNull T t)
+  StatementAppender nextColumn(final @NotNull ColumnMeta meta, final @NotNull Object object)
+      throws Throwable;
+
+  default StatementAppender nextLong(final Long content) throws SQLException {
+    return nextLong(content.longValue());
+  }
+
+  default StatementAppender nextDouble(final Double content) throws SQLException {
+    return nextDouble(content.doubleValue());
+  }
+
+  default StatementAppender nextInt(final Integer content) throws SQLException {
+    return nextInt(content.intValue());
+  }
+
+  <T extends RepositoryObject> StatementAppender nextJsonAdaptive(final @NotNull T t)
       throws SQLException, UnknownAdapterException;
 
   default StatementAppender nextUUID(final @NotNull UUID content) throws SQLException {

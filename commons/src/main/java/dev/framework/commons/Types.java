@@ -237,11 +237,11 @@ public final class Types {
   }
 
   public static boolean isPrimitive(final @NotNull Class<?> clazz) {
-    return PRIMITIVE_TO_BOXED.containsKey(clazz);
+    return PRIMITIVE_TO_BOXED.containsKey(clazz) || BOXED_TO_PRIMITIVE.containsKey(clazz);
   }
 
   public static Class<?> asBoxedPrimitive(final @NotNull Class<?> clazz) {
-    return isPrimitive(clazz) ? boxed(clazz) : clazz;
+    return isBoxed(clazz) ? clazz : boxed(clazz);
   }
 
   public static boolean isBoxed(final @NotNull Class<?> clazz) {

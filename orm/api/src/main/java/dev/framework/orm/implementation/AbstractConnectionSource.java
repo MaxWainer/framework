@@ -202,102 +202,101 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.implementation;
 
-import dev.framework.commons.Types;
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import dev.framework.orm.api.exception.UnknownAdapterException;
+import com.zaxxer.hikari.HikariDataSource;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableConsumer;
+import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
+import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.appender.StatementAppender;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
+import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.set.ResultSetReader;
-import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 import org.jetbrains.annotations.NotNull;
 
-final class ResultSetReaderImpl implements ResultSetReader {
+public abstract class AbstractConnectionSource implements ConnectionSource {
 
-  private final ResultSet resultSet;
   private final ORMFacade ormFacade;
 
-  ResultSetReaderImpl(final @NotNull ResultSet resultSet, final @NotNull ORMFacade ormFacade) {
-    this.resultSet = resultSet;
+  private final HikariDataSource dataSource;
+
+  private Connection connection;
+
+  protected AbstractConnectionSource(
+      final @NotNull ConnectionCredentials connectionCredentials,
+      final @NotNull ORMFacade ormFacade) {
     this.ormFacade = ormFacade;
+    this.dataSource = createDataSource(connectionCredentials);
   }
 
   @Override
-  public boolean next() throws SQLException {
-    return resultSet.next();
-  }
-
-  @Override
-  public OptionalLong readLong(@NotNull String column) throws SQLException {
-    return OptionalLong.of(resultSet.getLong(column));
-  }
-
-  @Override
-  public OptionalInt readInt(@NotNull String column) throws SQLException {
-    return OptionalInt.of(resultSet.getInt(column));
-  }
-
-  @Override
-  public OptionalDouble readDouble(@NotNull String column) throws SQLException {
-    return OptionalDouble.of(resultSet.getDouble(column));
-  }
-
-  @Override
-  public boolean readBoolean(@NotNull String column) throws SQLException {
-    return resultSet.getBoolean(column);
-  }
-
-  @Override
-  public <T extends RepositoryObject> Optional<T> readJsonAdaptive(
-      @NotNull String column, @NotNull Class<T> type) throws SQLException, UnknownAdapterException {
-    final Optional<String> optionalRaw = readString(column);
-
-    if (!optionalRaw.isPresent()) {
-      return Optional.empty();
+  public @NotNull Connection connection() {
+    if (this.connection == null) {
+      try {
+        this.connection = this.dataSource.getConnection();
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
     }
 
-    return Optional.ofNullable(ormFacade.jsonAdapters().fromJson(optionalRaw.get(), type));
+    return this.connection;
   }
 
   @Override
-  public <T> Optional<T> readColumnAdaptive(@NotNull String column, @NotNull Class<T> type)
-      throws SQLException {
-    final ColumnTypeAdapter adapter = ormFacade.columnTypeAdapters().findOrThrow(type);
+  public @NotNull <V> QueryResult<V> executeWithResult(@NotNull String query,
+      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
+      @NotNull ThrowableFunction<ResultSetReader, V, SQLException> resultMapper) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection().prepareStatement(query)) {
+        appender.consume(new StatementAppenderImpl(statement, ormFacade));
 
-    final Class<?> primitiveType = adapter.primitiveType();
-
-    final Object read = readPrimitive(column, primitiveType);
-
-    if (read == null) return Optional.empty();
-
-    return Optional.ofNullable((T) adapter.from(read));
+        return resultMapper.apply(new ResultSetReaderImpl(statement.executeQuery(), ormFacade));
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
   }
 
   @Override
-  public @NotNull Optional<String> readString(@NotNull String column) throws SQLException {
-    return Optional.ofNullable(resultSet.getString(column));
+  public @NotNull QueryResult<Void> execute(@NotNull String query) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection().prepareStatement(query)) {
+        statement.executeUpdate();
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
   }
 
-  private Object readPrimitive(final @NotNull String column, final @NotNull Class type) throws SQLException {
-    if (!Types.isPrimitive(type)) return null;
+  @Override
+  public @NotNull QueryResult<Void> execute(@NotNull String query,
+      @NotNull ThrowableConsumer<StatementAppender, SQLException> appender) {
+    return new QueryResultImpl<>(() -> {
+      try (final PreparedStatement statement = connection().prepareStatement(query)) {
+        appender.consume(new StatementAppenderImpl(statement, ormFacade));
 
-    if (Types.asBoxedPrimitive(type) == Long.class)
-      return resultSet.getLong(column);
-
-    if (Types.asBoxedPrimitive(type) == Integer.class)
-      return resultSet.getInt(column);
-
-    if (Types.asBoxedPrimitive(type) == Double.class)
-      return resultSet.getDouble(column);
-
-    if (Types.asBoxedPrimitive(type) == String.class)
-      return resultSet.getString(column);
-
-    return null;
+        statement.executeUpdate();
+      } catch (SQLException e) {
+        throw new CompletionException(e);
+      }
+    }, executorService());
   }
+
+  @Override
+  public void close() throws Exception {
+    this.connection().close(); // close connection
+    this.dataSource.close(); // close datasource
+  }
+
+  protected abstract HikariDataSource createDataSource(
+      final @NotNull ConnectionCredentials connectionCredentials);
+
+  protected abstract ExecutorService executorService();
+
 }

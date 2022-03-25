@@ -226,16 +226,6 @@ public final class DummyColumnTypeAdapter implements ColumnTypeAdapter {
     return Object.class;
   }
 
-  @Override
-  public int requiredStringSize() {
-    throw new UnsupportedOperationException("It's dummy type adapter");
-  }
-
-  @Override
-  public boolean utf8Required() {
-    throw new UnsupportedOperationException("It's dummy type adapter");
-  }
-
   @NotNull
   @Override
   public Object identifier() {

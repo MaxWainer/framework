@@ -202,14 +202,16 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.implementation;
 
+import dev.framework.orm.api.annotation.IdentifierField;
 import dev.framework.orm.api.annotation.Table;
 import dev.framework.orm.api.annotation.Table.CompressionType;
 import dev.framework.orm.api.annotation.Table.RowFormatType;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
-import java.lang.reflect.Constructor;
+import dev.framework.orm.api.exception.MissingAnnotationException;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
@@ -220,12 +222,28 @@ final class TableMetaImpl implements TableMeta {
 
   private final BaseTable baseTable;
 
+  private final ColumnMeta identifyingColumn;
+  private final Set<ColumnMeta> truncatedColumnMetaSet;
+
   TableMetaImpl(
       final @NotNull Set<ColumnMeta> columnMetaSet,
       final @NotNull BaseTable baseTable) {
     this.identifier = baseTable.tableName();
     this.columnMetaSet = columnMetaSet;
     this.baseTable = baseTable;
+
+    this.identifyingColumn = columnMetaSet
+        .stream()
+        .findFirst()
+        .get();
+
+    this.truncatedColumnMetaSet = new LinkedHashSet<>();
+
+    for (final ColumnMeta meta : columnMetaSet) {
+      if (identifyingColumn.equals(meta)) continue;
+
+      this.truncatedColumnMetaSet.add(meta);
+    }
   }
 
   @Override
@@ -236,6 +254,16 @@ final class TableMetaImpl implements TableMeta {
   @Override
   public @NotNull Set<ColumnMeta> columnMetaSet() {
     return columnMetaSet;
+  }
+
+  @Override
+  public @NotNull ColumnMeta identifyingColumn() {
+    return identifyingColumn;
+  }
+
+  @Override
+  public @NotNull Set<ColumnMeta> truncatedColumnMetaSet() {
+    return truncatedColumnMetaSet;
   }
 
   @Override

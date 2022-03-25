@@ -205,8 +205,6 @@
 package dev.framework.orm.api.data.meta;
 
 import dev.framework.orm.api.annotation.Table;
-import dev.framework.orm.api.annotation.Table.TableOptions;
-import java.lang.reflect.Constructor;
 import java.util.Iterator;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
@@ -214,6 +212,10 @@ import org.jetbrains.annotations.NotNull;
 public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
 
   @NotNull Set<ColumnMeta> columnMetaSet();
+
+  @NotNull ColumnMeta identifyingColumn();
+
+  @NotNull Set<ColumnMeta> truncatedColumnMetaSet();
 
   @NotNull BaseTable baseTable();
 

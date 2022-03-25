@@ -202,107 +202,65 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api.data.meta;
+package dev.framework.orm.implementation;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import dev.framework.commons.Types;
+import dev.framework.commons.map.OptionalMap;
+import dev.framework.commons.map.OptionalMaps;
+import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
-import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import dev.framework.orm.api.annotation.ForeignKey;
-import java.lang.reflect.Field;
+import dev.framework.orm.api.exception.UnknownAdapterException;
+import dev.framework.orm.api.repository.JsonAdapterRepository;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.UnknownNullability;
 
-public interface ColumnMeta extends ObjectMeta<String> {
+final class JsonAdapterRepositoryImpl implements JsonAdapterRepository {
 
-  boolean foreign();
+  private final OptionalMap<Class<?>, JsonObjectAdapter<?>> registry = OptionalMaps.newConcurrentMap();
 
-  boolean primaryKey();
-
-  boolean map();
-
-  boolean collection();
-
-  boolean jsonSerializable();
-
-  boolean identifying();
-
-  @Nullable BaseJsonMap mapOptions();
-
-  @Nullable BaseJsonCollection collectionOptions();
-
-  @Nullable BaseForeignKey foreignKeyOptions();
-
-  @Nullable BaseJsonSerializable serializerOptions();
-
-  @NotNull BaseColumn baseColumn();
-
-  @Nullable BaseGenericType genericType();
-
-  @NotNull Field field();
-
-  default @NotNull ColumnMeta.BaseColumn.BaseColumnOptions options() {
-    return baseColumn().options();
+  @Override
+  public @NotNull Optional<@NotNull JsonObjectAdapter<?>> find(@NotNull Class<?> aClass) {
+    return registry.get(aClass);
   }
 
-  interface BaseGenericType {
-
-    @NotNull Class<?>[] value();
+  @Override
+  public void register(@NotNull Class<?> aClass,
+      @NotNull JsonObjectAdapter<?> jsonObjectAdapter) {
+    registry.put(aClass, jsonObjectAdapter);
   }
 
-  interface BaseJsonMap {
+  @Override
+  public <T extends RepositoryObject> @NotNull T fromJson(
+      @NotNull String json,
+      @NotNull Class<T> type) throws UnknownAdapterException {
+    final JsonObjectAdapter<T> adapter = findAdapter(type);
 
-    boolean useTopLevelAnnotation();
+    final JsonElement element = JsonParser.parseString(json);
 
+    return adapter.construct(element);
   }
 
-  interface BaseJsonCollection {
+  @Override
+  public @NotNull <T extends RepositoryObject> String toJson(@NotNull T t)
+      throws UnknownAdapterException {
+    final JsonObjectAdapter<T> adapter = (JsonObjectAdapter<T>) findAdapter(t.getClass());
+    final JsonElement element = adapter.deconstruct(t);
 
-    boolean useTopLevelAnnotation();
-
+    return element.toString();
   }
 
-  interface BaseForeignKey {
-
-    @NotNull
-    String foreignField();
-
-    @NotNull
-    String targetTable();
-
-    @NotNull ForeignKey.Action onDelete();
-
-    @NotNull ForeignKey.Action onUpdate();
-
+  @Override
+  public @NotNull Optional<JsonObjectAdapter<?>> adapterInstance(
+      @NotNull Class<? extends JsonObjectAdapter> clazz) {
+    return registry.findValue(instance -> instance.getClass().equals(clazz));
   }
 
-  interface BaseJsonSerializable {
-
-    Class<? extends JsonObjectAdapter> value();
-  }
-
-  interface BaseColumn {
-
-    @NotNull String value();
-
-    @NotNull Class<? extends ColumnTypeAdapter> typeAdapter();
-
-    @NotNull BaseColumnOptions options();
-
-    @UnknownNullability String defaultValue();
-
-    interface BaseColumnOptions {
-
-      int size();
-
-      boolean nullable();
-
-      boolean unique();
-
-      boolean autoIncrement();
-
-      @NotNull String charset();
-    }
-
+  private <T extends RepositoryObject> JsonObjectAdapter<T> findAdapter(
+      final @NotNull Class<T> type) throws UnknownAdapterException {
+    return (JsonObjectAdapter<T>) registry.get(type)
+        .orElseThrow(() -> new UnknownAdapterException(type));
   }
 
 }

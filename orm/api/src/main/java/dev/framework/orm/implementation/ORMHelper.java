@@ -202,27 +202,110 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.implementation;
 
-import dev.framework.commons.map.OptionalMap;
-import dev.framework.commons.map.OptionalMaps;
-import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
-import java.util.Optional;
+import dev.framework.commons.Exceptions;
+import dev.framework.commons.Reflections;
+import dev.framework.commons.annotation.UtilityClass;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
+import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import org.jetbrains.annotations.NotNull;
 
-final class ColumnTypeAdapterRepositoryImpl implements ColumnTypeAdapterRepository {
+@UtilityClass
+final class ORMHelper {
 
-  private final OptionalMap<Class<?>, ColumnTypeAdapter<?, ?>> registry = OptionalMaps.newConcurrentMap();
-
-  @Override
-  public @NotNull Optional<@NotNull ColumnTypeAdapter<?, ?>> find(@NotNull Class<?> aClass) {
-    return registry.get(aClass);
+  private ORMHelper() {
+    Exceptions.instantiationError();
   }
 
-  @Override
-  public void register(@NotNull Class<?> aClass,
-      @NotNull ColumnTypeAdapter<?, ?> columnTypeAdapter) {
-    registry.put(aClass, columnTypeAdapter);
+  static Object handleConstructor(
+      final @NotNull Constructor<?> constructor,
+      final @NotNull Object[] data) throws Throwable {
+    final MethodHandle handle = Reflections
+        .trustedLookup()
+        .unreflectConstructor(constructor);
+
+    return handle.invokeWithArguments(data);
   }
+
+  static JsonObjectAdapter collectionAdapter(
+      final @NotNull ORMFacade facade,
+      final @NotNull Field field,
+      final @NotNull ColumnMeta meta) {
+    final BaseJsonSerializable serializable = meta.serializerOptions();
+
+    if (meta.collection()) {
+      boolean useTopLevel = meta.collectionOptions().useTopLevelAnnotation();
+
+      if (serializable == null) {
+        useTopLevel = false;
+      }
+
+      final JsonObjectAdapter adapter;
+      if (useTopLevel) {
+        final Class<?> type = meta.genericType().value()[0];
+
+        adapter = facade.jsonAdapters()
+            .findOrThrow(type);
+      } else {
+        adapter = facade.jsonAdapters()
+            .findOrThrow(Reflections.genericTypes(field.getType())[0]);
+      }
+
+      return adapter;
+    }
+
+    return null;
+  }
+
+  static JsonObjectAdapter[] mapAdapter(
+      final @NotNull ORMFacade facade,
+      final @NotNull Field field,
+      final @NotNull ColumnMeta meta) {
+    final BaseJsonSerializable serializable = meta.serializerOptions();
+
+    if (meta.map()) {
+      boolean useTopLevel = meta.mapOptions().useTopLevelAnnotation();
+
+      if (serializable == null) {
+        useTopLevel = false;
+      }
+
+      final JsonObjectAdapter keyAdapter;
+      final JsonObjectAdapter valueAdapter;
+      if (useTopLevel) {
+        final Class<?> keyType = meta.genericType().value()[0];
+        final Class<?> valueType = meta.genericType().value()[1];
+
+        keyAdapter = facade.jsonAdapters()
+            .findOrThrow(keyType);
+        valueAdapter = facade.jsonAdapters()
+            .findOrThrow(valueType);
+      } else {
+        final Class<?>[] types = Reflections.genericTypes(field.getType());
+
+        keyAdapter = facade.jsonAdapters()
+            .findOrThrow(types[0]);
+        valueAdapter = facade.jsonAdapters()
+            .findOrThrow(types[1]);
+      }
+
+      return new JsonObjectAdapter[]{keyAdapter, valueAdapter};
+    }
+
+    return null;
+  }
+
+  static Object fieldData(final @NotNull Field field, final @NotNull Object object)
+      throws Throwable {
+    final MethodHandle handle = Reflections.trustedLookup().unreflectGetter(field);
+
+    return handle.bindTo(object).invoke();
+  }
+
 }

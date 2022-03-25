@@ -205,10 +205,12 @@
 package dev.framework.orm.api.data;
 
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.exception.MetaConstructionException;
+import dev.framework.orm.api.exception.MissingAnnotationException;
 import org.jetbrains.annotations.NotNull;
 
 public interface ObjectDataFactory {
 
-  @NotNull ObjectData createFromClass(final @NotNull Class<? extends RepositoryObject> clazz);
+  @NotNull ObjectData createFromClass(final @NotNull Class<? extends RepositoryObject> clazz) throws MissingAnnotationException, MetaConstructionException;
 
 }

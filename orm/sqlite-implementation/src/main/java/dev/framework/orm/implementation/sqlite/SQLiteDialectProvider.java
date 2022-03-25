@@ -205,9 +205,11 @@
 package dev.framework.orm.implementation.sqlite;
 
 import dev.framework.commons.Types;
+import dev.framework.orm.api.annotation.ForeignKey;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn.BaseColumnOptions;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.dialect.DialectProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -224,6 +226,8 @@ final class SQLiteDialectProvider implements DialectProvider {
     final String columnName = '`' + column.value() + '`';
     final String rawType = adaptType(meta);
 
+    System.out.println(rawType);
+
     final BaseColumnOptions options = meta.options();
 
     return String.format(
@@ -234,24 +238,38 @@ final class SQLiteDialectProvider implements DialectProvider {
             column.defaultValue() == null ? "" : "DEFAULT " + column.defaultValue(),
             options.autoIncrement() ? "AUTO_INCREMENT" : "",
             meta.primaryKey() ? "PRIMARY KEY" : "",
-            options.unique() ? "UNIQUE KEY" : "")
-        .trim();
+            options.unique() ? "UNIQUE KEY" : ""
+        ).trim();
   }
 
   private static @NotNull String adaptType(@NotNull ColumnMeta meta) {
-    if (meta.collection() || meta.map()) return "TEXT";
+    if (meta.collection() || meta.map()) {
+      return "TEXT";
+    }
 
     final Class<?> fieldType = meta.field().getType();
 
     final BaseColumnOptions options = meta.options();
 
     if (Types.isPrimitive(fieldType)) {
-      if (Types.asBoxedPrimitive(fieldType) == Long.class) return "BIGINT";
-      if (Types.asBoxedPrimitive(fieldType) == Double.class) return "DOUBLE";
-      if (Types.asBoxedPrimitive(fieldType) == Short.class) return "SMALLINT";
-      if (Types.asBoxedPrimitive(fieldType) == Float.class) return "FLOAT";
-      if (Types.asBoxedPrimitive(fieldType) == Integer.class) return "INT";
-      if (Types.asBoxedPrimitive(fieldType) == Byte.class) return "TINYINT";
+      if (Types.asBoxedPrimitive(fieldType) == Long.class) {
+        return "BIGINT";
+      }
+      if (Types.asBoxedPrimitive(fieldType) == Double.class) {
+        return "DOUBLE";
+      }
+      if (Types.asBoxedPrimitive(fieldType) == Short.class) {
+        return "SMALLINT";
+      }
+      if (Types.asBoxedPrimitive(fieldType) == Float.class) {
+        return "FLOAT";
+      }
+      if (Types.asBoxedPrimitive(fieldType) == Integer.class) {
+        return "INT";
+      }
+      if (Types.asBoxedPrimitive(fieldType) == Byte.class) {
+        return "TINYINT";
+      }
     }
 
     return meta.jsonSerializable() ? "TEXT" : "VARCHAR(" + options.size() + ")";

@@ -228,7 +228,7 @@ public @interface Column {
 
   @interface ColumnOptions {
 
-    int size() default -1;
+    int size() default 255;
 
     boolean nullable() default false;
 

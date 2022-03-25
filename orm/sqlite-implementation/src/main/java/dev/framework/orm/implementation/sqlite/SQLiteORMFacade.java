@@ -204,7 +204,7 @@
 
 package dev.framework.orm.implementation.sqlite;
 
-import dev.framework.orm.api.AbstractORMFacade;
+import dev.framework.orm.implementation.AbstractORMFacade;
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.dialect.DialectProvider;

@@ -202,164 +202,204 @@
  *    limitations under the License.
  */
 
-package dev.framework.orm.api;
+package dev.framework.orm.implementation;
 
-import dev.framework.commons.map.OptionalMap;
-import dev.framework.commons.map.OptionalMaps;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import dev.framework.commons.Types;
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.commons.tuple.ImmutableTuple;
-import dev.framework.commons.tuple.Tuples;
-import dev.framework.commons.version.Version;
-import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.ObjectDataFactory;
-import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.exception.MissingRepositoryException;
-import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
-import dev.framework.orm.api.repository.JsonAdapterRepository;
-import java.io.IOException;
-import java.util.LinkedHashSet;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
+import dev.framework.orm.api.exception.UnknownAdapterException;
+import dev.framework.orm.api.set.ResultSetReader;
+import java.lang.reflect.Field;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import org.intellij.lang.annotations.Language;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractORMFacade implements ORMFacade {
+final class ResultSetReaderImpl implements ResultSetReader {
 
-  public static final String OBJECT_INFO_TABLE_NAME = "_DEV_FRMWRK_ObjectInfo";
+  private final ResultSet resultSet;
+  private final ORMFacade facade;
 
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectData> objectDataCache =
-      OptionalMaps.newConcurrentMap();
-
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectRepository<?, ?>>
-      repositoryCache = OptionalMaps.newConcurrentMap();
-
-  private final ObjectDataFactory dataFactory = new ObjectDataFactoryImpl();
-  private final ColumnTypeAdapterRepository columnTypeAdapters =
-      new ColumnTypeAdapterRepositoryImpl();
-  private final JsonAdapterRepository jsonAdapters = new JsonAdapterRepositoryImpl();
-
-  @Override
-  public <I, O extends RepositoryObject<I>> void registerRepository(
-      @NotNull Class<? extends O> clazz, @NotNull ObjectRepository<I, O> repository) {
-    repositoryCache.put(clazz, repository);
+  ResultSetReaderImpl(final @NotNull ResultSet resultSet, final @NotNull ORMFacade facade) {
+    this.resultSet = resultSet;
+    this.facade = facade;
   }
 
   @Override
-  public <I, O extends RepositoryObject<I>> void registerRepository(
-      @NotNull Class<? extends O> clazz) {
-    repositoryCache.put(clazz, new ObjectRepositoryImpl<>(this, clazz));
+  public boolean next() throws SQLException {
+    return resultSet.next();
   }
 
   @Override
-  public @NotNull <I, O extends RepositoryObject<I>> ObjectRepository<I, O> findRepository(
-      @NotNull Class<? extends O> clazz) throws MissingRepositoryException {
-    return (ObjectRepository<I, O>)
-        repositoryCache.get(clazz).orElseThrow(() -> new MissingRepositoryException(clazz));
+  public OptionalLong readLong(@NotNull String column) throws SQLException {
+    return OptionalLong.of(resultSet.getLong(column));
   }
 
   @Override
-  public @NotNull JsonAdapterRepository jsonAdapters() {
-    return this.jsonAdapters;
+  public OptionalInt readInt(@NotNull String column) throws SQLException {
+    return OptionalInt.of(resultSet.getInt(column));
   }
 
   @Override
-  public @NotNull ColumnTypeAdapterRepository columnTypeAdapters() {
-    return this.columnTypeAdapters;
+  public OptionalDouble readDouble(@NotNull String column) throws SQLException {
+    return OptionalDouble.of(resultSet.getDouble(column));
   }
 
   @Override
-  public @NotNull Optional<ObjectData> findData(@NotNull Class<? extends RepositoryObject> clazz) {
-    return objectDataCache.get(clazz);
+  public boolean readBoolean(@NotNull String column) throws SQLException {
+    return resultSet.getBoolean(column);
   }
 
   @Override
-  public void replaceData(@NotNull ObjectData data, @NotNull TableMeta newMeta) {
-    this.objectDataCache.useIfExists(
-        data.delegate(),
-        (value, key) -> {
-          value.replaceTableMeta(newMeta);
-          return value;
-        });
-  }
+  public @NotNull Optional<Object> readColumn(@NotNull ColumnMeta meta)
+      throws SQLException, UnknownAdapterException {
+    final Optional typed = readColumnAdaptive(meta.identifier(), meta.field().getType());
 
-  @Override
-  public @NotNull ObjectDataFactory dataFactory() {
-    return dataFactory;
-  }
-
-  @Override
-  public void open() {
-    final String protectedTableName = dialectProvider().protectValue(OBJECT_INFO_TABLE_NAME);
-
-    @Language("SQL")
-    final String createQuery =
-        String.format(
-            "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(10) NOT NULL)",
-            protectedTableName,
-            dialectProvider().protectValue("RUNTIME_CLASS_PATH"),
-            dialectProvider().protectValue("OBJECT_VERSION"));
-
-    // create registry
-    connectionSource().execute(createQuery).join();
-
-    @Language("SQL")
-    final String selectQuery = String.format("SELECT * FROM %s", protectedTableName);
-
-    final Set<ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>> restoreSet =
-        new LinkedHashSet<>();
-
-    connectionSource()
-        .executeReadOnly(
-            selectQuery,
-            appender -> {},
-            reader -> {
-              try {
-                while (reader.next()) {
-                  final String rawClassPath = reader.readString("RUNTIME_CLASS_PATH").get();
-                  final String rawVersion = reader.readString("OBJECT_VERSION").get();
-
-                  final Class<? extends RepositoryObject> classPath =
-                      (Class<? extends RepositoryObject>) Class.forName(rawClassPath);
-                  final Version version = Version.parseSequence(rawVersion);
-
-                  final ObjectData data = dataFactory.createFromClass(classPath);
-                  final Version localVersion = data.version();
-
-                  if (!version.isEqual(localVersion)) {
-                    restoreSet.add(Tuples.immutable(classPath, data));
-                  }
-
-                  objectDataCache.put(classPath, data);
-                }
-              } catch (Throwable e) {
-                throw new RuntimeException(e);
-              }
-            });
-
-    for (final ImmutableTuple<Class<? extends RepositoryObject>, ObjectData> tuple : restoreSet) {
-      tableUpdater().updateTable(tuple.key(), tuple.value().tableMeta());
+    if (typed.isPresent()) {
+      return Optional.of(typed.get());
     }
+
+    final Object primitive = readPrimitive(meta.identifier(), meta.field().getType());
+
+    if (primitive != null) {
+      return Optional.of(primitive);
+    }
+
+    final Field field = meta.field();
+
+    final JsonElement json = JsonParser
+        .parseString(readString(meta.identifier())
+        .orElseThrow(UnsupportedOperationException::new));
+
+    if (meta.collection()) {
+      final JsonObjectAdapter adapter = ORMHelper.collectionAdapter(facade, field, meta);
+
+      final List outList = new ArrayList();
+
+      for (final JsonElement element : json.getAsJsonArray()) {
+        outList.add(adapter.construct(element));
+      }
+
+      return Optional.of(outList);
+    }
+
+    if (meta.map()) {
+      final JsonObjectAdapter[] adapters = ORMHelper.mapAdapter(facade, field, meta);
+
+      final Map outMap = new HashMap();
+
+      for (final JsonElement element : json.getAsJsonArray()) {
+        final JsonObject object = element.getAsJsonObject();
+
+        outMap.put(
+            adapters[0].construct(object.get("key")),
+            adapters[1].construct(object.get("value"))
+        );
+      }
+
+      return Optional.of(outMap);
+    }
+
+    if (meta.jsonSerializable()) {
+      final BaseJsonSerializable serializable = meta.serializerOptions();
+
+      final Class<? extends JsonObjectAdapter> adapter = serializable.value();
+
+      final JsonObjectAdapter instance = facade.jsonAdapters()
+          .adapterInstance(adapter)
+          .orElseThrow(() -> new UnknownAdapterException(adapter));
+
+      return Optional.of(instance.construct(json));
+    }
+
+    return Optional.empty();
   }
 
   @Override
-  public void close() throws IOException {
-    @Language("SQL")
-    final String query =
-        String.format(
-            "UPDATE %s SET %s=? WHERE %s=?",
-            dialectProvider().protectValue(OBJECT_INFO_TABLE_NAME),
-            dialectProvider().protectValue("OBJECT_VERSION"),
-            dialectProvider().protectValue("RUNTIME_CLASS_PATH"));
+  public <T extends RepositoryObject> Optional<T> readJsonAdaptive(
+      @NotNull String column, @NotNull Class<T> type) throws SQLException, UnknownAdapterException {
+    final Optional<String> optionalRaw = readString(column);
 
-    for (ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>
-        tuple : objectDataCache) {
-
-      connectionSource()
-          .execute(query,
-              appender -> appender
-                  .nextString(tuple.key().getName())
-                  .nextString(tuple.value().version().asString())
-          ).join();
+    if (!optionalRaw.isPresent()) {
+      return Optional.empty();
     }
+
+    return Optional.ofNullable(facade.jsonAdapters().fromJson(optionalRaw.get(), type));
+  }
+
+  @Override
+  public <T> Optional<T> readColumnAdaptive(@NotNull String column, @NotNull Class<T> type)
+      throws SQLException {
+    final Optional<ColumnTypeAdapter<?, ?>> optAdapter = facade.columnTypeAdapters().find(type);
+
+    if (!optAdapter.isPresent()) {
+      return Optional.empty();
+    }
+
+    final ColumnTypeAdapter adapter = optAdapter.get();
+
+    final Class<?> primitiveType = adapter.primitiveType();
+
+    final Object read = readPrimitive(column, primitiveType);
+
+    if (read == null) {
+      return Optional.empty();
+    }
+
+    return Optional.ofNullable((T) adapter.from(read));
+  }
+
+  @Override
+  public @NotNull Optional<String> readString(@NotNull String column) throws SQLException {
+    return Optional.ofNullable(resultSet.getString(column));
+  }
+
+  private <T extends RepositoryObject> Optional<T> readJsonAdaptive0(
+      @NotNull String column, @NotNull Class<T> type) throws SQLException {
+    try {
+      return readJsonAdaptive(column, type);
+    } catch (final UnknownAdapterException ignored) {
+    }
+
+    return Optional.empty();
+  }
+
+  private Object readPrimitive(final @NotNull String column, final @NotNull Class type)
+      throws SQLException {
+    if (!Types.isPrimitive(type)) {
+      return null;
+    }
+
+    if (Types.asBoxedPrimitive(type) == Long.class) {
+      return resultSet.getLong(column);
+    }
+
+    if (Types.asBoxedPrimitive(type) == Integer.class) {
+      return resultSet.getInt(column);
+    }
+
+    if (Types.asBoxedPrimitive(type) == Double.class) {
+      return resultSet.getDouble(column);
+    }
+
+    if (Types.asBoxedPrimitive(type) == String.class) {
+      return resultSet.getString(column);
+    }
+
+    return null;
   }
 }
