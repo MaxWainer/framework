@@ -25,6 +25,7 @@
 package dev.framework.orm.implementation.sqlite;
 
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.commons.version.Version;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.TableMeta;
@@ -42,8 +43,9 @@ final class SQLiteTableUpdater implements TableUpdater {
 
   @Override
   public void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta) {
+      @NotNull Class<? extends RepositoryObject> clazz,
+      @NotNull ObjectData objectData,
+      @NotNull Version version) {
     final ObjectData data = facade.findData(possibleClass)
         .orElseThrow(RuntimeException::new);
 
@@ -56,9 +58,8 @@ final class SQLiteTableUpdater implements TableUpdater {
         .protectValue(data.tableMeta().identifier());
 
     // temp table query
-    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE %s %s",
-        facade.dialectProvider()
-            .protectValue("_TEMP_" + data.tableMeta().identifier()),
+    final String temporaryTableQuery = String.format("CREATE TEMPORARY TABLE `%s` `%s`",
+        "_TEMP_" + data.tableMeta().identifier(),
         columnsString
     );
 

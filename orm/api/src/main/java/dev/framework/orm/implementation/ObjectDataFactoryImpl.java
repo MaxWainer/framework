@@ -27,17 +27,7 @@ package dev.framework.orm.implementation;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl.BaseColumnOptionsImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseForeignKeyImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseGenericTypeImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonCollectionImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonMapImpl;
-import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonSerializableImpl;
-import dev.framework.orm.implementation.TableMetaImpl.BaseTableImpl;
-import dev.framework.orm.implementation.TableMetaImpl.BaseTableImpl.BaseTableOptionsImpl;
 import dev.framework.orm.api.annotation.Column;
-import dev.framework.orm.api.annotation.ForeignKey;
 import dev.framework.orm.api.annotation.GenericType;
 import dev.framework.orm.api.annotation.IdentifierField;
 import dev.framework.orm.api.annotation.InstanceConstructor;
@@ -54,6 +44,14 @@ import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl.BaseColumnOptionsImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseGenericTypeImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonCollectionImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonMapImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonSerializableImpl;
+import dev.framework.orm.implementation.TableMetaImpl.BaseTableImpl;
+import dev.framework.orm.implementation.TableMetaImpl.BaseTableImpl.BaseTableOptionsImpl;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -161,7 +159,6 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
     final GenericType genericType = field.getAnnotation(GenericType.class);
     final boolean primary = field.getAnnotation(PrimaryKey.class) != null;
     final Column column = field.getAnnotation(Column.class);
-    final ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
     final JsonSerializable serializable = field.getAnnotation(JsonSerializable.class);
 
     if (column == null) {
@@ -204,11 +201,6 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
         primary,
         map == null ? null : new BaseJsonMapImpl(map.useTopLevelAnnotation()),
         collection == null ? null : new BaseJsonCollectionImpl(collection.useTopLevelAnnotation()),
-        foreignKey == null ? null : new BaseForeignKeyImpl(
-            foreignKey.foreignField(),
-            foreignKey.targetTable(),
-            foreignKey.onDelete(),
-            foreignKey.onUpdate()),
         serializable == null ? null : new BaseJsonSerializableImpl(serializable.value()),
         new BaseColumnImpl(
             column.value(),

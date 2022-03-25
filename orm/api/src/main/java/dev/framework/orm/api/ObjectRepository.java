@@ -27,9 +27,14 @@ package dev.framework.orm.api;
 import dev.framework.commons.repository.Repository;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.data.ObjectData;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public interface ObjectRepository<I, T extends RepositoryObject<I>> extends Repository<I, T> {
+
+  @NotNull List<T> findAll(final @NotNull I i);
+
+  @NotNull List<T> listAll();
 
   void createTable();
 

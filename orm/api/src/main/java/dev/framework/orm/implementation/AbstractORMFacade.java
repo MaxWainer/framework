@@ -34,7 +34,6 @@ import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
-import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
@@ -42,9 +41,10 @@ import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.io.IOException;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -104,16 +104,6 @@ public abstract class AbstractORMFacade implements ORMFacade {
   }
 
   @Override
-  public void replaceData(@NotNull ObjectData data, @NotNull TableMeta newMeta) {
-    this.objectDataCache.useIfExists(
-        data.delegate(),
-        (value, key) -> {
-          value.replaceTableMeta(newMeta);
-          return value;
-        });
-  }
-
-  @Override
   public @NotNull ObjectDataFactory dataFactory() {
     return dataFactory;
   }
@@ -144,8 +134,8 @@ public abstract class AbstractORMFacade implements ORMFacade {
     @Language("SQL") final String selectQuery = String.format("SELECT * FROM %s",
         protectedTableName);
 
-    final Set<ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>> restoreSet =
-        new LinkedHashSet<>();
+    final Map<ObjectData, ImmutableTuple<Class<? extends RepositoryObject>, Version>> restoreMap =
+        new LinkedHashMap<>();
 
     connectionSource()
         .executeReadOnly(
@@ -166,7 +156,7 @@ public abstract class AbstractORMFacade implements ORMFacade {
                   final Version localVersion = data.version();
 
                   if (!version.isEqual(localVersion)) {
-                    restoreSet.add(Tuples.immutable(classPath, data));
+                    restoreMap.put(data, Tuples.immutable(classPath, localVersion));
                   }
 
                   objectDataCache.put(classPath, data);
@@ -176,8 +166,8 @@ public abstract class AbstractORMFacade implements ORMFacade {
               }
             });
 
-    for (final ImmutableTuple<Class<? extends RepositoryObject>, ObjectData> tuple : restoreSet) {
-      tableUpdater().updateTable(tuple.key(), tuple.value().tableMeta());
+    for (final Entry<ObjectData, ImmutableTuple<Class<? extends RepositoryObject>, Version>> entry : restoreMap.entrySet()) {
+      tableUpdater().updateTable(entry.getValue().key(), entry.getKey(), entry.getValue().value());
     }
 
     repositoryCache.values().forEach(ObjectRepository::createTable);
@@ -205,7 +195,8 @@ public abstract class AbstractORMFacade implements ORMFacade {
     connectionSource()
         .execute(
             insertQuery,
-            appender -> appender.nextString(clazz.getName()).nextString(objectData.version().asString())
+            appender -> appender.nextString(clazz.getName())
+                .nextString(objectData.version().asString())
         ).join();
   }
 

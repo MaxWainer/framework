@@ -25,40 +25,13 @@
 package dev.framework.orm.implementation.sqlite;
 
 import dev.framework.commons.Types;
-import dev.framework.orm.api.annotation.ForeignKey;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn.BaseColumnOptions;
-import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.dialect.DialectProvider;
 import org.jetbrains.annotations.NotNull;
 
 final class SQLiteDialectProvider implements DialectProvider {
-
-  @Override
-  public @NotNull String protectValue(@NotNull String value) {
-    return '`' + value + '`';
-  }
-
-  @Override
-  public @NotNull String columnMetaToString(@NotNull ColumnMeta meta) {
-    final BaseColumn column = meta.baseColumn();
-    final String columnName = '`' + column.value() + '`';
-    final String rawType = adaptType(meta);
-
-    final BaseColumnOptions options = meta.options();
-
-    return String.format(
-            "%s %s %s %s %s %s %s",
-            columnName,
-            rawType,
-            options.nullable() ? "NULL" : "NOT NULL",
-            column.defaultValue() == null ? "" : "DEFAULT " + column.defaultValue(),
-            options.autoIncrement() ? "AUTO_INCREMENT" : "",
-            meta.primaryKey() ? "PRIMARY KEY" : "",
-            options.unique() ? "UNIQUE KEY" : ""
-        ).trim();
-  }
 
   private static @NotNull String adaptType(@NotNull ColumnMeta meta) {
     if (meta.collection() || meta.map()) {
@@ -91,5 +64,30 @@ final class SQLiteDialectProvider implements DialectProvider {
     }
 
     return meta.jsonSerializable() ? "TEXT" : "VARCHAR(" + options.size() + ")";
+  }
+
+  @Override
+  public @NotNull String protectValue(@NotNull String value) {
+    return '`' + value + '`';
+  }
+
+  @Override
+  public @NotNull String columnMetaToString(@NotNull ColumnMeta meta) {
+    final BaseColumn column = meta.baseColumn();
+    final String columnName = '`' + column.value() + '`';
+    final String rawType = adaptType(meta);
+
+    final BaseColumnOptions options = meta.options();
+
+    return String.format(
+        "%s %s %s %s %s %s %s",
+        columnName,
+        rawType,
+        options.nullable() ? "NULL" : "NOT NULL",
+        column.defaultValue() == null ? "" : "DEFAULT " + column.defaultValue(),
+        options.autoIncrement() ? "AUTO_INCREMENT" : "",
+        meta.primaryKey() ? "PRIMARY KEY" : "",
+        options.unique() ? "UNIQUE KEY" : ""
+    ).trim();
   }
 }

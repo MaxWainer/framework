@@ -25,13 +25,16 @@
 package dev.framework.orm.api.update;
 
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.data.meta.TableMeta;
+import dev.framework.commons.version.Version;
+import dev.framework.orm.api.data.ObjectData;
+import dev.framework.orm.api.exception.MissingRepositoryException;
 import org.jetbrains.annotations.NotNull;
 
 public interface TableUpdater {
 
   void updateTable(
-      final @NotNull Class<? extends RepositoryObject> possibleClass,
-      final @NotNull TableMeta newMeta);
+      final @NotNull Class<? extends RepositoryObject> clazz,
+      final @NotNull ObjectData objectData,
+      final @NotNull Version version) throws MissingRepositoryException;
 
 }

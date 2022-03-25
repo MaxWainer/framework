@@ -26,6 +26,7 @@ package dev.framework.commons.map;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +40,12 @@ final class OptionalMapImpl<K, V> extends AbstractBlindMap<K, V> implements Opti
   @Override
   public @NotNull Optional<V> get(@NotNull K key) {
     return Optional.ofNullable(delegate.get(key));
+  }
+
+  @Override
+  public @NotNull V computeIfAbsent(@NotNull K key,
+      @NotNull Function<? super K, ? extends V> mapper) {
+    return this.delegate.computeIfAbsent(key, mapper);
   }
 
 }

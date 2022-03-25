@@ -103,7 +103,7 @@ final class ResultSetReaderImpl implements ResultSetReader {
 
     final JsonElement json = JsonParser
         .parseString(readString(meta.identifier())
-        .orElseThrow(UnsupportedOperationException::new));
+            .orElseThrow(UnsupportedOperationException::new));
 
     if (meta.collection()) {
       final JsonObjectAdapter adapter = ORMHelper.collectionAdapter(facade, field, meta);

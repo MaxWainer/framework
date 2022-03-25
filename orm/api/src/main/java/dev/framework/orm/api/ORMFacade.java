@@ -60,10 +60,6 @@ public interface ORMFacade extends Closeable {
 
   @NotNull Optional<ObjectData> findData(final @NotNull Class<? extends RepositoryObject> clazz);
 
-  void replaceData(
-      final @NotNull ObjectData data,
-      final @NotNull TableMeta newMeta);
-
   @NotNull ObjectDataFactory dataFactory();
 
   @NotNull DialectProvider dialectProvider();

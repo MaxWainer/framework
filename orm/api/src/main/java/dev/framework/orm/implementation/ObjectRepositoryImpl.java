@@ -32,12 +32,13 @@ import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
-import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,7 @@ import org.jetbrains.annotations.NotNull;
 final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
     ObjectRepository<I, T> {
 
-  private final OptionalMap<I, T> objectCache = OptionalMaps.newConcurrentMap();
+  private final OptionalMap<I, List<T>> objectCache = OptionalMaps.newConcurrentMap();
 
   private final DialectProvider dialectProvider;
   private final ConnectionSource connectionSource;
@@ -65,8 +66,13 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
   @Override
   public @NotNull Optional<@NotNull T> find(@NotNull I i) {
+    return Optional.ofNullable(findAll(i).get(0));
+  }
+
+  @Override
+  public @NotNull List<T> findAll(@NotNull I i) {
     if (objectCache.exists(i)) {
-      return objectCache.get(i);
+      return objectCache.get(i).orElse(Collections.emptyList());
     }
 
     final TableMeta tableMeta = objectData.tableMeta();
@@ -75,32 +81,47 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
         dialectProvider.protectValue(tableMeta.identifier()),
         dialectProvider.protectValue(tableMeta.identifyingColumn().identifier()));
 
-    final T object = connectionSource
+    final List<T> list = connectionSource
         .executeWithResult(query,
             appender -> appender.next(i),
             result -> {
+              final List<T> out = new ArrayList<>();
+
               try {
-                final List linkedList = new LinkedList();
-                for (final ColumnMeta meta : tableMeta) {
-                  final Optional optional = result.readColumn(meta);
+                while (result.next()) {
+                  final List linkedList = new LinkedList();
+                  for (final ColumnMeta meta : tableMeta) {
+                    final Optional optional = result.readColumn(meta);
 
-                  if (optional.isPresent()) {
-                    linkedList.add(optional.get());
-                  } else {
-                    linkedList.add(null);
+                    if (optional.isPresent()) {
+                      linkedList.add(optional.get());
+                    } else {
+                      linkedList.add(null);
+                    }
                   }
+
+                  final Constructor<?> constructor = objectData.targetConstructor();
+
+                  out.add((T) ORMHelper.handleConstructor(constructor, linkedList.toArray()));
                 }
-
-                final Constructor<?> constructor = objectData.targetConstructor();
-
-                return (T) ORMHelper.handleConstructor(constructor, linkedList.toArray());
               } catch (Throwable throwable) {
                 throw new CompletionException(throwable);
               }
+
+              return out;
             })
         .join();
 
-    return Optional.ofNullable(object);
+    objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).addAll(list);
+
+    return list;
+  }
+
+  @Override
+  public @NotNull List<T> listAll() {
+
+
+    return null;
   }
 
   @Override
@@ -129,7 +150,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
             })
         .join();
 
-    objectCache.put(i, t);
+    objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).add(t);
   }
 
   @Override
@@ -198,19 +219,20 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   @Override
   public void createTable() {
     final TableMeta tableMeta = objectData.tableMeta();
-    @Language("SQL") final String query = String.format("CREATE TABLE IF NOT EXISTS %s (%s %s)",
+    @Language("SQL") final String query = String.format("CREATE TABLE IF NOT EXISTS %s (%s)",
         dialectProvider.protectValue(tableMeta.identifier()),
         tableMeta.columnMetaSet().stream().map(dialectProvider::columnMetaToString)
-            .collect(Collectors.joining(", ")),
-        foreignKeys());
+            .collect(Collectors.joining(", ")));
 
     connectionSource.execute(query).join();
   }
 
   @Override
   public void cascadeUpdate() {
-    for (final ImmutableTuple<I, T> tuple : objectCache) {
-      update(tuple.key(), tuple.value());
+    for (final ImmutableTuple<I, List<T>> tuple : objectCache) {
+      for (final T t : tuple.value()) {
+        update(tuple.key(), t);
+      }
     }
   }
 
@@ -229,26 +251,6 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
         .truncatedColumnMetaSet()
         .stream()
         .map(meta -> String.format("%s=?", dialectProvider.protectValue(meta.identifier())))
-        .collect(Collectors.joining(", "));
-  }
-
-  private @NotNull String foreignKeys() {
-    final TableMeta tableMeta = objectData.tableMeta();
-
-    return tableMeta.columnMetaSet().stream()
-        .filter(ColumnMeta::foreign)
-        .map(meta -> {
-          final BaseForeignKey base = meta.foreignKeyOptions();
-
-          return String.format(
-              "FOREIGN KEY (%s) REFERENCES %s(%s) ON UPDATE %s ON DELETE %s",
-              meta.identifier(),
-              base.targetTable(),
-              base.foreignField(),
-              base.onUpdate(),
-              base.onDelete()
-          );
-        })
         .collect(Collectors.joining(", "));
   }
 

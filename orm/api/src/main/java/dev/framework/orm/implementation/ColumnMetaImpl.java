@@ -24,11 +24,8 @@
 
 package dev.framework.orm.implementation;
 
-import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import dev.framework.orm.api.annotation.ForeignKey;
-import dev.framework.orm.api.annotation.ForeignKey.Action;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -45,7 +42,6 @@ final class ColumnMetaImpl implements ColumnMeta {
   private final boolean primaryKey;
   private final BaseJsonMap map;
   private final BaseJsonCollection collection;
-  private final BaseForeignKey foreignKey;
   private final BaseJsonSerializable serializable;
   private final BaseColumn column;
   private final BaseGenericType genericType;
@@ -56,7 +52,6 @@ final class ColumnMetaImpl implements ColumnMeta {
       final boolean primaryKey,
       final @Nullable BaseJsonMap map,
       final @Nullable BaseJsonCollection collection,
-      final @Nullable BaseForeignKey foreignKey,
       final @Nullable BaseJsonSerializable serializable,
       final @NotNull BaseColumn column,
       final @Nullable BaseGenericType genericType,
@@ -66,7 +61,6 @@ final class ColumnMetaImpl implements ColumnMeta {
     this.field = field;
     this.map = map;
     this.collection = collection;
-    this.foreignKey = foreignKey;
     this.serializable = serializable;
     this.column = column;
     this.genericType = genericType;
@@ -76,11 +70,6 @@ final class ColumnMetaImpl implements ColumnMeta {
   @Override
   public @NotNull String identifier() {
     return identifier;
-  }
-
-  @Override
-  public boolean foreign() {
-    return foreignKey != null;
   }
 
   @Override
@@ -124,15 +113,6 @@ final class ColumnMetaImpl implements ColumnMeta {
     }
 
     throw new UnsupportedOperationException("Annotation JsonCollection, not preset!");
-  }
-
-  @Override
-  public @Nullable BaseForeignKey foreignKeyOptions() {
-    if (foreign()) {
-      return Objects.requireNonNull(foreignKey);
-    }
-
-    throw new UnsupportedOperationException("Annotation ForeignKey, not preset!");
   }
 
   @Override
@@ -218,55 +198,6 @@ final class ColumnMetaImpl implements ColumnMeta {
     public String toString() {
       return "BaseJsonCollectionImpl{" +
           "useTopLevelAnnotation=" + useTopLevelAnnotation +
-          '}';
-    }
-  }
-
-  static final class BaseForeignKeyImpl implements BaseForeignKey {
-
-    private final String foreignField;
-    private final String targetTable;
-    private final ForeignKey.Action deleteActions;
-    private final ForeignKey.Action updateActions;
-
-    BaseForeignKeyImpl(
-        final @NotNull String foreignField,
-        final @NotNull String targetTable,
-        final @NotNull Action deleteActions,
-        final @NotNull Action updateActions) {
-      this.foreignField = foreignField;
-      this.targetTable = targetTable;
-      this.deleteActions = deleteActions;
-      this.updateActions = updateActions;
-    }
-
-    @Override
-    public @NotNull String foreignField() {
-      return foreignField;
-    }
-
-    @Override
-    public @NotNull String targetTable() {
-      return targetTable;
-    }
-
-    @Override
-    public @NotNull ForeignKey.Action onDelete() {
-      return deleteActions;
-    }
-
-    @Override
-    public @NotNull ForeignKey.Action onUpdate() {
-      return updateActions;
-    }
-
-    @Override
-    public String toString() {
-      return "BaseForeignKeyImpl{" +
-          "foreignField='" + foreignField + '\'' +
-          ", targetTable=" + targetTable +
-          ", deleteActions=" + deleteActions +
-          ", updateActions=" + updateActions +
           '}';
     }
   }
@@ -408,7 +339,6 @@ final class ColumnMetaImpl implements ColumnMeta {
         ", primaryKey=" + primaryKey +
         ", map=" + map +
         ", collection=" + collection +
-        ", foreignKey=" + foreignKey +
         ", serializable=" + serializable +
         ", column=" + column +
         ", genericType=" + genericType +

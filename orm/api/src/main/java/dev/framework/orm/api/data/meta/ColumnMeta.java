@@ -26,15 +26,12 @@ package dev.framework.orm.api.data.meta;
 
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import dev.framework.orm.api.annotation.ForeignKey;
 import java.lang.reflect.Field;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 public interface ColumnMeta extends ObjectMeta<String> {
-
-  boolean foreign();
 
   boolean primaryKey();
 
@@ -49,8 +46,6 @@ public interface ColumnMeta extends ObjectMeta<String> {
   @Nullable BaseJsonMap mapOptions();
 
   @Nullable BaseJsonCollection collectionOptions();
-
-  @Nullable BaseForeignKey foreignKeyOptions();
 
   @Nullable BaseJsonSerializable serializerOptions();
 
@@ -78,20 +73,6 @@ public interface ColumnMeta extends ObjectMeta<String> {
   interface BaseJsonCollection {
 
     boolean useTopLevelAnnotation();
-
-  }
-
-  interface BaseForeignKey {
-
-    @NotNull
-    String foreignField();
-
-    @NotNull
-    String targetTable();
-
-    @NotNull ForeignKey.Action onDelete();
-
-    @NotNull ForeignKey.Action onUpdate();
 
   }
 

@@ -26,6 +26,7 @@ package dev.framework.commons.map;
 
 import dev.framework.commons.function.Compositor;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,6 +37,10 @@ public interface OptionalMap<K, V> extends BlindMap<K, V> {
   default boolean exists(final @NotNull K key) {
     return get(key).isPresent();
   }
+
+  @NotNull V computeIfAbsent(
+      final @NotNull K key,
+      final @NotNull Function<? super K, ? extends V> mapper);
 
   default Optional<V> findValue(final @NotNull Predicate<V> predicate) {
     return values()

@@ -36,10 +36,10 @@ import org.jetbrains.annotations.UnknownNullability;
 final class ObjectDataImpl implements ObjectData {
 
   private final Class<? extends RepositoryObject> delegate;
-  private final Version version;
+  private final SynchronizeableObject<Version> version;
   private final Constructor<?> targetConstructor;
 
-  private SynchronizeableObject<TableMeta> meta;
+  private final TableMeta meta;
 
   ObjectDataImpl(
       final @NotNull Class<? extends RepositoryObject> delegate,
@@ -47,8 +47,8 @@ final class ObjectDataImpl implements ObjectData {
       final @NotNull TableMeta meta,
       final @NotNull Constructor<?> targetConstructor) {
     this.delegate = delegate;
-    this.version = version;
-    this.meta = SynchronizeableObject.create(meta);
+    this.version = SynchronizeableObject.create(version);
+    this.meta = meta;
     this.targetConstructor = targetConstructor;
   }
 
@@ -59,17 +59,17 @@ final class ObjectDataImpl implements ObjectData {
 
   @Override
   public @NotNull TableMeta tableMeta() {
-    return meta.get();
+    return meta;
   }
 
   @Override
-  public void replaceTableMeta(@NotNull TableMeta meta) {
-    this.meta.replace(meta);
+  public void replaceVersion(@NotNull Version version) {
+    this.version.replace(version);
   }
 
   @Override
   public @NotNull Version version() {
-    return version;
+    return version.get();
   }
 
   @Override
