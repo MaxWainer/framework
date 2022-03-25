@@ -210,8 +210,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,6 +237,22 @@ public final class Reflections {
     }
 
     return null;
+  }
+
+  public static <T extends Annotation> @NotNull Field findFieldWithAnnotationOrThrow(
+      final @NotNull Class<?> clazz,
+      final @NotNull Class<? extends T> annotationType,
+      final @NotNull Predicate<T> annotationPredicate) {
+    for (final Field declaredField : clazz.getDeclaredFields()) {
+      final T annotation = declaredField.getAnnotation(annotationType);
+
+      if (annotationPredicate.test(annotation)) {
+        return declaredField;
+      }
+
+    }
+
+    throw new UnsupportedOperationException("No any annotated field matching predicate!");
   }
 
   public static @NotNull Constructor<?> findConstructorWithAnnotationOrThrow(

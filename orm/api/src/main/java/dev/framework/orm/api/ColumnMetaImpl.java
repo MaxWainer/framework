@@ -464,7 +464,7 @@ final class ColumnMetaImpl implements ColumnMeta {
       return defaultValue;
     }
 
-    static final class BaseColumnOptions implements BaseColumn.BaseColumnOptions {
+    static final class BaseColumnOptionsImpl implements BaseColumn.BaseColumnOptions {
 
       private final int size;
       private final boolean nullable;
@@ -472,7 +472,7 @@ final class ColumnMetaImpl implements ColumnMeta {
       private final boolean autoIncrement;
       private final String charset;
 
-      BaseColumnOptions(
+      BaseColumnOptionsImpl(
           final int size,
           final boolean nullable,
           final boolean unique,

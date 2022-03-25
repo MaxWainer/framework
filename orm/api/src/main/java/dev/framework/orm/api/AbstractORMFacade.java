@@ -204,21 +204,22 @@
 
 package dev.framework.orm.api;
 
-import dev.framework.commons.Reflections;
 import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.commons.tuple.ImmutableTuple;
+import dev.framework.commons.tuple.Tuples;
 import dev.framework.commons.version.Version;
-import dev.framework.orm.api.annotation.InstanceConstructor;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.exception.MissingRepositoryException;
-import dev.framework.orm.api.exception.UnknownAdapterException;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
@@ -280,10 +281,9 @@ public abstract class AbstractORMFacade implements ORMFacade {
     final String protectedTableName = dialectProvider().protectValue(OBJECT_INFO_TABLE_NAME);
 
     @Language("SQL") final String createQuery = String.format(
-        "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(10) NOT NULL, %s LONGTEXT NOT NULL)",
+        "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(10) NOT NULL)",
         protectedTableName, dialectProvider().protectValue("RUNTIME_CLASS_PATH"),
-        dialectProvider().protectValue("OBJECT_VERSION"),
-        dialectProvider().protectValue("TABLE_META"));
+        dialectProvider().protectValue("OBJECT_VERSION"));
 
     // create registry
     connectionSource().execute(createQuery).join();
@@ -291,35 +291,39 @@ public abstract class AbstractORMFacade implements ORMFacade {
     @Language("SQL") final String selectQuery = String.format("SELECT * FROM %s",
         protectedTableName);
 
-    connectionSource().executeWithResult(selectQuery, appender -> {
-    }, reader -> {
-      try {
-        while (reader.next()) {
-          final String rawClassPath = reader.readString("RUNTIME_CLASS_PATH");
-          final String rawVersion = reader.readString("OBJECT_VERSION");
-          final String rawTableMeta = reader.readString("TABLE_META");
+    final Set<ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>>
+        restoreSet = new LinkedHashSet<>();
 
-          final Class<? extends RepositoryObject> classPath;
-          final Version version;
+    connectionSource().executeWithResult(selectQuery, appender -> {
+        },
+        reader -> {
           try {
-            classPath = (Class<? extends RepositoryObject>) Class.forName(rawClassPath);
-            version = Version.parseSequence(rawVersion);
+            while (reader.next()) {
+              final String rawClassPath = reader.readString("RUNTIME_CLASS_PATH");
+              final String rawVersion = reader.readString("OBJECT_VERSION");
+
+              final Class<? extends RepositoryObject> classPath = (Class<? extends RepositoryObject>) Class.forName(
+                  rawClassPath);
+              final Version version = Version.parseSequence(rawVersion);
+
+              final ObjectData data = dataFactory.createFromClass(classPath);
+              final Version localVersion = data.version();
+
+              if (!version.isEqual(localVersion)) {
+                restoreSet.add(Tuples.immutable(classPath, data));
+              }
+
+              objectDataCache.put(classPath, data);
+            }
           } catch (Throwable e) {
             throw new RuntimeException(e);
           }
+          return null;
+        });
 
-          objectDataCache.put(classPath,
-              new ObjectDataImpl(
-                  classPath,
-                  version,
-                  jsonAdapters.fromJson(rawTableMeta, TableMeta.class),
-                  Reflections.findConstructorWithAnnotationOrThrow(classPath, InstanceConstructor.class)));
-        }
-      } catch (UnknownAdapterException e) {
-        e.printStackTrace();
-      }
-      return null;
-    });
+    for (final ImmutableTuple<Class<? extends RepositoryObject>, ObjectData> tuple : restoreSet) {
+      tableUpdater().updateTable(tuple.key(), tuple.value().tableMeta());
+    }
   }
 
   @Override

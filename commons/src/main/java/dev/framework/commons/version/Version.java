@@ -239,6 +239,10 @@ public interface Version extends Comparable<Version> {
 
   int revision();
 
+  default boolean isEqual(final @NotNull Version other) {
+    return compareTo(other) == 0;
+  }
+
   @NotNull String asString();
 
 }

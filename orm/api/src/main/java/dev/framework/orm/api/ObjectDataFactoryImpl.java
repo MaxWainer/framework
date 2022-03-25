@@ -208,7 +208,7 @@ import dev.framework.commons.Reflections;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
 import dev.framework.orm.api.ColumnMetaImpl.BaseColumnImpl;
-import dev.framework.orm.api.ColumnMetaImpl.BaseColumnImpl.BaseColumnOptions;
+import dev.framework.orm.api.ColumnMetaImpl.BaseColumnImpl.BaseColumnOptionsImpl;
 import dev.framework.orm.api.ColumnMetaImpl.BaseForeignKeyImpl;
 import dev.framework.orm.api.ColumnMetaImpl.BaseGenericTypeImpl;
 import dev.framework.orm.api.ColumnMetaImpl.BaseJsonCollectionImpl;
@@ -226,6 +226,7 @@ import dev.framework.orm.api.annotation.JsonSerializable;
 import dev.framework.orm.api.annotation.ObjectVersion;
 import dev.framework.orm.api.annotation.PrimaryKey;
 import dev.framework.orm.api.annotation.Table;
+import dev.framework.orm.api.annotation.TargetImplementation;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.data.meta.ColumnMeta;
@@ -233,6 +234,7 @@ import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -245,26 +247,48 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
   public @NotNull ObjectData createFromClass(
       @NotNull Class<? extends RepositoryObject> clazz) {
     try {
-      final TableMeta meta = readTableMeta(clazz);
-      final Version version = readVersion(clazz);
+      final Class<? extends RepositoryObject> readingClass = restoreClass(clazz);
 
-      return new ObjectDataImpl(clazz, version, meta,
-          Reflections.findConstructorWithAnnotationOrThrow(clazz, InstanceConstructor.class));
+      final TableMeta meta = readTableMeta(readingClass); // read meta
+      final Version version = readVersion(readingClass); // read version
+
+      return new ObjectDataImpl(readingClass, version, meta,
+          Reflections.findConstructorWithAnnotationOrThrow(
+              readingClass,
+              InstanceConstructor.class));
     } catch (Throwable throwable) {
       throw new RuntimeException(throwable);
     }
   }
 
-  private static Version readVersion(final @NotNull Class<? extends RepositoryObject> clazz)
+  public static Version readVersion(final @NotNull Class<? extends RepositoryObject> clazz)
       throws Throwable {
-    final ObjectVersion annotatedVersion = clazz.getAnnotation(ObjectVersion.class);
+    final Class<? extends RepositoryObject> readingClass = restoreClass(clazz);
 
-    ensureAnnotation(annotatedVersion, clazz);
+    final ObjectVersion annotatedVersion = readingClass.getAnnotation(ObjectVersion.class);
+
+    ensureAnnotation(annotatedVersion, readingClass);
 
     return Version.of(
         annotatedVersion.major(),
         annotatedVersion.minor(),
         annotatedVersion.revision());
+  }
+
+  private static Class<? extends RepositoryObject> restoreClass(
+      final @NotNull Class<? extends RepositoryObject> clazz) throws Throwable {
+    final Class<? extends RepositoryObject> readingClass;
+    // check is it abstract class or interface
+    if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
+      final TargetImplementation targetImplementation = clazz.getAnnotation(
+          TargetImplementation.class); // get target implementation
+
+      ensureAnnotation(targetImplementation, clazz); // ensure that this annotation present
+
+      return targetImplementation.value(); // set readingClass to founded target
+    }
+
+    return clazz;
   }
 
   private static TableMeta readTableMeta(final @NotNull Class<? extends RepositoryObject> clazz)
@@ -353,7 +377,7 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
         new BaseColumnImpl(
             column.value(),
             column.typeAdapter(),
-            new BaseColumnOptions(
+            new BaseColumnOptionsImpl(
                 columnOptions.size(),
                 columnOptions.nullable(),
                 columnOptions.unique(),
