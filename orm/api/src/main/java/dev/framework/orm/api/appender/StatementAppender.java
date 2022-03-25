@@ -204,6 +204,8 @@
 
 package dev.framework.orm.api.appender;
 
+import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.sql.SQLException;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
@@ -212,10 +214,16 @@ public interface StatementAppender {
 
   StatementAppender nextString(final @NotNull String content) throws SQLException;
 
+  StatementAppender nextLong(final long content) throws SQLException;
+
+  StatementAppender nextDouble(final double content) throws SQLException;
+
   StatementAppender nextInt(final int content) throws SQLException;
+
+  <T extends RepositoryObject> StatementAppender nextAdaptive(final @NotNull T t)
+      throws SQLException, UnknownAdapterException;
 
   default StatementAppender nextUUID(final @NotNull UUID content) throws SQLException {
     return nextString(content.toString());
   }
-
 }

@@ -206,26 +206,34 @@ package dev.framework.orm.implementation.sqlite;
 
 import dev.framework.orm.api.AbstractORMFacade;
 import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.update.TableUpdater;
-import java.io.IOException;
 import org.jetbrains.annotations.NotNull;
 
 public final class SQLiteORMFacade extends AbstractORMFacade {
 
+  private final TableUpdater tableUpdater = new SQLiteTableUpdater(this);
+  private final DialectProvider dialectProvider = new SQLiteDialectProvider();
+
+  private final ConnectionSource source;
+
+  public SQLiteORMFacade(final @NotNull ConnectionCredentials credentials) {
+    this.source = new SQLiteConnectionSource(credentials, this);
+  }
+
   @Override
   public @NotNull TableUpdater tableUpdater() {
-    return null;
+    return tableUpdater;
   }
 
   @Override
   public @NotNull ConnectionSource connectionSource() {
-    return null;
+    return source;
   }
 
   @Override
   public @NotNull DialectProvider dialectProvider() {
-    return null;
+    return dialectProvider;
   }
-
 }

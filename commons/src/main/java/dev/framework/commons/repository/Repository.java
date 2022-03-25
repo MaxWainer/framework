@@ -213,12 +213,20 @@ public interface Repository<I, T extends RepositoryObject> {
 
   void register(final @NotNull I i, final @NotNull T t);
 
+  default void register(final @NotNull T t) {
+    register((I) t.identifier(), t);
+  }
+
   void delete(final @NotNull I i);
 
   void update(final @NotNull I i, final @NotNull T t);
 
   default boolean exists(final @NotNull I i) {
     return find(i).isPresent();
+  }
+
+  default @NotNull T findOrThrow(final @NotNull I i) {
+    return find(i).orElseThrow(() -> new IllegalArgumentException("No value present by key: " + i));
   }
 
 }

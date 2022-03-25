@@ -222,6 +222,11 @@ public final class DummyColumnTypeAdapter implements ColumnTypeAdapter {
   }
 
   @Override
+  public @NotNull Class primitiveType() {
+    return Object.class;
+  }
+
+  @Override
   public int requiredStringSize() {
     throw new UnsupportedOperationException("It's dummy type adapter");
   }

@@ -221,6 +221,11 @@ public final class JavaInstantLongColumnTypeAdapter implements ColumnTypeAdapter
   }
 
   @Override
+  public @NotNull Class<Long> primitiveType() {
+    return Long.class;
+  }
+
+  @Override
   public int requiredStringSize() {
     return 0;
   }

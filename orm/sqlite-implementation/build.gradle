@@ -1,4 +1,4 @@
 dependencies {
-  compileOnly project(':orm:framework-orm-sql-implementation')
-  compileOnly project(':orm:framework-orm-api')
+    implementation project(':orm:framework-orm-sql-implementation')
+    implementation project(':orm:framework-orm-api')
 }

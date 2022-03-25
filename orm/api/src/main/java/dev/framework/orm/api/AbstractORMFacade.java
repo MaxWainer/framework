@@ -227,12 +227,15 @@ public abstract class AbstractORMFacade implements ORMFacade {
 
   public static final String OBJECT_INFO_TABLE_NAME = "_DEV_FRMWRK_ObjectInfo";
 
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectData> objectDataCache = OptionalMaps.newConcurrentMap();
+  private final OptionalMap<Class<? extends RepositoryObject>, ObjectData> objectDataCache =
+      OptionalMaps.newConcurrentMap();
 
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectRepository<?, ?>> repositoryCache = OptionalMaps.newConcurrentMap();
+  private final OptionalMap<Class<? extends RepositoryObject>, ObjectRepository<?, ?>>
+      repositoryCache = OptionalMaps.newConcurrentMap();
 
   private final ObjectDataFactory dataFactory = new ObjectDataFactoryImpl();
-  private final ColumnTypeAdapterRepository columnTypeAdapters = new ColumnTypeAdapterRepositoryImpl();
+  private final ColumnTypeAdapterRepository columnTypeAdapters =
+      new ColumnTypeAdapterRepositoryImpl();
   private final JsonAdapterRepository jsonAdapters = new JsonAdapterRepositoryImpl();
 
   @Override
@@ -242,10 +245,16 @@ public abstract class AbstractORMFacade implements ORMFacade {
   }
 
   @Override
+  public <I, O extends RepositoryObject<I>> void registerRepository(
+      @NotNull Class<? extends O> clazz) {
+    repositoryCache.put(clazz, new ObjectRepositoryImpl<>(this, clazz));
+  }
+
+  @Override
   public @NotNull <I, O extends RepositoryObject<I>> ObjectRepository<I, O> findRepository(
       @NotNull Class<? extends O> clazz) throws MissingRepositoryException {
-    return (ObjectRepository<I, O>) repositoryCache.get(clazz)
-        .orElseThrow(() -> new MissingRepositoryException(clazz));
+    return (ObjectRepository<I, O>)
+        repositoryCache.get(clazz).orElseThrow(() -> new MissingRepositoryException(clazz));
   }
 
   @Override
@@ -265,10 +274,12 @@ public abstract class AbstractORMFacade implements ORMFacade {
 
   @Override
   public void replaceData(@NotNull ObjectData data, @NotNull TableMeta newMeta) {
-    this.objectDataCache.useIfExists(data.delegate(), (value, key) -> {
-      value.replaceTableMeta(newMeta);
-      return value;
-    });
+    this.objectDataCache.useIfExists(
+        data.delegate(),
+        (value, key) -> {
+          value.replaceTableMeta(newMeta);
+          return value;
+        });
   }
 
   @Override
@@ -280,46 +291,50 @@ public abstract class AbstractORMFacade implements ORMFacade {
   public void open() {
     final String protectedTableName = dialectProvider().protectValue(OBJECT_INFO_TABLE_NAME);
 
-    @Language("SQL") final String createQuery = String.format(
-        "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(10) NOT NULL)",
-        protectedTableName, dialectProvider().protectValue("RUNTIME_CLASS_PATH"),
-        dialectProvider().protectValue("OBJECT_VERSION"));
+    @Language("SQL")
+    final String createQuery =
+        String.format(
+            "CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(10) NOT NULL)",
+            protectedTableName,
+            dialectProvider().protectValue("RUNTIME_CLASS_PATH"),
+            dialectProvider().protectValue("OBJECT_VERSION"));
 
     // create registry
     connectionSource().execute(createQuery).join();
 
-    @Language("SQL") final String selectQuery = String.format("SELECT * FROM %s",
-        protectedTableName);
+    @Language("SQL")
+    final String selectQuery = String.format("SELECT * FROM %s", protectedTableName);
 
-    final Set<ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>>
-        restoreSet = new LinkedHashSet<>();
+    final Set<ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>> restoreSet =
+        new LinkedHashSet<>();
 
-    connectionSource().executeWithResult(selectQuery, appender -> {
-        },
-        reader -> {
-          try {
-            while (reader.next()) {
-              final String rawClassPath = reader.readString("RUNTIME_CLASS_PATH");
-              final String rawVersion = reader.readString("OBJECT_VERSION");
+    connectionSource()
+        .executeReadOnly(
+            selectQuery,
+            appender -> {},
+            reader -> {
+              try {
+                while (reader.next()) {
+                  final String rawClassPath = reader.readString("RUNTIME_CLASS_PATH").get();
+                  final String rawVersion = reader.readString("OBJECT_VERSION").get();
 
-              final Class<? extends RepositoryObject> classPath = (Class<? extends RepositoryObject>) Class.forName(
-                  rawClassPath);
-              final Version version = Version.parseSequence(rawVersion);
+                  final Class<? extends RepositoryObject> classPath =
+                      (Class<? extends RepositoryObject>) Class.forName(rawClassPath);
+                  final Version version = Version.parseSequence(rawVersion);
 
-              final ObjectData data = dataFactory.createFromClass(classPath);
-              final Version localVersion = data.version();
+                  final ObjectData data = dataFactory.createFromClass(classPath);
+                  final Version localVersion = data.version();
 
-              if (!version.isEqual(localVersion)) {
-                restoreSet.add(Tuples.immutable(classPath, data));
+                  if (!version.isEqual(localVersion)) {
+                    restoreSet.add(Tuples.immutable(classPath, data));
+                  }
+
+                  objectDataCache.put(classPath, data);
+                }
+              } catch (Throwable e) {
+                throw new RuntimeException(e);
               }
-
-              objectDataCache.put(classPath, data);
-            }
-          } catch (Throwable e) {
-            throw new RuntimeException(e);
-          }
-          return null;
-        });
+            });
 
     for (final ImmutableTuple<Class<? extends RepositoryObject>, ObjectData> tuple : restoreSet) {
       tableUpdater().updateTable(tuple.key(), tuple.value().tableMeta());
@@ -328,6 +343,23 @@ public abstract class AbstractORMFacade implements ORMFacade {
 
   @Override
   public void close() throws IOException {
+    @Language("SQL")
+    final String query =
+        String.format(
+            "UPDATE %s SET %s=? WHERE %s=?",
+            dialectProvider().protectValue(OBJECT_INFO_TABLE_NAME),
+            dialectProvider().protectValue("OBJECT_VERSION"),
+            dialectProvider().protectValue("RUNTIME_CLASS_PATH"));
 
+    for (ImmutableTuple<Class<? extends RepositoryObject>, ObjectData>
+        tuple : objectDataCache) {
+
+      connectionSource()
+          .execute(query,
+              appender -> appender
+                  .nextString(tuple.key().getName())
+                  .nextString(tuple.value().version().asString())
+          ).join();
+    }
   }
 }

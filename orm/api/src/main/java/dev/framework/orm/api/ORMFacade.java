@@ -225,6 +225,9 @@ public interface ORMFacade extends Closeable {
   <I, O extends RepositoryObject<I>> void registerRepository(
       final @NotNull Class<? extends O> clazz, final @NotNull ObjectRepository<I, O> repository);
 
+  <I, O extends RepositoryObject<I>> void registerRepository(
+      final @NotNull Class<? extends O> clazz);
+
   @NotNull JsonAdapterRepository jsonAdapters();
 
   @NotNull ColumnTypeAdapterRepository columnTypeAdapters();

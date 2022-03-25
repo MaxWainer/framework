@@ -204,6 +204,8 @@
 
 package dev.framework.orm.api;
 
+import dev.framework.commons.map.OptionalMap;
+import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
@@ -211,23 +213,29 @@ import org.jetbrains.annotations.NotNull;
 final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
     implements ObjectRepository<I, T> {
 
+  private final OptionalMap<I, T> objectCache = OptionalMaps.newConcurrentMap();
+
+  private final ORMFacade facade;
+  private final Class<? extends T> type;
+
+  ObjectRepositoryImpl(final @NotNull ORMFacade facade, final @NotNull Class<? extends T> type) {
+    this.facade = facade;
+    this.type = type;
+  }
+
   @Override
   public @NotNull Optional<@NotNull T> find(@NotNull I i) {
+    if (objectCache.exists(i)) return objectCache.get(i);
+
     return Optional.empty();
   }
 
   @Override
-  public void register(@NotNull I i, @NotNull T t) {
-
-  }
+  public void register(@NotNull I i, @NotNull T t) {}
 
   @Override
-  public void delete(@NotNull I i) {
-
-  }
+  public void delete(@NotNull I i) {}
 
   @Override
-  public void update(@NotNull I i, @NotNull T t) {
-
-  }
+  public void update(@NotNull I i, @NotNull T t) {}
 }

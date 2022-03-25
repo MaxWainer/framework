@@ -212,6 +212,10 @@ public interface OptionalMap<K, V> extends BlindMap<K, V> {
 
   @NotNull Optional<V> get(final @NotNull K key);
 
+  default boolean exists(final @NotNull K key) {
+    return get(key).isPresent();
+  }
+
   default void useIfExists(final @NotNull K key,
       final @NotNull Compositor<V, K> valueUpdater) {
     final Optional<V> possible = get(key);

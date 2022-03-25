@@ -204,9 +204,17 @@
 
 package dev.framework.orm.api;
 
+import dev.framework.commons.Types;
+import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.exception.UnknownAdapterException;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 
 final class ResultSetReaderImpl implements ResultSetReader {
@@ -225,7 +233,71 @@ final class ResultSetReaderImpl implements ResultSetReader {
   }
 
   @Override
-  public @NotNull String readString(@NotNull String column) throws SQLException {
-    return resultSet.getString(column);
+  public OptionalLong readLong(@NotNull String column) throws SQLException {
+    return OptionalLong.of(resultSet.getLong(column));
+  }
+
+  @Override
+  public OptionalInt readInt(@NotNull String column) throws SQLException {
+    return OptionalInt.of(resultSet.getInt(column));
+  }
+
+  @Override
+  public OptionalDouble readDouble(@NotNull String column) throws SQLException {
+    return OptionalDouble.of(resultSet.getDouble(column));
+  }
+
+  @Override
+  public boolean readBoolean(@NotNull String column) throws SQLException {
+    return resultSet.getBoolean(column);
+  }
+
+  @Override
+  public <T extends RepositoryObject> Optional<T> readJsonAdaptive(
+      @NotNull String column, @NotNull Class<T> type) throws SQLException, UnknownAdapterException {
+    final Optional<String> optionalRaw = readString(column);
+
+    if (!optionalRaw.isPresent()) {
+      return Optional.empty();
+    }
+
+    return Optional.ofNullable(ormFacade.jsonAdapters().fromJson(optionalRaw.get(), type));
+  }
+
+  @Override
+  public <T> Optional<T> readColumnAdaptive(@NotNull String column, @NotNull Class<T> type)
+      throws SQLException {
+    final ColumnTypeAdapter adapter = ormFacade.columnTypeAdapters().findOrThrow(type);
+
+    final Class<?> primitiveType = adapter.primitiveType();
+
+    final Object read = readPrimitive(column, primitiveType);
+
+    if (read == null) return Optional.empty();
+
+    return Optional.ofNullable((T) adapter.from(read));
+  }
+
+  @Override
+  public @NotNull Optional<String> readString(@NotNull String column) throws SQLException {
+    return Optional.ofNullable(resultSet.getString(column));
+  }
+
+  private Object readPrimitive(final @NotNull String column, final @NotNull Class type) throws SQLException {
+    if (!Types.isPrimitive(type)) return null;
+
+    if (Types.asBoxedPrimitive(type) == Long.class)
+      return resultSet.getLong(column);
+
+    if (Types.asBoxedPrimitive(type) == Integer.class)
+      return resultSet.getInt(column);
+
+    if (Types.asBoxedPrimitive(type) == Double.class)
+      return resultSet.getDouble(column);
+
+    if (Types.asBoxedPrimitive(type) == String.class)
+      return resultSet.getString(column);
+
+    return null;
   }
 }

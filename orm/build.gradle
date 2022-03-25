@@ -2,9 +2,9 @@ group 'framework.orm'
 
 allprojects {
   dependencies {
-    compileOnly project(':framework-commons')
+      implementation project(':framework-commons')
     testCompileOnly project(':framework-commons')
 
-    compileOnly 'com.zaxxer:HikariCP:4.0.3'
+      implementation 'com.zaxxer:HikariCP:4.0.3'
   }
 }

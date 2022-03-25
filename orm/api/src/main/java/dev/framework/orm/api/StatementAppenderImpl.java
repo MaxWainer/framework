@@ -204,7 +204,9 @@
 
 package dev.framework.orm.api;
 
+import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.appender.StatementAppender;
+import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.jetbrains.annotations.NotNull;
@@ -214,19 +216,41 @@ final class StatementAppenderImpl implements StatementAppender {
   private final PreparedStatement preparedStatement;
   private final ORMFacade facade;
 
-  StatementAppenderImpl(final @NotNull PreparedStatement preparedStatement,
-      final @NotNull ORMFacade facade) {
+  private int counter = 1;
+
+  StatementAppenderImpl(
+      final @NotNull PreparedStatement preparedStatement, final @NotNull ORMFacade facade) {
     this.preparedStatement = preparedStatement;
     this.facade = facade;
   }
 
   @Override
   public StatementAppender nextString(@NotNull String content) throws SQLException {
-    return null;
+    preparedStatement.setString(counter++, content);
+    return this;
+  }
+
+  @Override
+  public StatementAppender nextLong(long content) throws SQLException {
+    preparedStatement.setLong(counter++, content);
+    return this;
+  }
+
+  @Override
+  public StatementAppender nextDouble(double content) throws SQLException {
+    preparedStatement.setDouble(counter++, content);
+    return this;
   }
 
   @Override
   public StatementAppender nextInt(int content) throws SQLException {
-    return null;
+    preparedStatement.setInt(counter++, content);
+    return this;
+  }
+
+  @Override
+  public <T extends RepositoryObject> StatementAppender nextAdaptive(@NotNull T t)
+      throws SQLException, UnknownAdapterException {
+    return nextString(facade.jsonAdapters().toJson(t));
   }
 }

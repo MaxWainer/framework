@@ -211,13 +211,16 @@ import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.credentials.ConnectionCredentials;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractSQLConnectionSource extends AbstractConnectionSource {
 
-  AbstractSQLConnectionSource(
-      @NotNull ConnectionCredentials connectionCredentials,
-      @NotNull ORMFacade ormFacade) {
+  private final ExecutorService service = Executors.newCachedThreadPool();
+
+  protected AbstractSQLConnectionSource(
+      @NotNull ConnectionCredentials connectionCredentials, @NotNull ORMFacade ormFacade) {
     super(connectionCredentials, ormFacade);
   }
 
@@ -230,7 +233,7 @@ public abstract class AbstractSQLConnectionSource extends AbstractConnectionSour
 
     config.setJdbcUrl(link);
 
-    config.setDriverClassName(driverClassName(link));
+    if (driverClassName() != null) config.setDriverClassName(driverClassName());
 
     config.setPassword(connectionCredentials.password());
     config.setUsername(connectionCredentials.username());
@@ -244,9 +247,8 @@ public abstract class AbstractSQLConnectionSource extends AbstractConnectionSour
 
   @Override
   protected ExecutorService executorService() {
-    return null;
+    return service;
   }
 
-  protected abstract @NotNull String driverClassName(final @NotNull String link);
-
+  protected abstract @Nullable String driverClassName();
 }

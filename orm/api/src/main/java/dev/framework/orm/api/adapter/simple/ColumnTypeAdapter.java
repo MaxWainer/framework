@@ -213,6 +213,8 @@ public interface ColumnTypeAdapter<S, T> extends RepositoryObject<Class<T>> {
 
   @NotNull T from(final @NotNull S data);
 
+  @NotNull Class<S> primitiveType();
+
   int requiredStringSize();
 
   default boolean utf8Required() {

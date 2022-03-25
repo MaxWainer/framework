@@ -217,12 +217,14 @@ import org.jetbrains.annotations.Nullable;
 
 public interface ConnectionSource extends AutoCloseable {
 
-  @NotNull Connection connection();
+  @NotNull
+  Connection connection();
 
-  @NotNull QueryResult<Void> execute(
-      final @NotNull @Language("SQL") String query);
+  @NotNull
+  QueryResult<Void> execute(final @NotNull @Language("SQL") String query);
 
-  @NotNull QueryResult<Void> execute(
+  @NotNull
+  QueryResult<Void> execute(
       final @NotNull @Language("SQL") String query,
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender);
 
@@ -231,4 +233,16 @@ public interface ConnectionSource extends AutoCloseable {
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
       final @NotNull ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper);
 
+  default QueryResult<Void> executeReadOnly(
+      final @NotNull @Language("SQL") String query,
+      final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
+      final @NotNull ThrowableConsumer<ResultSetReader, SQLException> resultConsumer) {
+    return executeWithResult(
+        query,
+        appender,
+        result -> {
+          resultConsumer.consume(result);
+          return null;
+        });
+  }
 }

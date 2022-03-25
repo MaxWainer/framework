@@ -240,19 +240,25 @@ public final class Types {
     return PRIMITIVE_TO_BOXED.containsKey(clazz);
   }
 
+  public static Class<?> asBoxedPrimitive(final @NotNull Class<?> clazz) {
+    return isPrimitive(clazz) ? boxed(clazz) : clazz;
+  }
+
   public static boolean isBoxed(final @NotNull Class<?> clazz) {
     return BOXED_TO_PRIMITIVE.containsKey(clazz);
   }
 
   public static Class<?> unboxed(final @NotNull Class<?> clazz) {
-    return Exceptions.checkObject(BOXED_TO_PRIMITIVE.get(clazz), Objects::nonNull,
+    return Exceptions.checkObject(
+        BOXED_TO_PRIMITIVE.get(clazz),
+        Objects::nonNull,
         $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
   }
 
   public static Class<?> boxed(final @NotNull Class<?> clazz) {
-    return Exceptions.checkObject(PRIMITIVE_TO_BOXED.get(clazz), Objects::nonNull,
+    return Exceptions.checkObject(
+        PRIMITIVE_TO_BOXED.get(clazz),
+        Objects::nonNull,
         $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
   }
-
 }
-

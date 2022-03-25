@@ -204,13 +204,33 @@
 
 package dev.framework.orm.api.set;
 
+import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.sql.SQLException;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
 
 public interface ResultSetReader {
 
   boolean next() throws SQLException;
 
-  @NotNull String readString(final @NotNull String column) throws SQLException;
+  OptionalLong readLong(final @NotNull String column) throws SQLException;
 
+  OptionalInt readInt(final @NotNull String column) throws SQLException;
+
+  OptionalDouble readDouble(final @NotNull String column) throws SQLException;
+
+  boolean readBoolean(final @NotNull String column) throws SQLException;
+
+  <T extends RepositoryObject> Optional<T> readJsonAdaptive(final @NotNull String column, final @NotNull Class<T> type)
+      throws SQLException, UnknownAdapterException;
+
+  <T> Optional<T> readColumnAdaptive(final @NotNull String column, final @NotNull Class<T> targetType)
+      throws SQLException;
+
+  @NotNull
+  Optional<String> readString(final @NotNull String column) throws SQLException;
 }
