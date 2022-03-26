@@ -35,9 +35,8 @@ import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
-import dev.framework.orm.api.exception.QueryNotCompletedException;
 import dev.framework.orm.api.query.QueryResult;
-import dev.framework.orm.api.query.builder.QueryBuilder;
+import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.ref.ReferenceClass;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.lang.reflect.Constructor;
@@ -62,7 +61,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   private final ObjectData objectData;
   private final ReferenceClass<T> referenceClass;
 
-  private final QueryBuilder queryBuilder;
+  private final QueryFactory queryFactory;
   private final ObjectMapper<T> objectMapper;
 
   ObjectRepositoryImpl(
@@ -70,13 +69,13 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
       final @NotNull ConnectionSource connectionSource,
       final @NotNull ObjectData objectData,
       final @NotNull ReferenceClass<T> referenceClass,
-      final @NotNull QueryBuilder queryBuilder,
+      final @NotNull QueryFactory queryFactory,
       final @NotNull ObjectMapper<T> objectMapper) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;
     this.objectData = objectData;
     this.referenceClass = referenceClass;
-    this.queryBuilder = queryBuilder;
+    this.queryFactory = queryFactory;
     this.objectMapper = objectMapper;
   }
 

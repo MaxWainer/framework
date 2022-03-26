@@ -1,4 +1,4 @@
-package dev.framework.orm.api.query.builder;
+package dev.framework.orm.api.query;
 
 import dev.framework.orm.api.query.types.AlterTableQuery;
 import dev.framework.orm.api.query.types.CreateTableQuery;
@@ -8,7 +8,7 @@ import dev.framework.orm.api.query.types.SelectQuery;
 import dev.framework.orm.api.query.types.UpdateQuery;
 import org.jetbrains.annotations.NotNull;
 
-public interface QueryBuilder {
+public interface QueryFactory {
 
   @NotNull SelectQuery select();
 

@@ -37,7 +37,7 @@ import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
-import dev.framework.orm.api.query.builder.QueryBuilder;
+import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.set.ResultSetReader;
@@ -64,10 +64,10 @@ public abstract class AbstractORMFacade implements ORMFacade {
       new ColumnTypeAdapterRepositoryImpl();
   private final JsonAdapterRepository jsonAdapters = new JsonAdapterRepositoryImpl();
 
-  private final QueryBuilder queryBuilder;
+  private final QueryFactory queryFactory;
 
   protected AbstractORMFacade() {
-    queryBuilder = new QueryBuilderImpl(dialectProvider(), connectionSource());
+    queryFactory = new QueryFactoryImpl(dialectProvider(), connectionSource());
   }
 
   @Override
@@ -186,8 +186,8 @@ public abstract class AbstractORMFacade implements ORMFacade {
   }
 
   @Override
-  public @NotNull QueryBuilder queryBuilder() {
-    return queryBuilder;
+  public @NotNull QueryFactory queryBuilder() {
+    return queryFactory;
   }
 
   private boolean repositoryRegistered(final Class<? extends RepositoryObject> clazz,

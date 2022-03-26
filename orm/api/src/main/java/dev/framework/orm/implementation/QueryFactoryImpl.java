@@ -2,7 +2,7 @@ package dev.framework.orm.implementation;
 
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
-import dev.framework.orm.api.query.builder.QueryBuilder;
+import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.query.types.AlterTableQuery;
 import dev.framework.orm.api.query.types.CreateTableQuery;
 import dev.framework.orm.api.query.types.DropQuery;
@@ -11,12 +11,12 @@ import dev.framework.orm.api.query.types.SelectQuery;
 import dev.framework.orm.api.query.types.UpdateQuery;
 import org.jetbrains.annotations.NotNull;
 
-final class QueryBuilderImpl implements QueryBuilder {
+final class QueryFactoryImpl implements QueryFactory {
 
   private final DialectProvider dialectProvider;
   private final ConnectionSource connectionSource;
 
-  QueryBuilderImpl(final @NotNull DialectProvider dialectProvider,
+  QueryFactoryImpl(final @NotNull DialectProvider dialectProvider,
       final @NotNull ConnectionSource connectionSource) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;
