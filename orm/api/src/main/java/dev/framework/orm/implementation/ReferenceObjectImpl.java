@@ -27,12 +27,12 @@ final class ReferenceObjectImpl<T extends RepositoryObject> implements Reference
   }
 
   @Override
-  public Object filedData(@NotNull String fieldName, @NotNull Object... args) throws Throwable {
+  public Object filedData(@NotNull String fieldName) throws Throwable {
     final Field field = clazz.getDeclaredField(fieldName);
 
     final MethodHandle handle = Reflections.trustedLookup().unreflectGetter(field);
 
-    return handle.bindTo(instance).invokeWithArguments(args);
+    return handle.bindTo(instance).invokeWithArguments();
   }
 
   @Override
