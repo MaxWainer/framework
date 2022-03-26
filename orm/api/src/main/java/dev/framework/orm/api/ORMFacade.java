@@ -24,6 +24,7 @@
 
 package dev.framework.orm.api;
 
+import dev.framework.commons.exception.NotImplementedYet;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
@@ -32,6 +33,7 @@ import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
+import dev.framework.orm.api.query.builder.QueryBuilder;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.update.TableUpdater;
@@ -49,6 +51,10 @@ public interface ORMFacade extends Closeable {
 
   <I, O extends RepositoryObject<I>> void registerRepository(
       final @NotNull Class<? extends O> clazz) throws MissingAnnotationException, MetaConstructionException;
+
+  default @NotNull QueryBuilder queryBuilder() {
+    throw new NotImplementedYet();
+  }
 
   @NotNull JsonAdapterRepository jsonAdapters();
 

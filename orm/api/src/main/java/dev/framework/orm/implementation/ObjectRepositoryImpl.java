@@ -35,6 +35,7 @@ import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.QueryResult;
+import dev.framework.orm.api.query.builder.QueryBuilder;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   private final ConnectionSource connectionSource;
 
   private final ObjectData objectData;
+
+  private QueryBuilder queryBuilder;
 
   ObjectRepositoryImpl(final @NotNull DialectProvider dialectProvider,
       final @NotNull ConnectionSource connectionSource, final @NotNull ObjectData objectData) {
