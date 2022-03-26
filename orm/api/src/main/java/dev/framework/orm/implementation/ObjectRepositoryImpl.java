@@ -60,8 +60,10 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
   private QueryBuilder queryBuilder;
 
-  ObjectRepositoryImpl(final @NotNull DialectProvider dialectProvider,
-      final @NotNull ConnectionSource connectionSource, final @NotNull ObjectData objectData) {
+  ObjectRepositoryImpl(
+      final @NotNull DialectProvider dialectProvider,
+      final @NotNull ConnectionSource connectionSource,
+      final @NotNull ObjectData objectData) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;
     this.objectData = objectData;
