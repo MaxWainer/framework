@@ -37,6 +37,7 @@ import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
+import dev.framework.orm.api.query.builder.QueryBuilder;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.set.ResultSetReader;
@@ -63,6 +64,12 @@ public abstract class AbstractORMFacade implements ORMFacade {
       new ColumnTypeAdapterRepositoryImpl();
   private final JsonAdapterRepository jsonAdapters = new JsonAdapterRepositoryImpl();
 
+  private final QueryBuilder queryBuilder;
+
+  protected AbstractORMFacade() {
+    queryBuilder = new QueryBuilderImpl(dialectProvider(), connectionSource());
+  }
+
   @Override
   public <I, O extends RepositoryObject<I>> void registerRepository(
       @NotNull Class<? extends O> clazz, @NotNull ObjectRepository<I, O> repository) {
@@ -73,12 +80,12 @@ public abstract class AbstractORMFacade implements ORMFacade {
   public <I, O extends RepositoryObject<I>> void registerRepository(
       @NotNull Class<? extends O> clazz)
       throws MissingAnnotationException, MetaConstructionException {
-    final ObjectData objectData = dataFactory.createFromClass(clazz);
-    final ObjectRepository<I, O> repository = new ObjectRepositoryImpl<>(dialectProvider(),
-        connectionSource(), objectData);
-
-    repositoryCache.put(clazz,
-        repository);
+//    final ObjectData objectData = dataFactory.createFromClass(clazz);
+//    final ObjectRepository<I, O> repository = new ObjectRepositoryImpl<>(dialectProvider(),
+//        connectionSource(), objectData, referenceClass, queryBuilder, objectMapper);
+//
+//    repositoryCache.put(clazz,
+//        repository);
   }
 
   @Override
@@ -168,13 +175,19 @@ public abstract class AbstractORMFacade implements ORMFacade {
 
     for (final Entry<ObjectData, ImmutableTuple<Class<? extends RepositoryObject>, Version>> entry : restoreMap.entrySet()) {
       try {
-        tableUpdater().updateTable(entry.getValue().key(), entry.getKey(), entry.getValue().value());
+        tableUpdater().updateTable(entry.getValue().key(), entry.getKey(),
+            entry.getValue().value());
       } catch (MissingRepositoryException e) {
         e.printStackTrace();
       }
     }
 
     repositoryCache.values().forEach(ObjectRepository::createTable);
+  }
+
+  @Override
+  public @NotNull QueryBuilder queryBuilder() {
+    return queryBuilder;
   }
 
   private boolean repositoryRegistered(final Class<? extends RepositoryObject> clazz,

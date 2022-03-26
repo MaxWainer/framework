@@ -39,6 +39,7 @@ import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
+import dev.framework.orm.api.exception.QueryNotCompletedException;
 import dev.framework.orm.implementation.sqlite.SQLiteORMFacade;
 import java.io.IOException;
 import java.util.UUID;
@@ -47,48 +48,18 @@ import org.jetbrains.annotations.NotNull;
 public class ExampleRun {
 
   public static void main(String[] args)
-      throws MetaConstructionException, MissingAnnotationException, IOException, MissingRepositoryException {
+      throws MetaConstructionException, MissingAnnotationException, IOException, MissingRepositoryException, QueryNotCompletedException {
     try (final SQLiteORMFacade facade = new SQLiteORMFacade(ConnectionCredentials.of(
         "jdbc:sqlite:database.db", "", "", Maps.newHashMap()))) {
+      final String ready = facade.queryBuilder()
+          .select()
+          .everything()
+          .from("example")
+          .join("other", "person_id", "person_id")
+          .whereAnd("uuid")
+          .buildQuery();
 
-      facade.registerRepository(Person.class);
-      facade.columnTypeAdapters().register(new StringColumnTypeAdapter<UUID>() {
-        @Override
-        public @NotNull String to(@NotNull UUID uuid) {
-          return uuid.toString();
-        }
-
-        @Override
-        public @NotNull UUID from(@NotNull String data) {
-          return UUID.fromString(data);
-        }
-
-        @Override
-        public @NotNull Class<String> primitiveType() {
-          return String.class;
-        }
-
-        @Override
-        public @NotNull Class<UUID> identifier() {
-          return UUID.class;
-        }
-      });
-
-      facade.open();
-
-      final UUID firstUid = UUID.fromString("847a0641-f14d-46b3-942a-ced3ef3ad68b");
-      final UUID secondUid = UUID.fromString("cce00326-a1a3-455c-9f03-e465128a2489");
-
-      final ObjectRepository<UUID, Person> personRepository = facade.findRepository(Person.class);
-
-      personRepository.register(new Person(firstUid, "Mike", 10, "None"));
-      personRepository.register(new Person(secondUid, "John", 25, "Gay"));
-
-      final Person first = personRepository.find(firstUid).orElse(null);
-      final Person second = personRepository.find(secondUid).orElse(null);
-
-      System.out.println(first);
-      System.out.println(second);
+      System.out.println(ready);
     }
   }
 

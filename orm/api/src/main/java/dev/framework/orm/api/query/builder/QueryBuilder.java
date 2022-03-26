@@ -1,5 +1,6 @@
 package dev.framework.orm.api.query.builder;
 
+import dev.framework.orm.api.query.types.AlterTableQuery;
 import dev.framework.orm.api.query.types.CreateTableQuery;
 import dev.framework.orm.api.query.types.DropQuery;
 import dev.framework.orm.api.query.types.InsertQuery;
@@ -18,5 +19,7 @@ public interface QueryBuilder {
   @NotNull DropQuery drop();
 
   @NotNull InsertQuery insert();
+
+  @NotNull AlterTableQuery alterTable();
 
 }

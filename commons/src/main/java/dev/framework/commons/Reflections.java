@@ -46,7 +46,6 @@ import sun.misc.Unsafe;
 @UtilityClass
 public final class Reflections {
 
-  private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
   private static final Map<Class<?>, Map<String, MethodHandle>> FIELDS = new HashMap<>();
   private static final Map<Class<?>, Map<String, MethodHandle>> METHODS = new HashMap<>();
 
@@ -144,7 +143,7 @@ public final class Reflections {
   ) {
     try {
       // finding getter (field)
-      final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
+      final MethodHandle handle = TRUSTED_LOOKUP.findGetter(clazz, fieldName, fieldType);
 
       return (T) handle.invoke(object); // invoking it
     } catch (final Throwable throwable) {
@@ -163,7 +162,7 @@ public final class Reflections {
       if (methodHandleMap.containsKey(methodName)) {
         return methodHandleMap.get(methodName);
       } else {
-        final MethodHandle handle = LOOKUP.findVirtual(clazz, methodName, methodType);
+        final MethodHandle handle = TRUSTED_LOOKUP.findVirtual(clazz, methodName, methodType);
 
         methodHandleMap.put(methodName, handle);
 
@@ -184,7 +183,7 @@ public final class Reflections {
       if (methodHandleMap.containsKey(fieldName)) {
         return methodHandleMap.get(fieldName);
       } else {
-        final MethodHandle handle = LOOKUP.findGetter(clazz, fieldName, fieldType);
+        final MethodHandle handle = TRUSTED_LOOKUP.findGetter(clazz, fieldName, fieldType);
 
         methodHandleMap.put(fieldName, handle);
 

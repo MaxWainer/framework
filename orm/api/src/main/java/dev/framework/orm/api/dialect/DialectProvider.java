@@ -31,6 +31,11 @@ public interface DialectProvider {
 
   @NotNull String protectValue(final @NotNull String value);
 
+  default char open() { return '`'; }
+  default char close() { return '`'; }
+
   @NotNull String columnMetaToString(final @NotNull ColumnMeta meta);
+
+  @NotNull String columnMetaAppending(final @NotNull ColumnMeta meta);
 
 }

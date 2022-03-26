@@ -29,13 +29,16 @@ import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.tuple.ImmutableTuple;
 import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.ObjectMapper;
 import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.exception.QueryNotCompletedException;
 import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.query.builder.QueryBuilder;
+import dev.framework.orm.api.ref.ReferenceClass;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -57,16 +60,24 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   private final ConnectionSource connectionSource;
 
   private final ObjectData objectData;
+  private final ReferenceClass<T> referenceClass;
 
-  private QueryBuilder queryBuilder;
+  private final QueryBuilder queryBuilder;
+  private final ObjectMapper<T> objectMapper;
 
   ObjectRepositoryImpl(
       final @NotNull DialectProvider dialectProvider,
       final @NotNull ConnectionSource connectionSource,
-      final @NotNull ObjectData objectData) {
+      final @NotNull ObjectData objectData,
+      final @NotNull ReferenceClass<T> referenceClass,
+      final @NotNull QueryBuilder queryBuilder,
+      final @NotNull ObjectMapper<T> objectMapper) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;
     this.objectData = objectData;
+    this.referenceClass = referenceClass;
+    this.queryBuilder = queryBuilder;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -82,13 +93,12 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    @Language("SQL") final String query = String.format("SELECT * FROM %s WHERE %s=?",
-        dialectProvider.protectValue(tableMeta.identifier()),
-        dialectProvider.protectValue(tableMeta.identifyingColumn().identifier()));
+    final @NotNull String query = "";
 
     final List<T> list = connectionSource
         .executeWithResult(query,
-            appender -> appender.next(i),
+            appender -> {
+            },
             result -> {
               final List<T> out = new ArrayList<>();
 
@@ -98,11 +108,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
                   for (final ColumnMeta meta : tableMeta) {
                     final Optional optional = result.readColumn(meta);
 
-                    if (optional.isPresent()) {
-                      linkedList.add(optional.get());
-                    } else {
-                      linkedList.add(null);
-                    }
+                    linkedList.add(optional.orElse(null));
                   }
 
                   final Constructor<?> constructor = objectData.targetConstructor();
@@ -125,8 +131,6 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   @Override
   public @NotNull List<T> listAll() {
     final List<T> list = new ArrayList<>();
-
-
 
     return null;
   }

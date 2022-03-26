@@ -24,8 +24,10 @@
 
 package dev.framework.orm.api.data.meta;
 
+import dev.framework.commons.exception.NotImplementedYet;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.annotation.ForeignKey;
 import java.lang.reflect.Field;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +45,14 @@ public interface ColumnMeta extends ObjectMeta<String> {
 
   boolean identifying();
 
+  default boolean foreign() {
+    throw new NotImplementedYet();
+  }
+
+  default @NotNull BaseForeignKey foreignKeyOptions() {
+    throw new NotImplementedYet();
+  }
+
   @Nullable BaseJsonMap mapOptions();
 
   @Nullable BaseJsonCollection collectionOptions();
@@ -57,6 +67,19 @@ public interface ColumnMeta extends ObjectMeta<String> {
 
   default @NotNull ColumnMeta.BaseColumn.BaseColumnOptions options() {
     return baseColumn().options();
+  }
+
+  interface BaseForeignKey {
+
+    @NotNull
+    String foreignField();
+
+    @NotNull String targetTable();
+
+    @NotNull ForeignKey.Action onDelete();
+
+    @NotNull ForeignKey.Action onUpdate();
+
   }
 
   interface BaseGenericType {

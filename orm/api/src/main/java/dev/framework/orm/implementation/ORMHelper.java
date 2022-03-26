@@ -34,6 +34,7 @@ import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
@@ -41,6 +42,12 @@ final class ORMHelper {
 
   private ORMHelper() {
     Exceptions.instantiationError();
+  }
+
+  static ColumnMeta[] filterAppending(final @NotNull ColumnMeta[] metas) {
+    return Arrays.stream(metas)
+        .filter(it -> it.foreign() || it.primaryKey())
+        .toArray(ColumnMeta[]::new);
   }
 
   static Object handleConstructor(

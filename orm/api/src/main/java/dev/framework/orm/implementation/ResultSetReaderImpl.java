@@ -48,15 +48,23 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 final class ResultSetReaderImpl implements ResultSetReader {
 
   private final ResultSet resultSet;
   private final ORMFacade facade;
+  private final String joinPrefix;
 
-  ResultSetReaderImpl(final @NotNull ResultSet resultSet, final @NotNull ORMFacade facade) {
+  ResultSetReaderImpl(final @NotNull ResultSet resultSet, final @NotNull ORMFacade facade,
+      final @Nullable String joinPrefix) {
     this.resultSet = resultSet;
     this.facade = facade;
+    this.joinPrefix = joinPrefix;
+  }
+
+  ResultSetReaderImpl(final @NotNull ResultSet resultSet, final @NotNull ORMFacade facade) {
+    this(resultSet, facade, null);
   }
 
   @Override
@@ -66,22 +74,22 @@ final class ResultSetReaderImpl implements ResultSetReader {
 
   @Override
   public OptionalLong readLong(@NotNull String column) throws SQLException {
-    return OptionalLong.of(resultSet.getLong(column));
+    return OptionalLong.of(resultSet.getLong(prefixed(column)));
   }
 
   @Override
   public OptionalInt readInt(@NotNull String column) throws SQLException {
-    return OptionalInt.of(resultSet.getInt(column));
+    return OptionalInt.of(resultSet.getInt(prefixed(column)));
   }
 
   @Override
   public OptionalDouble readDouble(@NotNull String column) throws SQLException {
-    return OptionalDouble.of(resultSet.getDouble(column));
+    return OptionalDouble.of(resultSet.getDouble(prefixed(column)));
   }
 
   @Override
   public boolean readBoolean(@NotNull String column) throws SQLException {
-    return resultSet.getBoolean(column);
+    return resultSet.getBoolean(prefixed(column));
   }
 
   @Override
@@ -185,7 +193,7 @@ final class ResultSetReaderImpl implements ResultSetReader {
 
   @Override
   public @NotNull Optional<String> readString(@NotNull String column) throws SQLException {
-    return Optional.ofNullable(resultSet.getString(column));
+    return Optional.ofNullable(resultSet.getString(prefixed(column)));
   }
 
   private <T extends RepositoryObject> Optional<T> readJsonAdaptive0(
@@ -205,21 +213,25 @@ final class ResultSetReaderImpl implements ResultSetReader {
     }
 
     if (Types.asBoxedPrimitive(type) == Long.class) {
-      return resultSet.getLong(column);
+      return resultSet.getLong(prefixed(column));
     }
 
     if (Types.asBoxedPrimitive(type) == Integer.class) {
-      return resultSet.getInt(column);
+      return resultSet.getInt(prefixed(column));
     }
 
     if (Types.asBoxedPrimitive(type) == Double.class) {
-      return resultSet.getDouble(column);
+      return resultSet.getDouble(prefixed(column));
     }
 
     if (Types.asBoxedPrimitive(type) == String.class) {
-      return resultSet.getString(column);
+      return resultSet.getString(prefixed(column));
     }
 
     return null;
+  }
+
+  private @NotNull String prefixed(final @NotNull String column) {
+    return joinPrefix == null ? column : joinPrefix + '.' + column;
   }
 }

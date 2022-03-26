@@ -1,0 +1,112 @@
+package dev.framework.orm.implementation;
+
+import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.query.types.AlterTableQuery;
+import dev.framework.orm.api.query.types.Query;
+import org.jetbrains.annotations.NotNull;
+
+final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implements AlterTableQuery {
+
+  private boolean table = false;
+
+  AlterTableQueryImpl(
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
+    super(dialectProvider, connectionSource);
+
+    builder.append("ALTER TABLE ");
+  }
+
+  @Override
+  public AlterTableQuery withCheck() {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("WITH CHECK ");
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery withNoCheck() {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("WITH NOCHECK ");
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery dropColumn(@NotNull String column) {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("DROP COLUMN ").append(column);
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery alterColumn(@NotNull ColumnMeta columnMeta) {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("ALTER COLUMN ");
+
+    if (columnMeta.foreign() || columnMeta.primaryKey()) {
+      builder.append(dialectProvider.columnMetaAppending(columnMeta));
+    } else {
+      builder.append(dialectProvider.columnMetaToString(columnMeta));
+    }
+
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery add(@NotNull String syntax) {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("ADD ").append(syntax).append(" ");
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery renameTo(@NotNull String newTableName) {
+    if (!table) {
+      return this;
+    }
+
+    builder.append("RENAME TO ").append(dialectProvider.protectValue(newTableName));
+    return this;
+  }
+
+  @Override
+  public AlterTableQuery table(@NotNull String table) {
+    if (check()) {
+      return this;
+    }
+
+    if (!this.table) {
+      builder.append(table).append(" ");
+
+      this.table = true;
+    }
+    return this;
+  }
+
+  @Override
+  protected boolean subQuerySupported(@NotNull Query<?> sub) {
+    return false;
+  }
+
+  @Override
+  protected boolean check() {
+    return table;
+  }
+}

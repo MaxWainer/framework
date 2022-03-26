@@ -28,6 +28,7 @@ import dev.framework.commons.Types;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn.BaseColumnOptions;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.dialect.DialectProvider;
 import org.jetbrains.annotations.NotNull;
 
@@ -89,5 +90,31 @@ final class SQLiteDialectProvider implements DialectProvider {
         meta.primaryKey() ? "PRIMARY KEY" : "",
         options.unique() ? "UNIQUE KEY" : ""
     ).trim();
+  }
+
+  @Override
+  public @NotNull String columnMetaAppending(@NotNull ColumnMeta meta) {
+    if (!meta.foreign() || !meta.primaryKey()) {
+      return "";
+    }
+
+    if (meta.foreign()) {
+      final BaseForeignKey foreignKey = meta.foreignKeyOptions();
+
+      return String.format(
+          "FOREIGN KEY %s REFERENCES %s %s ON DELETE %s ON UPDATE %s",
+          protectValue(meta.identifier()),
+          protectValue(foreignKey.foreignField()),
+          protectValue(foreignKey.targetTable()),
+          foreignKey.onDelete(),
+          foreignKey.onUpdate()
+      );
+    }
+
+    if (meta.primaryKey()) {
+      return String.format("PRIMARY KEY (%s)", protectValue(meta.identifier()));
+    }
+
+    return "";
   }
 }
