@@ -119,6 +119,8 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
   @Override
   public @NotNull List<T> listAll() {
+    final List<T> list = new ArrayList<>();
+
 
 
     return null;

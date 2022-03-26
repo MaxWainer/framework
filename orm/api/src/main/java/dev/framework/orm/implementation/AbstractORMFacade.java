@@ -167,7 +167,11 @@ public abstract class AbstractORMFacade implements ORMFacade {
             });
 
     for (final Entry<ObjectData, ImmutableTuple<Class<? extends RepositoryObject>, Version>> entry : restoreMap.entrySet()) {
-      tableUpdater().updateTable(entry.getValue().key(), entry.getKey(), entry.getValue().value());
+      try {
+        tableUpdater().updateTable(entry.getValue().key(), entry.getKey(), entry.getValue().value());
+      } catch (MissingRepositoryException e) {
+        e.printStackTrace();
+      }
     }
 
     repositoryCache.values().forEach(ObjectRepository::createTable);

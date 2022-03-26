@@ -46,7 +46,7 @@ final class SQLiteTableUpdater implements TableUpdater {
       @NotNull Class<? extends RepositoryObject> clazz,
       @NotNull ObjectData objectData,
       @NotNull Version version) {
-    final ObjectData data = facade.findData(possibleClass)
+    final ObjectData data = facade.findData(clazz)
         .orElseThrow(RuntimeException::new);
 
     // create columns string (old)
@@ -71,7 +71,6 @@ final class SQLiteTableUpdater implements TableUpdater {
 
     final String temporaryTableDelete = String.format("");
 
-    facade.replaceData(data, newMeta);
   }
 
   private @NotNull String createColumnsString(final @NotNull TableMeta tableMeta) {

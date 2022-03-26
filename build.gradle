@@ -72,10 +72,10 @@ subprojects {
     implementation 'com.google.code.gson:gson:2.9.0'
 
     // kyori
-    implementation 'net.kyori:adventure-api:4.10.1'
-    implementation 'net.kyori:adventure-text-serializer-legacy:4.10.1'
-    implementation 'net.kyori:adventure-text-serializer-gson:4.10.1'
-    implementation 'net.kyori:adventure-text-serializer-plain:4.10.1'
+    compileOnly 'net.kyori:adventure-api:4.10.1'
+    compileOnly 'net.kyori:adventure-text-serializer-legacy:4.10.1'
+    compileOnly 'net.kyori:adventure-text-serializer-gson:4.10.1'
+    compileOnly 'net.kyori:adventure-text-serializer-plain:4.10.1'
 
     // testing utils
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
@@ -96,6 +96,19 @@ subprojects {
   license {
     header = rootProject.file('HEADER.txt')
     include '**/*.java'
+  }
+
+  publishing {
+    // setup publication
+    publications {
+      mavenJava(MavenPublication) {
+        artifactId = project.name
+        groupId = 'io.github.maxwainer'
+        version = '0.0.2'
+
+        from components.java
+      }
+    }
   }
 
   // central publishing start

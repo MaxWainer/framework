@@ -7,6 +7,6 @@ subprojects {
 
     compileOnly 'org.spigotmc:spigot:1.12.2-R0.1-SNAPSHOT'
 
-    implementation 'net.kyori:adventure-platform-bukkit:4.0.1'
+    compileOnly 'net.kyori:adventure-platform-bukkit:4.0.1'
   }
 }

@@ -1,5 +1,7 @@
 group 'dev.framework.bukkit.implementation.command'
 
 dependencies {
-  //compileOnly project(':bukkit:bukkit-bootstrap-implementation')
+  compileOnly project(':bukkit:framework-bukkit-bootstrap-implementation')
+  compileOnly project(':framework-bootstrap')
+  compileOnly project(':framework-commands')
 }
