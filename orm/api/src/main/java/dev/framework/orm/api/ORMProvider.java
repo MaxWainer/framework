@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ORMProvider {
 
-
   @Internal
   Set<String> LOADING_BLACKLIST_NAMES = MoreSets.newImmutableHashSet(
       "dev.framework.orm.jdbcUrl",

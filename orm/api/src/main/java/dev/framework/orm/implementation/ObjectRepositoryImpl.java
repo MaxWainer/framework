@@ -30,6 +30,7 @@ import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.tuple.ImmutableTuple;
 import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.ObjectResolver;
 import dev.framework.orm.api.data.ObjectData;
@@ -65,18 +66,16 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
   private final ObjectResolver<T> objectResolver;
 
   ObjectRepositoryImpl(
-      final @NotNull DialectProvider dialectProvider,
-      final @NotNull ConnectionSource connectionSource,
-      final @NotNull ObjectData objectData,
+      final @NotNull ORMFacade facade,
+      final @NotNull ObjectResolver<T> resolver,
       final @NotNull ReferenceClass<T> referenceClass,
-      final @NotNull QueryFactory queryFactory,
-      final @NotNull ObjectResolver<T> objectResolver) {
-    this.dialectProvider = dialectProvider;
-    this.connectionSource = connectionSource;
+      final @NotNull ObjectData objectData) {
+    this.dialectProvider = facade.dialectProvider();
+    this.connectionSource = facade.connectionSource();
     this.objectData = objectData;
     this.referenceClass = referenceClass;
-    this.queryFactory = queryFactory;
-    this.objectResolver = objectResolver;
+    this.queryFactory = facade.queryFactory();
+    this.objectResolver = resolver;
   }
 
   @Override

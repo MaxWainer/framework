@@ -9,6 +9,10 @@ public interface ObjectDataRegistry {
 
   @NotNull Optional<ObjectData> findData(final @NotNull Class<? extends RepositoryObject> clazz);
 
+  default @NotNull ObjectData findDataOrThrow(final @NotNull Class<? extends RepositoryObject> clazz) {
+    return findData(clazz).orElseThrow(UnknownError::new);
+  }
+
   void registerObjectData(final @NotNull Class<? extends RepositoryObject> clazz,
       final @NotNull ObjectData objectData);
 

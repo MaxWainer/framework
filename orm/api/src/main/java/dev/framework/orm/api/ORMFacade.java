@@ -29,6 +29,7 @@ import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.registry.ObjectDataRegistry;
 import dev.framework.orm.api.registry.ObjectRepositoryRegistry;
+import dev.framework.orm.api.registry.ObjectResolverRegistry;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.update.TableUpdater;
@@ -51,6 +52,8 @@ public interface ORMFacade extends Closeable {
    */
   @NotNull ObjectDataRegistry objectDataRegistry();
 
+  @NotNull ObjectResolverRegistry resolverRegistry();
+
   @NotNull JsonAdapterRepository jsonAdaptersRepository();
 
   @NotNull ColumnTypeAdapterRepository columnTypeAdaptersRepository();
@@ -63,7 +66,7 @@ public interface ORMFacade extends Closeable {
 
   @NotNull DialectProvider dialectProvider();
 
-  @NotNull ObjectDataFactory dataFactory();
+  @NotNull ObjectDataFactory objectDataFactory();
 
   @NotNull ReferenceClassFactory referenceClassFactory();
 
