@@ -1,5 +1,6 @@
 package dev.framework.orm.implementation;
 
+import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.types.Query;
 import dev.framework.orm.api.query.types.UpdateQuery;
@@ -12,8 +13,9 @@ final class UpdateQueryImpl extends AbstractWhereOptions<UpdateQuery> implements
   private boolean set = false;
 
   UpdateQueryImpl(
-      @NotNull DialectProvider dialectProvider) {
-    super(dialectProvider);
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
+    super(dialectProvider, connectionSource);
 
     builder.append("UPDATE ");
   }

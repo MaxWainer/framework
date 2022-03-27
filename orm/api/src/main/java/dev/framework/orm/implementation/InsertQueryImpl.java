@@ -1,6 +1,6 @@
 package dev.framework.orm.implementation;
 
-import dev.framework.commons.Strings;
+import dev.framework.commons.MoreStrings;
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.types.InsertQuery;
@@ -15,8 +15,8 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
   private boolean values = false;
 
   InsertQueryImpl(
-      @NotNull ConnectionSource connectionSource,
-      @NotNull DialectProvider dialectProvider) {
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
     builder.append("INSERT INTO ");
@@ -33,7 +33,7 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
     }
 
     if (!values) {
-      builder.append("VALUES").append(Strings.repeatJoining(count, "?", ",", "(", ")"));
+      builder.append("VALUES").append(MoreStrings.repeatJoining(count, "?", ",", "(", ")"));
 
       values = true;
     }

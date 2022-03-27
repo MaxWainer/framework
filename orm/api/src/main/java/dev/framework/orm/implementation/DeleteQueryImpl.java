@@ -1,5 +1,6 @@
 package dev.framework.orm.implementation;
 
+import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.types.DeleteQuery;
 import dev.framework.orm.api.query.types.Query;
@@ -11,8 +12,9 @@ final class DeleteQueryImpl extends AbstractWhereOptions<DeleteQuery> implements
   private boolean table = false;
 
   DeleteQueryImpl(
-      @NotNull DialectProvider dialectProvider) {
-    super(dialectProvider);
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
+    super(dialectProvider, connectionSource);
   }
 
   @Override

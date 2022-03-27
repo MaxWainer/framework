@@ -26,8 +26,6 @@ package dev.framework.orm.example;
 
 import com.google.common.collect.Maps;
 import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.ObjectRepository;
-import dev.framework.orm.api.adapter.simple.StringColumnTypeAdapter;
 import dev.framework.orm.api.annotation.Column;
 import dev.framework.orm.api.annotation.Column.ColumnOptions;
 import dev.framework.orm.api.annotation.IdentifierField;
@@ -51,7 +49,7 @@ public class ExampleRun {
       throws MetaConstructionException, MissingAnnotationException, IOException, MissingRepositoryException, QueryNotCompletedException {
     try (final SQLiteORMFacade facade = new SQLiteORMFacade(ConnectionCredentials.of(
         "jdbc:sqlite:database.db", "", "", Maps.newHashMap()))) {
-      final String ready = facade.queryBuilder()
+      final String ready = facade.queryFactory()
           .select()
           .everything()
           .from("example")

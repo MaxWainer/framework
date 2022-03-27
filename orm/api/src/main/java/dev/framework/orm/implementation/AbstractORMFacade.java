@@ -32,6 +32,7 @@ import dev.framework.commons.tuple.Tuples;
 import dev.framework.commons.version.Version;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ObjectRepository;
+import dev.framework.orm.api.ReferenceClassFactory;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.exception.MetaConstructionException;
@@ -51,18 +52,24 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractORMFacade implements ORMFacade {
 
-  public static final String OBJECT_INFO_TABLE_NAME = "_DEV_FRMWRK_ObjectInfo";
+  private static final String OBJECT_INFO_TABLE_NAME = "_DEV_FRMWRK_ObjectInfo";
 
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectData> objectDataCache =
-      OptionalMaps.newConcurrentMap();
+  private final
+  OptionalMap<Class<? extends RepositoryObject>, ObjectData>
+      objectDataCache = OptionalMaps.newConcurrentMap();
 
-  private final OptionalMap<Class<? extends RepositoryObject>, ObjectRepository<?, ?>>
+  private final
+  OptionalMap<Class<? extends RepositoryObject>, ObjectRepository<?, ?>>
       repositoryCache = OptionalMaps.newConcurrentMap();
 
-  private final ObjectDataFactory dataFactory = new ObjectDataFactoryImpl();
+  private final ObjectDataFactory dataFactory =
+      new ObjectDataFactoryImpl();
   private final ColumnTypeAdapterRepository columnTypeAdapters =
       new ColumnTypeAdapterRepositoryImpl();
-  private final JsonAdapterRepository jsonAdapters = new JsonAdapterRepositoryImpl();
+  private final JsonAdapterRepository jsonAdapters =
+      new JsonAdapterRepositoryImpl();
+  private final ReferenceClassFactory referenceClassFactory =
+      new CachedReferenceClassFactory(dataFactory);
 
   private final QueryFactory queryFactory;
 
@@ -71,43 +78,13 @@ public abstract class AbstractORMFacade implements ORMFacade {
   }
 
   @Override
-  public <I, O extends RepositoryObject<I>> void registerRepository(
-      @NotNull Class<? extends O> clazz, @NotNull ObjectRepository<I, O> repository) {
-    repositoryCache.put(clazz, repository);
-  }
-
-  @Override
-  public <I, O extends RepositoryObject<I>> void registerRepository(
-      @NotNull Class<? extends O> clazz)
-      throws MissingAnnotationException, MetaConstructionException {
-//    final ObjectData objectData = dataFactory.createFromClass(clazz);
-//    final ObjectRepository<I, O> repository = new ObjectRepositoryImpl<>(dialectProvider(),
-//        connectionSource(), objectData, referenceClass, queryBuilder, objectMapper);
-//
-//    repositoryCache.put(clazz,
-//        repository);
-  }
-
-  @Override
-  public @NotNull <I, O extends RepositoryObject<I>> ObjectRepository<I, O> findRepository(
-      @NotNull Class<? extends O> clazz) throws MissingRepositoryException {
-    return (ObjectRepository<I, O>)
-        repositoryCache.get(clazz).orElseThrow(() -> new MissingRepositoryException(clazz));
-  }
-
-  @Override
-  public @NotNull JsonAdapterRepository jsonAdapters() {
+  public @NotNull JsonAdapterRepository jsonAdaptersRepository() {
     return this.jsonAdapters;
   }
 
   @Override
-  public @NotNull ColumnTypeAdapterRepository columnTypeAdapters() {
+  public @NotNull ColumnTypeAdapterRepository columnTypeAdaptersRepository() {
     return this.columnTypeAdapters;
-  }
-
-  @Override
-  public @NotNull Optional<ObjectData> findData(@NotNull Class<? extends RepositoryObject> clazz) {
-    return objectDataCache.get(clazz);
   }
 
   @Override
@@ -157,7 +134,7 @@ public abstract class AbstractORMFacade implements ORMFacade {
 
                   final Class<? extends RepositoryObject> classPath =
                       (Class<? extends RepositoryObject>) Class.forName(rawClassPath);
-                  final Version version = Version.parseSequence(rawVersion);
+                  final Version version = Version.parse(rawVersion);
 
                   final ObjectData data = dataFactory.createFromClass(classPath);
                   final Version localVersion = data.version();
@@ -186,7 +163,7 @@ public abstract class AbstractORMFacade implements ORMFacade {
   }
 
   @Override
-  public @NotNull QueryFactory queryBuilder() {
+  public @NotNull QueryFactory queryFactory() {
     return queryFactory;
   }
 
@@ -238,5 +215,10 @@ public abstract class AbstractORMFacade implements ORMFacade {
                   .nextString(tuple.value().version().asString())
           ).join();
     }
+  }
+
+  @Override
+  public @NotNull ReferenceClassFactory referenceClassFactory() {
+    return referenceClassFactory;
   }
 }

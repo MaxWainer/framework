@@ -142,7 +142,7 @@ final class StatementAppenderImpl implements StatementAppender {
 
       final Class<? extends JsonObjectAdapter> adapter = serializable.value();
 
-      final JsonObjectAdapter instance = facade.jsonAdapters()
+      final JsonObjectAdapter instance = facade.jsonAdaptersRepository()
           .adapterInstance(adapter)
           .orElseThrow(() -> new UnknownAdapterException(adapter));
 
@@ -157,7 +157,7 @@ final class StatementAppenderImpl implements StatementAppender {
   @Override
   public <T extends RepositoryObject> StatementAppender nextJsonAdaptive(@NotNull T t)
       throws SQLException, UnknownAdapterException {
-    return nextString(facade.jsonAdapters().toJson(t));
+    return nextString(facade.jsonAdaptersRepository().toJson(t));
   }
 
   private boolean typeWrite(final @NotNull Object content)
@@ -166,7 +166,7 @@ final class StatementAppenderImpl implements StatementAppender {
       return true;
     }
 
-    final Optional<ColumnTypeAdapter<?, ?>> optional = facade.columnTypeAdapters()
+    final Optional<ColumnTypeAdapter<?, ?>> optional = facade.columnTypeAdaptersRepository()
         .find(content.getClass());
 
     if (!optional.isPresent()) {

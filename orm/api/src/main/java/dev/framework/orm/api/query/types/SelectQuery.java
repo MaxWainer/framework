@@ -1,5 +1,6 @@
 package dev.framework.orm.api.query.types;
 
+import dev.framework.orm.api.data.meta.TableMeta;
 import org.jetbrains.annotations.NotNull;
 
 public interface SelectQuery extends WhereOptions<SelectQuery>, TableScope<SelectQuery> {
@@ -7,6 +8,10 @@ public interface SelectQuery extends WhereOptions<SelectQuery>, TableScope<Selec
   SelectQuery everything();
 
   default SelectQuery from(final @NotNull String table) {
+    return table(table);
+  }
+
+  default SelectQuery from(final @NotNull TableMeta table) {
     return table(table);
   }
 

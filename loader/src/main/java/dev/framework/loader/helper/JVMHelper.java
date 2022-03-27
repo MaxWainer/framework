@@ -24,8 +24,8 @@
 
 package dev.framework.loader.helper;
 
-import dev.framework.commons.Exceptions;
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.StaticLogger;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 public final class JVMHelper {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+  private static final Logger LOGGER = StaticLogger.getLogger();
 
   private static final Set<JavaVersion> REFLECTION_LOADABLE_VERSION = EnumSet.of(
       JavaVersion.JAVA_8
@@ -56,7 +56,7 @@ public final class JVMHelper {
   public static final JavaVersion CURRENT_VERSION = detectVersion();
 
   private JVMHelper() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static boolean isReflectionSupported() {

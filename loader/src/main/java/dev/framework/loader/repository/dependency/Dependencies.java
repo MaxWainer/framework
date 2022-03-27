@@ -24,14 +24,14 @@
 
 package dev.framework.loader.repository.dependency;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public final class Dependencies {
 
   private Dependencies() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static @NotNull String fileNameOf(final @NotNull Dependency dependency,

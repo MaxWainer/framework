@@ -94,7 +94,6 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
 
   private static Class<? extends RepositoryObject> restoreClass(
       final @NotNull Class<? extends RepositoryObject> clazz) throws MetaConstructionException {
-    final Class<? extends RepositoryObject> readingClass;
     // check is it abstract class or interface
     if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
       final TargetImplementation targetImplementation = clazz.getAnnotation(

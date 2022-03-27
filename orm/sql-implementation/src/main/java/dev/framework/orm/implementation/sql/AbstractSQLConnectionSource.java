@@ -49,7 +49,7 @@ public abstract class AbstractSQLConnectionSource extends AbstractConnectionSour
       @NotNull ConnectionCredentials connectionCredentials) {
     final HikariConfig config = new HikariConfig();
 
-    final String link = connectionCredentials.connectionLink();
+    final String link = connectionCredentials.jdbcUrl();
 
     config.setJdbcUrl(link);
 

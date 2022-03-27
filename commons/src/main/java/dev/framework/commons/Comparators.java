@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Comparators {
 
   private Comparators() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <E extends Enum<E>> @NotNull Comparator<E> enumOrdinalComparator() {

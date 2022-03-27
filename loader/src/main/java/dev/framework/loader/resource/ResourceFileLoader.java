@@ -27,7 +27,7 @@ package dev.framework.loader.resource;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.loader.repository.dependency.Dependency;
 import java.io.IOException;
 import java.io.Reader;
@@ -39,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
 public final class ResourceFileLoader {
 
   private ResourceFileLoader() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static ResourceFile readFile(

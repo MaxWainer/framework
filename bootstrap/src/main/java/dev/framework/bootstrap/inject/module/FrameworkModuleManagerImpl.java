@@ -26,10 +26,10 @@ package dev.framework.bootstrap.inject.module;
 
 import dev.framework.bootstrap.inject.module.annotation.ModuleInfo;
 import dev.framework.commons.Comparators;
-import dev.framework.commons.Exceptions;
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.StaticLogger;
 import dev.framework.commons.Measure;
-import dev.framework.commons.unmodifiable.UnmodifiableCollectors;
+import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+  private static final Logger LOGGER = StaticLogger.getLogger();
 
   private final ModuleInjector moduleInjector;
 
@@ -52,7 +52,7 @@ final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
     final ModuleInfo info = module.getClass().getAnnotation(ModuleInfo.class);
 
     if (info == null) {
-      Exceptions.nagAuthor("Module " + module.getClass().getName() + ", is not annotated with "
+      MoreExceptions.nagAuthor("Module " + module.getClass().getName() + ", is not annotated with "
           + ModuleInfo.class.getName() + "!");
     }
 
@@ -119,7 +119,7 @@ final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
         .stream()
         .map(module -> new WrappedFrameworkModule(module, readInfo(module)))
         .sorted(FrameworkModuleComparator.INSTANCE)
-        .collect(UnmodifiableCollectors.set());
+        .collect(ImmutableCollectors.set());
   }
 
   private static final class WrappedFrameworkModule {

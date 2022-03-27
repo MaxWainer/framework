@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ObjectDataFactory {
 
-  @NotNull ObjectData createFromClass(final @NotNull Class<? extends RepositoryObject> clazz) throws MissingAnnotationException, MetaConstructionException;
+  @NotNull ObjectData createFromClass(final @NotNull Class<? extends RepositoryObject> clazz)
+      throws MissingAnnotationException, MetaConstructionException;
 
 }

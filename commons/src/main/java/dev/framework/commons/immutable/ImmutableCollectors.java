@@ -22,43 +22,46 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons;
+package dev.framework.commons.immutable;
 
-import java.util.function.Function;
-import java.util.function.Predicate;
+import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.annotation.UtilityClass;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import org.jetbrains.annotations.NotNull;
 
-public final class Exceptions {
+@UtilityClass
+public final class ImmutableCollectors {
 
-  private Exceptions() {
-    instantiationError();
+  private ImmutableCollectors() {
+    MoreExceptions.instantiationError();
   }
 
-  public static void instantiationError() {
-    throw new AssertionError("Utility class cannot be instantiated!");
+  public static <T> Collector<T, ?, Set<T>> set() {
+    return set0(HashSet::new);
   }
 
-  public static void nagAuthor(final @NotNull String detailedMessage) {
-    throw new NagAuthorException(detailedMessage);
+  public static <T> Collector<T, ?, Set<T>> linkedSet() {
+    return set0(LinkedHashSet::new);
   }
 
-  public static <T, X extends Throwable> T checkObject(
-      final T object,
-      final @NotNull Predicate<T> predicate,
-      final @NotNull Function<T, X> exceptionFactory) throws X {
-    if (!predicate.test(object)) {
-      throw exceptionFactory.apply(object);
-    }
-
-    return object;
-  }
-
-  // we're going to keep it private, to avoid ignoring them
-  private static final class NagAuthorException extends RuntimeException {
-
-    NagAuthorException(final @NotNull String message) {
-      super(message);
-    }
+  private static <T> Collector<T, ?, Set<T>> set0(final @NotNull Supplier<Set<T>> setFactory) {
+    return Collector.of(setFactory,
+        Set::add,
+        (left, right) -> {
+          if (left.size() < right.size()) {
+            right.addAll(left);
+            return right;
+          } else {
+            left.addAll(right);
+            return left;
+          }
+        }, Collections::unmodifiableSet,
+        Collector.Characteristics.UNORDERED);
   }
 
 }

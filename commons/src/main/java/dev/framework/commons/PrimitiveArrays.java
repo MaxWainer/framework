@@ -34,7 +34,7 @@ import org.jetbrains.annotations.UnknownNullability;
 public final class PrimitiveArrays {
 
   private PrimitiveArrays() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <T> T[] appendHead(final @NotNull T @NonNls [] array,

@@ -147,7 +147,7 @@ final class ResultSetReaderImpl implements ResultSetReader {
 
       final Class<? extends JsonObjectAdapter> adapter = serializable.value();
 
-      final JsonObjectAdapter instance = facade.jsonAdapters()
+      final JsonObjectAdapter instance = facade.jsonAdaptersRepository()
           .adapterInstance(adapter)
           .orElseThrow(() -> new UnknownAdapterException(adapter));
 
@@ -166,13 +166,13 @@ final class ResultSetReaderImpl implements ResultSetReader {
       return Optional.empty();
     }
 
-    return Optional.ofNullable(facade.jsonAdapters().fromJson(optionalRaw.get(), type));
+    return Optional.ofNullable(facade.jsonAdaptersRepository().fromJson(optionalRaw.get(), type));
   }
 
   @Override
   public <T> Optional<T> readColumnAdaptive(@NotNull String column, @NotNull Class<T> type)
       throws SQLException {
-    final Optional<ColumnTypeAdapter<?, ?>> optAdapter = facade.columnTypeAdapters().find(type);
+    final Optional<ColumnTypeAdapter<?, ?>> optAdapter = facade.columnTypeAdaptersRepository().find(type);
 
     if (!optAdapter.isPresent()) {
       return Optional.empty();

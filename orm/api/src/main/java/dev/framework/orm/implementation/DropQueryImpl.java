@@ -11,8 +11,8 @@ final class DropQueryImpl extends AbstractQuery<DropQuery> implements DropQuery 
   private boolean table = false;
 
   DropQueryImpl(
-      @NotNull ConnectionSource connectionSource,
-      @NotNull DialectProvider dialectProvider) {
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
     builder.append("DROP TABLE ");

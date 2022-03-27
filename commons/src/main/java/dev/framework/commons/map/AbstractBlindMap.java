@@ -26,9 +26,8 @@ package dev.framework.commons.map;
 
 import dev.framework.commons.tuple.ImmutableTuple;
 import dev.framework.commons.tuple.Tuples;
-import dev.framework.commons.unmodifiable.UnmodifiableCollectors;
+import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -103,6 +102,6 @@ abstract class AbstractBlindMap<K, V> implements BlindMap<K, V> {
   public @NotNull @Unmodifiable Set<ImmutableTuple<K, V>> entrySet() {
     return delegate.entrySet().stream()
         .map(entry -> Tuples.immutable(entry.getKey(), entry.getValue()))
-        .collect(UnmodifiableCollectors.set());
+        .collect(ImmutableCollectors.set());
   }
 }

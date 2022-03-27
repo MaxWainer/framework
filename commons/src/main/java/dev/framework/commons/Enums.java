@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Enums {
 
   private Enums() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <E extends Enum<E>> List<E> reversedEnumValues(final @NotNull Class<E> eClass) {

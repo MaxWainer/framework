@@ -30,7 +30,7 @@ import dev.framework.commons.annotation.UtilityClass;
 public final class MoreMaths {
 
   private MoreMaths() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   // maxValue - 100

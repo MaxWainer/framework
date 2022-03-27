@@ -2,6 +2,7 @@ package dev.framework.orm.api.query;
 
 import dev.framework.orm.api.query.types.AlterTableQuery;
 import dev.framework.orm.api.query.types.CreateTableQuery;
+import dev.framework.orm.api.query.types.DeleteQuery;
 import dev.framework.orm.api.query.types.DropQuery;
 import dev.framework.orm.api.query.types.InsertQuery;
 import dev.framework.orm.api.query.types.SelectQuery;
@@ -21,5 +22,7 @@ public interface QueryFactory {
   @NotNull InsertQuery insert();
 
   @NotNull AlterTableQuery alterTable();
+
+  @NotNull DeleteQuery delete();
 
 }

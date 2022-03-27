@@ -24,7 +24,7 @@
 
 package dev.framework.loader.loadstrategy.version;
 
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.StaticLogger;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractClassLoadingStrategy implements ClassLoadingStrategy {
 
-  static final Logger LOGGER = LoggerCompat.getLogger();
+  static final Logger LOGGER = StaticLogger.getLogger();
 
   protected final URLClassLoader providedClassLoader;
 

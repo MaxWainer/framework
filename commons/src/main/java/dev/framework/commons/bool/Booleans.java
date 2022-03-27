@@ -24,7 +24,7 @@
 
 package dev.framework.commons.bool;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public final class Booleans {
   }
 
   private Booleans() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static Boolean parseBooleanStrict(final @NotNull String input) {

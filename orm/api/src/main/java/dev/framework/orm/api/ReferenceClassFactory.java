@@ -6,8 +6,9 @@ import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.ref.ReferenceClass;
 import org.jetbrains.annotations.NotNull;
 
-public interface ReferenceClassFactory<T extends RepositoryObject> {
+public interface ReferenceClassFactory {
 
-  @NotNull ReferenceClass<T> createReference(final @NotNull Class<T> clazz) throws MissingAnnotationException, MetaConstructionException;
+  <T extends RepositoryObject> @NotNull ReferenceClass<T> createReference(
+      final @NotNull Class<T> clazz) throws MissingAnnotationException, MetaConstructionException;
 
 }

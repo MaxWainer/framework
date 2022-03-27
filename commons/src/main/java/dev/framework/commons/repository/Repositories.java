@@ -24,7 +24,7 @@
 
 package dev.framework.commons.repository;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 public final class Repositories {
 
   private Repositories() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <V extends RepositoryObject<UUID>>

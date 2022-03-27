@@ -24,7 +24,7 @@
 
 package dev.framework.commons.map;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class OptionalMaps {
 
   private OptionalMaps() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <K, V> OptionalMap<K, V> newConcurrentMap() {

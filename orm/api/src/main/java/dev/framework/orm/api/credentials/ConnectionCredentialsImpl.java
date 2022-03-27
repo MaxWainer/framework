@@ -29,23 +29,23 @@ import org.jetbrains.annotations.NotNull;
 
 final class ConnectionCredentialsImpl implements ConnectionCredentials {
 
-  private final String connectionLink, username, password;
+  private final String jdbcUrl, username, password;
   private final Map<String, Object> options;
 
   ConnectionCredentialsImpl(
-      final @NotNull String connectionLink,
+      final @NotNull String jdbcUrl,
       final @NotNull String username,
       final @NotNull String password,
       final @NotNull Map<String, Object> options) {
-    this.connectionLink = connectionLink;
+    this.jdbcUrl = jdbcUrl;
     this.username = username;
     this.password = password;
     this.options = options;
   }
 
   @Override
-  public @NotNull String connectionLink() {
-    return connectionLink;
+  public @NotNull String jdbcUrl() {
+    return jdbcUrl;
   }
 
   @Override

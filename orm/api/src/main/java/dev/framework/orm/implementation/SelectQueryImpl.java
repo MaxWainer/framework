@@ -1,6 +1,7 @@
 package dev.framework.orm.implementation;
 
 import dev.framework.commons.concurrent.annotation.NotThreadSafe;
+import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.types.CreateTableQuery;
 import dev.framework.orm.api.query.types.DropQuery;
@@ -18,8 +19,8 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
   private String table = null;
   private boolean columns = false;
 
-  SelectQueryImpl(final @NotNull DialectProvider dialectProvider) {
-    super(dialectProvider);
+  SelectQueryImpl(@NotNull DialectProvider dialectProvider, @NotNull ConnectionSource connectionSource) {
+    super(dialectProvider, connectionSource);
   }
 
   @Override

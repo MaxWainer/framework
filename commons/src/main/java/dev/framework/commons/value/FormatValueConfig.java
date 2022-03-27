@@ -25,7 +25,7 @@
 package dev.framework.commons.value;
 
 import dev.framework.commons.Buildable;
-import dev.framework.commons.value.FormatValueConfigImpl.BuilderImpl;
+import dev.framework.commons.value.FormatValueConfigImpl.FormatValueConfigBuilderImpl;
 import java.util.Set;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +33,8 @@ import org.jetbrains.annotations.Unmodifiable;
 
 public interface FormatValueConfig<U> {
 
-  static <T> Builder<T> builder() {
-    return new BuilderImpl<>();
+  static <T> FormatValueConfigBuilder<T> builder() {
+    return new FormatValueConfigBuilderImpl<>();
   }
 
   static <T> FormatValueConfig<T> simple() {
@@ -60,19 +60,19 @@ public interface FormatValueConfig<U> {
     return !allowed(u);
   }
 
-  interface Builder<V> extends Buildable<FormatValueConfig<V>> {
+  interface FormatValueConfigBuilder<V> extends Buildable<FormatValueConfig<V>> {
 
-    Builder<V> exclude(final @NotNull V @NonNls ... units);
+    FormatValueConfigBuilder<V> exclude(final @NotNull V @NonNls ... units);
 
-    Builder<V> allow(final @NotNull V @NonNls ... units);
+    FormatValueConfigBuilder<V> allow(final @NotNull V @NonNls ... units);
 
-    Builder<V> prefix(final @NotNull CharSequence prefix);
+    FormatValueConfigBuilder<V> prefix(final @NotNull CharSequence prefix);
 
-    Builder<V> suffix(final @NotNull CharSequence suffix);
+    FormatValueConfigBuilder<V> suffix(final @NotNull CharSequence suffix);
 
-    Builder<V> delimiter(final @NotNull CharSequence delimiter);
+    FormatValueConfigBuilder<V> delimiter(final @NotNull CharSequence delimiter);
 
-    Builder<V> allowZero(final boolean allowZero);
+    FormatValueConfigBuilder<V> allowZero(final boolean allowZero);
 
   }
 

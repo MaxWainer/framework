@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 public final class Nulls {
 
   private Nulls() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static <V> V getOr(

@@ -4,9 +4,10 @@ import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.exception.QueryNotCompletedException;
 import dev.framework.orm.api.exception.UnsupportedQueryConcatenationQuery;
-import dev.framework.orm.api.query.post.QueryPostProcessor;
+import dev.framework.orm.api.query.QueryResult;
+import dev.framework.orm.api.query.pre.QueryPreProcessor;
 import dev.framework.orm.api.query.types.Query;
-import dev.framework.orm.implementation.QueryPostProcessorImpl.QueryPostProcessorBuilderImpl;
+import dev.framework.orm.implementation.QueryPreProcessorImpl.QueryPreProcessorBuilderImpl;
 import java.util.StringJoiner;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
@@ -66,17 +67,26 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
 
   @NotNull
   @Override
-  public <V> QueryPostProcessor.QueryPostProcessorBuilder<V> execute()
+  public <V> QueryPreProcessor.QueryPreProcessorBuilder<V> preProcess()
       throws QueryNotCompletedException {
-    return new QueryPostProcessorBuilderImpl<>(connectionSource, buildQuery());
+    return new QueryPreProcessorBuilderImpl<>(connectionSource, buildQuery());
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> executeUnexcepting() {
+    return connectionSource.execute(buildQueryUnexcepting());
+  }
+
+  @Override
+  public @NotNull QueryResult<Void> execute() throws QueryNotCompletedException {
+    return connectionSource.execute(buildQuery());
   }
 
   @NotNull
   @Override
   @Internal
-  @Deprecated
-  public <V> QueryPostProcessor.QueryPostProcessorBuilder<V> executeUnexcepting() {
-    return new QueryPostProcessorBuilderImpl<>(connectionSource, buildQueryUnexcepting());
+  public <V> QueryPreProcessor.QueryPreProcessorBuilder<V> preProcessUnexcepting() {
+    return new QueryPreProcessorBuilderImpl<>(connectionSource, buildQueryUnexcepting());
   }
 
   protected @NotNull StringJoiner createJoiner(final @NotNull String delimiter) {
@@ -86,7 +96,6 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
 
   @Override
   @Internal
-  @Deprecated
   public @NotNull String buildQueryUnexcepting() {
     return builder.toString();
   }

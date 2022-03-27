@@ -24,7 +24,7 @@
 
 package dev.framework.loader.repository.implementation;
 
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.StaticLogger;
 import dev.framework.loader.repository.Repository;
 import dev.framework.loader.repository.dependency.Dependencies;
 import dev.framework.loader.repository.dependency.Dependency;
@@ -41,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 abstract class AbstractRepository implements Repository {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+  private static final Logger LOGGER = StaticLogger.getLogger();
 
   private static void loadFromUrl(
       final HttpURLConnection connection,

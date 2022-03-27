@@ -48,7 +48,7 @@ public final class Types {
   }
 
   private Types() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   // contravariance object type as class
@@ -69,14 +69,14 @@ public final class Types {
   }
 
   public static Class<?> unboxed(final @NotNull Class<?> clazz) {
-    return Exceptions.checkObject(
+    return MoreExceptions.checkObject(
         BOXED_TO_PRIMITIVE.get(clazz),
         Objects::nonNull,
         $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));
   }
 
   public static Class<?> boxed(final @NotNull Class<?> clazz) {
-    return Exceptions.checkObject(
+    return MoreExceptions.checkObject(
         PRIMITIVE_TO_BOXED.get(clazz),
         Objects::nonNull,
         $ -> new UnsupportedOperationException("Not primitive: " + clazz.getName()));

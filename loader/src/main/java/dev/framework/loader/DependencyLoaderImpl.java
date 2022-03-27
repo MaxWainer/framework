@@ -26,7 +26,7 @@ package dev.framework.loader;
 
 import static java.util.Objects.requireNonNull;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.Nulls;
 import dev.framework.commons.SneakyThrows;
 import dev.framework.loader.helper.JVMHelper;
@@ -87,7 +87,7 @@ final class DependencyLoaderImpl implements DependencyLoader {
     final String checkingClassName = DependencyLoader.class.getName();
 
     if (basicPackage.equals(checkingClassName)) {
-      Exceptions.nagAuthor(checkingClassName
+      MoreExceptions.nagAuthor(checkingClassName
           + " is not relocated, this part of framework is very sensitive to it, suggesting to nag plugin developer and resolve issue! "
           + "To author: Add relocation to entire framework dependencies, if someone gonna use it not the same version, this may produce silly issues!");
     }

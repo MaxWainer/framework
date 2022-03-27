@@ -30,7 +30,7 @@ import org.jetbrains.annotations.ApiStatus;
 public final class SneakyThrows {
 
   private SneakyThrows() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static void sneakyThrows(final Throwable throwable) {

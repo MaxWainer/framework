@@ -24,14 +24,14 @@
 
 package dev.framework.commons.function;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 
 @UtilityClass
 public final class ThrowableFunctions {
 
   private ThrowableFunctions() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   @FunctionalInterface
@@ -71,6 +71,10 @@ public final class ThrowableFunctions {
   public interface ThrowableFunction<I, O, T extends Throwable> {
 
     O apply(final I i) throws T;
+
+    static <Q, W, E extends Throwable> ThrowableFunction<Q, W, E> empty() {
+      return $ -> null;
+    }
 
   }
 

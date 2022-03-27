@@ -24,22 +24,28 @@
 
 package dev.framework.orm.implementation.sqlite;
 
-import dev.framework.orm.implementation.AbstractORMFacade;
 import dev.framework.orm.api.ConnectionSource;
+import dev.framework.orm.api.ORMProvider;
 import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.update.TableUpdater;
+import dev.framework.orm.implementation.AbstractORMFacade;
 import org.jetbrains.annotations.NotNull;
 
 public final class SQLiteORMFacade extends AbstractORMFacade {
 
-  private final TableUpdater tableUpdater = new SQLiteTableUpdater(this);
+  static {
+    ORMProvider.instance().registerFactory("sqlite", SQLiteORMFacade::new);
+  }
+
+  private final TableUpdater tableUpdater;
   private final DialectProvider dialectProvider = new SQLiteDialectProvider();
 
   private final ConnectionSource source;
 
   public SQLiteORMFacade(final @NotNull ConnectionCredentials credentials) {
     this.source = new SQLiteConnectionSource(credentials, this);
+    this.tableUpdater = new SQLiteTableUpdater(this);
   }
 
   @Override

@@ -30,14 +30,14 @@ import org.jetbrains.annotations.NotNull;
 public interface ConnectionCredentials {
 
   static ConnectionCredentials of(
-      final @NotNull String connectionLink,
+      final @NotNull String jdbcUrl,
       final @NotNull String username,
       final @NotNull String password,
       final @NotNull Map<String, Object> options) {
-    return new ConnectionCredentialsImpl(connectionLink, username, password, options);
+    return new ConnectionCredentialsImpl(jdbcUrl, username, password, options);
   }
 
-  @NotNull String connectionLink();
+  @NotNull String jdbcUrl();
 
   @NotNull String username();
 

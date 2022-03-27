@@ -24,7 +24,7 @@
 
 package dev.framework.loader.repository;
 
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.StaticLogger;
 import dev.framework.loader.repository.implementation.UndetectedRepository;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class RepositoryManager {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+  private static final Logger LOGGER = StaticLogger.getLogger();
 
   private final Map<String, Repository> registeredRepositories = new HashMap<>();
 

@@ -24,7 +24,7 @@
 
 package dev.framework.commons.duration;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.HashMap;
 import java.util.Map;
@@ -58,7 +58,7 @@ public final class DurationParser {
   }
 
   private DurationParser() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static Duration fromString(

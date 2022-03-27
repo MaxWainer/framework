@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 public final class MoreFiles {
 
   private MoreFiles() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   @NotNull

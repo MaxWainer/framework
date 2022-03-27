@@ -8,13 +8,13 @@ import dev.framework.commons.function.ThrowableFunctions.ThrowableFunction;
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.appender.StatementAppender;
 import dev.framework.orm.api.query.QueryResult;
-import dev.framework.orm.api.query.post.QueryPostProcessor;
+import dev.framework.orm.api.query.pre.QueryPreProcessor;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.sql.SQLException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-final class QueryPostProcessorImpl<T> implements QueryPostProcessor<T> {
+final class QueryPreProcessorImpl<T> implements QueryPreProcessor<T> {
 
   private final ConnectionSource connectionSource;
   private final String query;
@@ -22,7 +22,7 @@ final class QueryPostProcessorImpl<T> implements QueryPostProcessor<T> {
   private final ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender;
   private final ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable T, SQLException> resultMapper;
 
-  private QueryPostProcessorImpl(
+  private QueryPreProcessorImpl(
       final @NotNull ConnectionSource connectionSource,
       final @NotNull String query,
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
@@ -38,16 +38,16 @@ final class QueryPostProcessorImpl<T> implements QueryPostProcessor<T> {
     return connectionSource.executeWithResult(query, appender, resultMapper);
   }
 
-  public static final class QueryPostProcessorBuilderImpl<V> implements
-      QueryPostProcessorBuilder<V> {
+  public static final class QueryPreProcessorBuilderImpl<V> implements
+      QueryPreProcessorBuilder<V> {
 
     private final ConnectionSource connectionSource;
     private final String query;
 
-    private ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender;
-    private ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper;
+    private ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender = ThrowableConsumer.empty();
+    private ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper = ThrowableFunction.empty();
 
-    QueryPostProcessorBuilderImpl(
+    QueryPreProcessorBuilderImpl(
         final @NotNull ConnectionSource connectionSource,
         final @NotNull String query) {
       this.connectionSource = connectionSource;
@@ -55,20 +55,20 @@ final class QueryPostProcessorImpl<T> implements QueryPostProcessor<T> {
     }
 
     @Override
-    public QueryPostProcessor<V> build() {
-      return new QueryPostProcessorImpl<>(connectionSource, query, requireNonNull(appender),
+    public QueryPreProcessor<V> build() {
+      return new QueryPreProcessorImpl<>(connectionSource, query, requireNonNull(appender),
           requireNonNull(resultMapper));
     }
 
     @Override
-    public QueryPostProcessorBuilder<V> appender(
+    public QueryPreProcessorBuilder<V> appender(
         @NotNull ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender) {
       this.appender = appender;
       return this;
     }
 
     @Override
-    public QueryPostProcessorBuilder<V> resultMapper(
+    public QueryPreProcessorBuilder<V> resultMapper(
         @NotNull ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper) {
       this.resultMapper = resultMapper;
       return this;

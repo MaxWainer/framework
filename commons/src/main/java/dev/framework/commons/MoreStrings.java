@@ -5,10 +5,10 @@ import java.util.StringJoiner;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
-public final class Strings {
+public final class MoreStrings {
 
-  private Strings() {
-    Exceptions.instantiationError();
+  private MoreStrings() {
+    MoreExceptions.instantiationError();
   }
 
   public static @NotNull String repeatJoining(final int count,

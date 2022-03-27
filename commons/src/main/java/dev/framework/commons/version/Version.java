@@ -34,7 +34,7 @@ public interface Version extends Comparable<Version> {
     return new VersionImpl(major, minor, revision);
   }
 
-  static Version parseSequence(final @NotNull CharSequence sequence)
+  static Version parse(final @NotNull CharSequence sequence)
       throws MalformedVersionException {
 
     final String[] split = sequence.toString().split(Pattern.quote("."));

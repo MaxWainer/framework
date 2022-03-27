@@ -35,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 public final class NumberParser {
 
   private NumberParser() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static NumberParseResult<Integer> parseInt(@NotNull String input) {

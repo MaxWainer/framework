@@ -24,20 +24,20 @@
 
 package dev.framework.bukkit.commons;
 
-import dev.framework.commons.Exceptions;
-import dev.framework.commons.LoggerCompat;
+import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.StaticLogger;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
 public final class ForkHelper {
 
-  private static final Logger LOGGER = LoggerCompat.getLogger();
+  private static final Logger LOGGER = StaticLogger.getLogger();
   private static final Set<Fork> SUPPORTED_FORKS = EnumSet.of(Fork.PAPER);
   public static final Fork CURRENT_FORK = detectFork();
 
   private ForkHelper() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   private static Fork detectFork() {

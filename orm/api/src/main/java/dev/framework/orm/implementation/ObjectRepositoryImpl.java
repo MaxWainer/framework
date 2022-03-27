@@ -24,34 +24,34 @@
 
 package dev.framework.orm.implementation;
 
+import dev.framework.commons.Types;
 import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.tuple.ImmutableTuple;
 import dev.framework.orm.api.ConnectionSource;
-import dev.framework.orm.api.ObjectMapper;
 import dev.framework.orm.api.ObjectRepository;
+import dev.framework.orm.api.ObjectResolver;
 import dev.framework.orm.api.data.ObjectData;
-import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
-import dev.framework.orm.api.query.QueryResult;
 import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.ref.ReferenceClass;
+import dev.framework.orm.api.ref.ReferenceObject;
 import dev.framework.orm.api.set.ResultSetReader;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
-import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
-final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
-    ObjectRepository<I, T> {
+final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
+    implements ObjectRepository<I, T> {
 
   private final OptionalMap<I, List<T>> objectCache = OptionalMaps.newConcurrentMap();
 
@@ -62,7 +62,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
   private final ReferenceClass<T> referenceClass;
 
   private final QueryFactory queryFactory;
-  private final ObjectMapper<T> objectMapper;
+  private final ObjectResolver<T> objectResolver;
 
   ObjectRepositoryImpl(
       final @NotNull DialectProvider dialectProvider,
@@ -70,13 +70,13 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
       final @NotNull ObjectData objectData,
       final @NotNull ReferenceClass<T> referenceClass,
       final @NotNull QueryFactory queryFactory,
-      final @NotNull ObjectMapper<T> objectMapper) {
+      final @NotNull ObjectResolver<T> objectResolver) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;
     this.objectData = objectData;
     this.referenceClass = referenceClass;
     this.queryFactory = queryFactory;
-    this.objectMapper = objectMapper;
+    this.objectResolver = objectResolver;
   }
 
   @Override
@@ -92,34 +92,27 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    final @NotNull String query = "";
+    final List<T> list = new ArrayList<>();
 
-    final List<T> list = connectionSource
-        .executeWithResult(query,
-            appender -> {
-            },
-            result -> {
-              final List<T> out = new ArrayList<>();
+    queryFactory
+        .select()
+        .everything()
+        .from(tableMeta)
+        .whereAnd(tableMeta.identifyingColumn().identifier() + "=")
+        .preProcessUnexcepting()
+        .appender(appender -> appender.next(i))
+        .resultMapper(mapper -> {
+          while (mapper.next()) {
+            try {
+              list.add(objectResolver.constructObject(mapper).asObject());
+            } catch (Throwable e) {
+              e.printStackTrace();
+            }
+          }
 
-              try {
-                while (result.next()) {
-                  final List linkedList = new LinkedList();
-                  for (final ColumnMeta meta : tableMeta) {
-                    final Optional optional = result.readColumn(meta);
-
-                    linkedList.add(optional.orElse(null));
-                  }
-
-                  final Constructor<?> constructor = objectData.targetConstructor();
-
-                  out.add((T) ORMHelper.handleConstructor(constructor, linkedList.toArray()));
-                }
-              } catch (Throwable throwable) {
-                throw new CompletionException(throwable);
-              }
-
-              return out;
-            })
+          return null;
+        })
+        .build()
         .join();
 
     objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).addAll(list);
@@ -129,9 +122,35 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
   @Override
   public @NotNull List<T> listAll() {
-    final List<T> list = new ArrayList<>();
+    final Map<I, List<T>> map = new HashMap<>();
 
-    return null;
+    final TableMeta tableMeta = objectData.tableMeta();
+
+    queryFactory
+        .select()
+        .everything()
+        .from(tableMeta)
+        .preProcessUnexcepting()
+        .resultMapper(mapper -> {
+          while (mapper.next()) {
+            try {
+              final T obj = objectResolver.constructObject(mapper).asObject();
+
+              map.computeIfAbsent(obj.identifier(), $ -> new ArrayList<>()).add(obj);
+            } catch (Throwable e) {
+              e.printStackTrace();
+            }
+          }
+
+          return null;
+        })
+        .build()
+        .join();
+
+    return map.values()
+        .stream()
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -142,22 +161,21 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    @Language("SQL") final String query = String.format("INSERT INTO %s VALUES (%s)",
-        dialectProvider.protectValue(tableMeta.identifier()),
-        insertingString());
-
-    connectionSource
-        .execute(
-            query,
-            appender -> {
-              try {
-                for (final ColumnMeta meta : tableMeta) {
-                  appender.nextColumn(meta, t);
-                }
-              } catch (Throwable throwable) {
-                throw new CompletionException(throwable);
-              }
-            })
+    queryFactory
+        .insert()
+        .into(tableMeta)
+        .values(tableMeta.columnMetaSet().size())
+        .preProcessUnexcepting()
+        .appender(it -> {
+          try {
+            objectResolver.fillConstructor(
+                createObjectReference(t),
+                it);
+          } catch (Throwable e) {
+            throw new CompletionException(e);
+          }
+        })
+        .build()
         .join();
 
     objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).add(t);
@@ -171,12 +189,11 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    @Language("SQL") final String query = String.format("DELETE FROM %s WHERE %s=?",
-        dialectProvider.protectValue(tableMeta.identifier()),
-        dialectProvider.protectValue(tableMeta.identifyingColumn().identifier()));
-
-    connectionSource
-        .execute(query).join();
+    queryFactory
+        .delete()
+        .from(tableMeta)
+        .whereAnd(tableMeta.identifyingColumn().identifier() + "=")
+        .executeUnexcepting();
   }
 
   @Override
@@ -188,24 +205,21 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    @Language("SQL") final String query = String.format("UPDATE %s SET %s WHERE %s=?",
-        dialectProvider.protectValue(tableMeta.identifier()), updatingString(),
-        dialectProvider.protectValue(tableMeta.identifyingColumn().identifier()));
-
-    connectionSource.execute(query, appender -> {
-      try {
-        for (final ColumnMeta meta : tableMeta.truncatedColumnMetaSet()) {
-          appender.nextColumn(meta, t);
-        }
-
-        final ColumnMeta identifierMeta = tableMeta.identifyingColumn();
-        final Object object = ORMHelper.fieldData(identifierMeta.field(), t);
-        appender.next(object);
-
-      } catch (Throwable e) {
-        e.printStackTrace();
-      }
-    }).join();
+    queryFactory
+        .update()
+        .table(tableMeta)
+        .set(tableMeta)
+        .whereAnd(tableMeta.identifier() + "=")
+        .preProcessUnexcepting()
+        .appender(appender -> {
+          try {
+            objectResolver.fillUpdater(createObjectReference(t), appender);
+          } catch (Throwable e) {
+            throw new CompletionException(e);
+          }
+        })
+        .build()
+        .join();
   }
 
   @Override
@@ -216,25 +230,26 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    @Language("SQL") final String query = String.format("SELECT * FROM %s WHERE %s=?",
-        dialectProvider.protectValue(tableMeta.identifier()),
-        dialectProvider.protectValue(tableMeta.identifyingColumn().identifier()));
-
-    final QueryResult<Boolean> result = connectionSource.executeWithResult(query,
-        appender -> appender.next(i), ResultSetReader::next);
-
-    return result.join();
+    return queryFactory
+        .select()
+        .everything().from(tableMeta)
+        .whereAnd(tableMeta.identifier() + "=")
+        .<Boolean>preProcessUnexcepting()
+        .appender(appender -> appender.next(i))
+        .resultMapper(ResultSetReader::next)
+        .build()
+        .join();
   }
 
   @Override
   public void createTable() {
     final TableMeta tableMeta = objectData.tableMeta();
-    @Language("SQL") final String query = String.format("CREATE TABLE IF NOT EXISTS %s (%s)",
-        dialectProvider.protectValue(tableMeta.identifier()),
-        tableMeta.columnMetaSet().stream().map(dialectProvider::columnMetaToString)
-            .collect(Collectors.joining(", ")));
 
-    connectionSource.execute(query).join();
+    queryFactory
+        .createTable()
+        .ifNotExists()
+        .columns(tableMeta.columnMetaSet())
+        .executeUnexcepting();
   }
 
   @Override
@@ -251,17 +266,8 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>> implements
     return this.objectData;
   }
 
-  private @NotNull String insertingString() {
-    return objectData.tableMeta().columnMetaSet().stream().map($ -> "?")
-        .collect(Collectors.joining(","));
-  }
-
-  private @NotNull String updatingString() {
-    return objectData.tableMeta()
-        .truncatedColumnMetaSet()
-        .stream()
-        .map(meta -> String.format("%s=?", dialectProvider.protectValue(meta.identifier())))
-        .collect(Collectors.joining(", "));
+  private ReferenceObject<T> createObjectReference(T t) {
+    return new ReferenceObjectImpl<>(t, Types.contravarianceType(t.getClass()), objectData);
   }
 
 }

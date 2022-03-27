@@ -25,7 +25,9 @@
 package dev.framework.commons;
 
 import dev.framework.commons.annotation.UtilityClass;
+import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,10 +37,10 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
-public final class Sets {
+public final class MoreSets {
 
-  private Sets() {
-    Exceptions.instantiationError();
+  private MoreSets() {
+    MoreExceptions.instantiationError();
   }
 
   public static <T> Set<T> newLinkedHashSet(final @NotNull T @NonNls ... values) {
@@ -55,5 +57,22 @@ public final class Sets {
 
   public static <T> Set<T> newHashSet(final @NotNull Stream<T> stream) {
     return stream.collect(Collectors.toCollection(HashSet::new));
+  }
+
+
+  public static <T> Set<T> newImmutableLinkedHashSet(final @NotNull T @NonNls ... values) {
+    return Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(values)));
+  }
+
+  public static <T> Set<T> newImmutableHashSet(final @NotNull T @NonNls ... values) {
+    return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(values)));
+  }
+
+  public static <T> Set<T> newImmutableLinkedHashSet(final @NotNull Stream<T> stream) {
+    return stream.collect(ImmutableCollectors.linkedSet());
+  }
+
+  public static <T> Set<T> newImmutableHashSet(final @NotNull Stream<T> stream) {
+    return stream.collect(ImmutableCollectors.set());
   }
 }

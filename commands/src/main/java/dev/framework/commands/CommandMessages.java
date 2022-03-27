@@ -33,7 +33,7 @@ import dev.framework.commands.schema.ArgumentSchema;
 import dev.framework.commands.schema.ArgumentSchemaHolder;
 import dev.framework.commands.scope.AbstractScopedParentCommand;
 import dev.framework.commands.style.CommandStyleConfig;
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.locale.MessageMapper;
 import java.util.function.Function;
 import net.kyori.adventure.text.Component;
@@ -46,7 +46,7 @@ import org.jetbrains.annotations.NotNull;
 public final class CommandMessages {
 
   private CommandMessages() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   private static TranslatableComponent prefix(final @NotNull String type) {
@@ -158,7 +158,7 @@ public final class CommandMessages {
     };
 
     private HelpTopic() {
-      Exceptions.instantiationError();
+      MoreExceptions.instantiationError();
     }
 
     private static TranslatableComponent key(final @NotNull String key) {
@@ -211,7 +211,7 @@ public final class CommandMessages {
     public static final TranslatableComponent FULL_UNUSABLE = key("full.unusable");
 
     private Error() {
-      Exceptions.instantiationError();
+      MoreExceptions.instantiationError();
     }
 
     private static TranslatableComponent key(final @NotNull String key) {
@@ -258,7 +258,7 @@ public final class CommandMessages {
         "delimiter.horizontal").color(CommandStyleConfig.systemDelimiterColor());
 
     private Format() {
-      Exceptions.instantiationError();
+      MoreExceptions.instantiationError();
     }
 
     private static TranslatableComponent key(final @NotNull String key) {

@@ -24,7 +24,7 @@
 
 package dev.framework.orm.implementation;
 
-import dev.framework.commons.Exceptions;
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.annotation.UtilityClass;
 import dev.framework.orm.api.ORMFacade;
@@ -34,18 +34,19 @@ import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
 
 @UtilityClass
 final class ORMHelper {
 
   private ORMHelper() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
-  static ColumnMeta[] filterAppending(final @NotNull ColumnMeta[] metas) {
-    return Arrays.stream(metas)
+  static ColumnMeta[] filterAppending(final @NotNull Iterable<? extends ColumnMeta> metas) {
+    return StreamSupport
+        .stream(metas.spliterator(), false)
         .filter(it -> it.foreign() || it.primaryKey())
         .toArray(ColumnMeta[]::new);
   }
@@ -77,10 +78,10 @@ final class ORMHelper {
       if (useTopLevel) {
         final Class<?> type = meta.genericType().value()[0];
 
-        adapter = facade.jsonAdapters()
+        adapter = facade.jsonAdaptersRepository()
             .findOrThrow(type);
       } else {
-        adapter = facade.jsonAdapters()
+        adapter = facade.jsonAdaptersRepository()
             .findOrThrow(Reflections.genericTypes(field.getType())[0]);
       }
 
@@ -109,16 +110,16 @@ final class ORMHelper {
         final Class<?> keyType = meta.genericType().value()[0];
         final Class<?> valueType = meta.genericType().value()[1];
 
-        keyAdapter = facade.jsonAdapters()
+        keyAdapter = facade.jsonAdaptersRepository()
             .findOrThrow(keyType);
-        valueAdapter = facade.jsonAdapters()
+        valueAdapter = facade.jsonAdaptersRepository()
             .findOrThrow(valueType);
       } else {
         final Class<?>[] types = Reflections.genericTypes(field.getType());
 
-        keyAdapter = facade.jsonAdapters()
+        keyAdapter = facade.jsonAdaptersRepository()
             .findOrThrow(types[0]);
-        valueAdapter = facade.jsonAdapters()
+        valueAdapter = facade.jsonAdaptersRepository()
             .findOrThrow(types[1]);
       }
 

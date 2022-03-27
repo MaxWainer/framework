@@ -77,7 +77,7 @@ public final class Reflections {
   }
 
   private Reflections() {
-    Exceptions.instantiationError();
+    MoreExceptions.instantiationError();
   }
 
   public static @Nullable Constructor<?> findConstructorWithAnnotation(

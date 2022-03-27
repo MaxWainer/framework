@@ -24,30 +24,41 @@
 
 package dev.framework.commons;
 
-import java.util.logging.Logger;
-import org.jetbrains.annotations.ApiStatus;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import org.jetbrains.annotations.NotNull;
 
-@ApiStatus.Internal
-public final class LoggerCompat {
+public final class MoreExceptions {
 
-  private LoggerCompat() {
-    Exceptions.instantiationError();
+  private MoreExceptions() {
+    instantiationError();
   }
 
-  public static Logger getLogger() {
-    // Getting caller name
-    final String callerName = getCallerClassName();
-
-    // Creating logger for caller class
-    return Logger.getLogger(callerName);
+  public static void instantiationError() {
+    throw new AssertionError("Utility class cannot be instantiated!");
   }
 
-  private static String getCallerClassName() {
-    // Getting stack tract from current thread
-    final StackTraceElement[] elements = Thread.currentThread().getStackTrace();
+  public static void nagAuthor(final @NotNull String detailedMessage) {
+    throw new NagAuthorException(detailedMessage);
+  }
 
-    // Getting from elements class name
-    return elements[3].getClassName();
+  public static <T, X extends Throwable> T checkObject(
+      final T object,
+      final @NotNull Predicate<T> predicate,
+      final @NotNull Function<T, X> exceptionFactory) throws X {
+    if (!predicate.test(object)) {
+      throw exceptionFactory.apply(object);
+    }
+
+    return object;
+  }
+
+  // we're going to keep it private, to avoid ignoring them
+  private static final class NagAuthorException extends RuntimeException {
+
+    NagAuthorException(final @NotNull String message) {
+      super(message);
+    }
   }
 
 }

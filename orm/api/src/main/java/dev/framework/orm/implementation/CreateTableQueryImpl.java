@@ -16,8 +16,8 @@ final class CreateTableQueryImpl
   private boolean columns = false;
 
   CreateTableQueryImpl(
-      @NotNull ConnectionSource connectionSource,
-      @NotNull DialectProvider dialectProvider) {
+      @NotNull DialectProvider dialectProvider,
+      @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
     builder.append("CREATE TABLE ");
@@ -50,7 +50,7 @@ final class CreateTableQueryImpl
   }
 
   @Override
-  public CreateTableQuery columns(@NotNull ColumnMeta... columnMeta) {
+  public CreateTableQuery columns(@NotNull Iterable<? extends ColumnMeta> columnMeta) {
     if (check()) {
       return this;
     }

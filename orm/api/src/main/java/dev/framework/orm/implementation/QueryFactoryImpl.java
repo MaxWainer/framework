@@ -5,6 +5,7 @@ import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.query.types.AlterTableQuery;
 import dev.framework.orm.api.query.types.CreateTableQuery;
+import dev.framework.orm.api.query.types.DeleteQuery;
 import dev.framework.orm.api.query.types.DropQuery;
 import dev.framework.orm.api.query.types.InsertQuery;
 import dev.framework.orm.api.query.types.SelectQuery;
@@ -24,31 +25,36 @@ final class QueryFactoryImpl implements QueryFactory {
 
   @Override
   public @NotNull SelectQuery select() {
-    return new SelectQueryImpl(dialectProvider);
+    return new SelectQueryImpl(dialectProvider, connectionSource);
   }
 
   @Override
   public @NotNull CreateTableQuery createTable() {
-    return new CreateTableQueryImpl(connectionSource, dialectProvider);
+    return new CreateTableQueryImpl(dialectProvider, connectionSource);
   }
 
   @Override
   public @NotNull UpdateQuery update() {
-    return new UpdateQueryImpl(dialectProvider);
+    return new UpdateQueryImpl(dialectProvider, connectionSource);
   }
 
   @Override
   public @NotNull DropQuery drop() {
-    return new DropQueryImpl(connectionSource, dialectProvider);
+    return new DropQueryImpl(dialectProvider, connectionSource);
   }
 
   @Override
   public @NotNull InsertQuery insert() {
-    return new InsertQueryImpl(connectionSource, dialectProvider);
+    return new InsertQueryImpl(dialectProvider, connectionSource);
   }
 
   @Override
   public @NotNull AlterTableQuery alterTable() {
     return new AlterTableQueryImpl(dialectProvider, connectionSource);
+  }
+
+  @Override
+  public @NotNull DeleteQuery delete() {
+    return new DeleteQueryImpl(dialectProvider, connectionSource);
   }
 }

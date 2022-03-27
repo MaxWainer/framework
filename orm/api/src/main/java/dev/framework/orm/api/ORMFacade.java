@@ -24,50 +24,48 @@
 
 package dev.framework.orm.api;
 
-import dev.framework.commons.exception.NotImplementedYet;
-import dev.framework.commons.repository.RepositoryObject;
-import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.dialect.DialectProvider;
-import dev.framework.orm.api.exception.MetaConstructionException;
-import dev.framework.orm.api.exception.MissingAnnotationException;
-import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.query.QueryFactory;
+import dev.framework.orm.api.registry.ObjectDataRegistry;
+import dev.framework.orm.api.registry.ObjectRepositoryRegistry;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
 import dev.framework.orm.api.repository.JsonAdapterRepository;
 import dev.framework.orm.api.update.TableUpdater;
 import java.io.Closeable;
-import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 public interface ORMFacade extends Closeable {
 
-  <I, O extends RepositoryObject<I>> @NotNull ObjectRepository<I, O> findRepository(
-      final @NotNull Class<? extends O> clazz) throws MissingRepositoryException;
+  /**
+   * Get registry of object repositories
+   *
+   * @return {@link ObjectRepositoryRegistry}
+   */
+  @NotNull ObjectRepositoryRegistry objectRepositoryRegistry();
 
-  <I, O extends RepositoryObject<I>> void registerRepository(
-      final @NotNull Class<? extends O> clazz, final @NotNull ObjectRepository<I, O> repository);
+  /**
+   * Get object data registry
+   *
+   * @return {@link ObjectDataRegistry}
+   */
+  @NotNull ObjectDataRegistry objectDataRegistry();
 
-  <I, O extends RepositoryObject<I>> void registerRepository(
-      final @NotNull Class<? extends O> clazz) throws MissingAnnotationException, MetaConstructionException;
+  @NotNull JsonAdapterRepository jsonAdaptersRepository();
 
-  default @NotNull QueryFactory queryBuilder() {
-    throw new NotImplementedYet();
-  }
-
-  @NotNull JsonAdapterRepository jsonAdapters();
-
-  @NotNull ColumnTypeAdapterRepository columnTypeAdapters();
+  @NotNull ColumnTypeAdapterRepository columnTypeAdaptersRepository();
 
   @NotNull TableUpdater tableUpdater();
 
+  @NotNull QueryFactory queryFactory();
+
   @NotNull ConnectionSource connectionSource();
 
-  @NotNull Optional<ObjectData> findData(final @NotNull Class<? extends RepositoryObject> clazz);
+  @NotNull DialectProvider dialectProvider();
 
   @NotNull ObjectDataFactory dataFactory();
 
-  @NotNull DialectProvider dialectProvider();
+  @NotNull ReferenceClassFactory referenceClassFactory();
 
   void open();
 
