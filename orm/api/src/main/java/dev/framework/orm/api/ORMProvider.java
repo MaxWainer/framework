@@ -28,7 +28,7 @@ public interface ORMProvider {
 
   void registerFactory(
       final @NotNull String driver,
-      final @NotNull OMFFacadeFactory facadeFactory);
+      final @NotNull ORMFacadeFactory facadeFactory);
 
   default @NotNull ORMFacade createFacade(
       final @NotNull Properties properties) throws MissingFacadeException {

@@ -10,7 +10,7 @@ final class ORMProviderImpl implements ORMProvider {
 
   public static final ORMProviderImpl INSTANCE = new ORMProviderImpl();
 
-  private final OptionalMap<String, OMFFacadeFactory> registry = OptionalMaps.newConcurrentMap();
+  private final OptionalMap<String, ORMFacadeFactory> registry = OptionalMaps.newConcurrentMap();
 
   private ORMProviderImpl() {
   }
@@ -27,11 +27,11 @@ final class ORMProviderImpl implements ORMProvider {
 
   @Override
   public void registerFactory(final @NotNull String driver,
-      final @NotNull OMFFacadeFactory facadeFactory) {
+      final @NotNull ORMFacadeFactory facadeFactory) {
     registry.put(driver, facadeFactory);
   }
 
-  @NotNull OMFFacadeFactory fromDriver(final @NotNull String driver)
+  @NotNull ORMFacadeFactory fromDriver(final @NotNull String driver)
       throws MissingFacadeException {
     return registry.get(driver)
         .orElseThrow(() -> new MissingFacadeException(driver));
