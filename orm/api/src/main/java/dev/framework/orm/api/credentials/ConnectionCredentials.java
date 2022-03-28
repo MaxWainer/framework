@@ -24,17 +24,35 @@
 
 package dev.framework.orm.api.credentials;
 
+import com.google.common.collect.Maps;
+import java.util.Collections;
 import java.util.Map;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 public interface ConnectionCredentials {
 
   static ConnectionCredentials of(
+      final @NotNull String facadeClassName,
       final @NotNull String jdbcUrl,
       final @NotNull String username,
       final @NotNull String password,
       final @NotNull Map<String, Object> options) {
-    return new ConnectionCredentialsImpl(jdbcUrl, username, password, options);
+    return new ConnectionCredentialsImpl(facadeClassName, jdbcUrl, username, password, options);
+  }
+
+  static ConnectionCredentials of(
+      final @NotNull String facadeClassName,
+      final @NotNull String jdbcUrl,
+      final @NotNull String username,
+      final @NotNull String password) {
+    return of(facadeClassName, jdbcUrl, username, password, Collections.emptyMap());
+  }
+
+  static ConnectionCredentials of(
+      final @NotNull String facadeClassName,
+      final @NotNull String jdbcUrl) {
+    return of(facadeClassName, jdbcUrl, "", "");
   }
 
   @NotNull String jdbcUrl();

@@ -17,7 +17,8 @@ final class QueryFactoryImpl implements QueryFactory {
   private final DialectProvider dialectProvider;
   private final ConnectionSource connectionSource;
 
-  QueryFactoryImpl(final @NotNull DialectProvider dialectProvider,
+  QueryFactoryImpl(
+      final @NotNull DialectProvider dialectProvider,
       final @NotNull ConnectionSource connectionSource) {
     this.dialectProvider = dialectProvider;
     this.connectionSource = connectionSource;

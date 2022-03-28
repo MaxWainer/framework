@@ -24,8 +24,9 @@
 
 package dev.framework.orm.example;
 
-import com.google.common.collect.Maps;
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.ORMProvider;
 import dev.framework.orm.api.annotation.Column;
 import dev.framework.orm.api.annotation.Column.ColumnOptions;
 import dev.framework.orm.api.annotation.IdentifierField;
@@ -36,9 +37,10 @@ import dev.framework.orm.api.annotation.Table;
 import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
+import dev.framework.orm.api.exception.MissingFacadeException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.exception.QueryNotCompletedException;
-import dev.framework.orm.implementation.sqlite.SQLiteORMFacade;
+import dev.framework.orm.api.query.types.Condition;
 import java.io.IOException;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
@@ -46,18 +48,26 @@ import org.jetbrains.annotations.NotNull;
 public class ExampleRun {
 
   public static void main(String[] args)
-      throws MetaConstructionException, MissingAnnotationException, IOException, MissingRepositoryException, QueryNotCompletedException {
-    try (final SQLiteORMFacade facade = new SQLiteORMFacade(ConnectionCredentials.of(
-        "jdbc:sqlite:database.db", "", "", Maps.newHashMap()))) {
-      final String ready = facade.queryFactory()
-          .select()
-          .everything()
-          .from("example")
-          .join("other", "person_id", "person_id")
-          .whereAnd("uuid")
-          .buildQuery();
+      throws MetaConstructionException, MissingAnnotationException, IOException,
+          MissingRepositoryException, QueryNotCompletedException, MissingFacadeException,
+          ClassNotFoundException {
+    try (final ORMFacade facade =
+        ORMProvider.instance()
+            .createFacade(
+                ConnectionCredentials.of(
+                    "dev.framework.orm.implementation.sqlite.SQLiteORMFacade",
+                    "jdbc:sqlite:database.db"))) {
+      facade.open();
 
-      System.out.println(ready);
+      System.out.println(
+          facade
+              .queryFactory()
+              .select()
+              .everything()
+              .from("example")
+              .join("other", "person_id", "person_id")
+              .whereAnd(Condition.of("uuid", Condition.EQUALS))
+              .buildQuery());
     }
   }
 
@@ -76,19 +86,11 @@ public class ExampleRun {
     @Column("age")
     private final int age;
 
-    @Column(
-        value = "job",
-        options = @ColumnOptions(nullable = true)
-    )
+    @Column(value = "job", options = @ColumnOptions(nullable = true))
     private final String job;
 
     @InstanceConstructor
-    public Person(
-        final UUID uuid,
-        final String name,
-        final int age,
-        final String job
-    ) {
+    public Person(final UUID uuid, final String name, final int age, final String job) {
       this.uuid = uuid;
       this.name = name;
       this.age = age;
@@ -114,14 +116,18 @@ public class ExampleRun {
 
     @Override
     public String toString() {
-      return "Person{" +
-          "uuid=" + uuid +
-          ", name='" + name + '\'' +
-          ", age=" + age +
-          ", job='" + job + '\'' +
-          '}';
+      return "Person{"
+          + "uuid="
+          + uuid
+          + ", name='"
+          + name
+          + '\''
+          + ", age="
+          + age
+          + ", job='"
+          + job
+          + '\''
+          + '}';
     }
   }
-
-
 }

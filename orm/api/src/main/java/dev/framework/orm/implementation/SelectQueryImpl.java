@@ -13,14 +13,18 @@ import org.jetbrains.annotations.NotNull;
 @NotThreadSafe
 final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements SelectQuery {
 
-  private final StringBuilder builder = new StringBuilder()
-      .append("SELECT");
-
   private String table = null;
   private boolean columns = false;
 
   SelectQueryImpl(@NotNull DialectProvider dialectProvider, @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
+
+    builder.append("SELECT ");
+  }
+
+  @Override
+  protected SelectQuery self() {
+    return this;
   }
 
   @Override
@@ -34,7 +38,7 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
     }
 
     if (!columns) {
-      builder.append(" * ").append("FROM ");
+      this.builder.append(" * ").append("FROM ");
 
       columns = true;
     }
@@ -53,6 +57,8 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
 
     if (!this.columns) {
       appendColumns(",", "", columns);
+
+      this.builder.append(" FROM ");
 
       this.columns = true;
     }
@@ -77,7 +83,7 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
       return this;
     }
 
-    builder.append("JOIN ")
+    this.builder.append("JOIN ")
         .append(dialectProvider.protectValue(table))
         .append(" AS ")
         .append(dialectProvider.protectValue(joinAlias))
@@ -104,10 +110,8 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
       return this;
     }
 
-    if (this.table == null) {
-      builder.append(dialectProvider.protectValue(table)).append(" ");
-      this.table = table;
-    }
+    this.builder.append(dialectProvider.protectValue(table)).append(" ");
+    this.table = table;
 
     return this;
   }

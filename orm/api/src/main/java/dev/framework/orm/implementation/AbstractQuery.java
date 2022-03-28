@@ -31,13 +31,13 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
       throw new QueryNotCompletedException("Query not completed, currently: " + builder);
     }
 
-    return builder.toString().trim();
+    return builder.toString();
   }
 
   @Override
   public T append(@NotNull String raw) {
-    builder.append(raw);
-    return (T) this;
+    this.builder.append(raw);
+    return self();
   }
 
   @Override
@@ -48,9 +48,9 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
           "Query " + sub + " is not supported by " + getClass().getName());
     }
 
-    builder.append(" (").append(sub.buildQuery()).append(") ");
+    this.builder.append(" (").append(sub.buildQuery()).append(") ");
 
-    return (T) this;
+    return self();
   }
 
   protected void appendColumns(final @NotNull String delimiter,
@@ -62,7 +62,7 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
       joiner.add(dialectProvider.protectValue(column) + columnSuffix);
     }
 
-    builder.append(joiner).append(" ");
+    this.builder.append(joiner).append(" ");
   }
 
   @NotNull
@@ -97,11 +97,19 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
   @Override
   @Internal
   public @NotNull String buildQueryUnexcepting() {
-    return builder.toString();
+    return this.builder.toString();
   }
+
+  protected abstract T self();
 
   protected abstract boolean subQuerySupported(final @NotNull Query<?> sub);
 
   protected abstract boolean check();
 
+  @Override
+  public String toString() {
+    return "AbstractQuery{" +
+        "builder=" + builder +
+        '}';
+  }
 }

@@ -15,6 +15,7 @@ public interface ORMProvider {
   @Internal
   Set<String> LOADING_BLACKLIST_NAMES = MoreSets.newImmutableHashSet(
       "dev.framework.orm.jdbcUrl",
+      "dev.framework.orm.facadeClass",
       "dev.framework.orm.username",
       "dev.framework.orm.password");
 
@@ -40,6 +41,7 @@ public interface ORMProvider {
     }
 
     return createFacade(ConnectionCredentials.of(
+        properties.getProperty("dev.framework.orm.facadeClass"),
         properties.getProperty("dev.framework.orm.jdbcUrl"),
         properties.getProperty("dev.framework.orm.username"),
         properties.getProperty("dev.framework.orm.password"),

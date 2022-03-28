@@ -15,7 +15,12 @@ final class DropQueryImpl extends AbstractQuery<DropQuery> implements DropQuery 
       @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
-    builder.append("DROP TABLE ");
+    this.builder.append("DROP TABLE ");
+  }
+
+  @Override
+  protected DropQuery self() {
+    return this;
   }
 
   @Override
@@ -24,7 +29,7 @@ final class DropQueryImpl extends AbstractQuery<DropQuery> implements DropQuery 
       return this;
     }
 
-    builder.append(dialectProvider.protectValue(table));
+    this.builder.append(dialectProvider.protectValue(table));
     this.table = true;
     return this;
   }

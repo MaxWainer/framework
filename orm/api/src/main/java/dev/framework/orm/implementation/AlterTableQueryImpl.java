@@ -16,7 +16,12 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
-    builder.append("ALTER TABLE ");
+    this.builder.append("ALTER TABLE ");
+  }
+
+  @Override
+  protected AlterTableQuery self() {
+    return this;
   }
 
   @Override
@@ -25,7 +30,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("WITH CHECK ");
+    this.builder.append("WITH CHECK ");
     return this;
   }
 
@@ -35,7 +40,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("WITH NOCHECK ");
+    this.builder.append("WITH NOCHECK ");
     return this;
   }
 
@@ -45,7 +50,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("DROP COLUMN ").append(column);
+    this.builder.append("DROP COLUMN ").append(column);
     return this;
   }
 
@@ -55,12 +60,12 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("ALTER COLUMN ");
+    this.builder.append("ALTER COLUMN ");
 
     if (columnMeta.foreign() || columnMeta.primaryKey()) {
-      builder.append(dialectProvider.columnMetaAppending(columnMeta));
+      this.builder.append(dialectProvider.columnMetaAppending(columnMeta));
     } else {
-      builder.append(dialectProvider.columnMetaToString(columnMeta));
+      this.builder.append(dialectProvider.columnMetaToString(columnMeta));
     }
 
     return this;
@@ -72,7 +77,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("ADD ").append(syntax).append(" ");
+    this.builder.append("ADD ").append(syntax).append(" ");
     return this;
   }
 
@@ -82,7 +87,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
       return this;
     }
 
-    builder.append("RENAME TO ").append(dialectProvider.protectValue(newTableName));
+    this.builder.append("RENAME TO ").append(dialectProvider.protectValue(newTableName));
     return this;
   }
 
@@ -93,7 +98,7 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
     }
 
     if (!this.table) {
-      builder.append(table).append(" ");
+      this.builder.append(table).append(" ");
 
       this.table = true;
     }

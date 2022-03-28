@@ -2,6 +2,7 @@ package dev.framework.orm.implementation;
 
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.query.types.Condition;
 import dev.framework.orm.api.query.types.DeleteQuery;
 import dev.framework.orm.api.query.types.Query;
 import dev.framework.orm.api.query.types.SelectQuery;
@@ -23,7 +24,7 @@ final class DeleteQueryImpl extends AbstractWhereOptions<DeleteQuery> implements
       return this;
     }
 
-    builder.append(dialectProvider.protectValue(table));
+    this.builder.append(dialectProvider.protectValue(table));
     this.table = true;
 
     return this;
@@ -35,21 +36,22 @@ final class DeleteQueryImpl extends AbstractWhereOptions<DeleteQuery> implements
   }
 
   @Override
-  public DeleteQuery whereAnd(@NotNull String... columns) {
-    if (!table) {
-      return this;
-    }
+  public DeleteQuery whereAnd(@NotNull Condition... conditions) {
+    if (!table) return this;
 
-    return super.whereAnd(columns);
+    return super.whereAnd(conditions);
   }
 
   @Override
-  public DeleteQuery whereOr(@NotNull String... columns) {
-    if (!table) {
-      return this;
-    }
+  public DeleteQuery whereOr(@NotNull Condition... conditions) {
+    if (!table) return this;
 
-    return super.whereOr(columns);
+    return super.whereOr(conditions);
+  }
+
+  @Override
+  protected DeleteQuery self() {
+    return this;
   }
 
   @Override

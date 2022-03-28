@@ -2,6 +2,7 @@ package dev.framework.orm.implementation;
 
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.query.types.Condition;
 import dev.framework.orm.api.query.types.Query;
 import dev.framework.orm.api.query.types.UpdateQuery;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +18,7 @@ final class UpdateQueryImpl extends AbstractWhereOptions<UpdateQuery> implements
       @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
-    builder.append("UPDATE ");
+    this.builder.append("UPDATE ");
   }
 
   @Override
@@ -27,7 +28,7 @@ final class UpdateQueryImpl extends AbstractWhereOptions<UpdateQuery> implements
     }
 
     if (!this.table) {
-      builder.append(dialectProvider.protectValue(table));
+      this.builder.append(dialectProvider.protectValue(table));
 
       this.table = true;
     }
@@ -60,21 +61,22 @@ final class UpdateQueryImpl extends AbstractWhereOptions<UpdateQuery> implements
   }
 
   @Override
-  public UpdateQuery whereAnd(@NotNull String... columns) {
-    if (!check()) {
-      return this;
-    }
+  public UpdateQuery whereOr(@NotNull Condition... conditions) {
+    if (!check()) return this;
 
-    return super.whereAnd(columns);
+    return super.whereOr(conditions);
   }
 
   @Override
-  public UpdateQuery whereOr(@NotNull String... columns) {
-    if (!check()) {
-      return this;
-    }
+  protected UpdateQuery self() {
+    return this;
+  }
 
-    return super.whereOr(columns);
+  @Override
+  public UpdateQuery whereAnd(@NotNull Condition... conditions) {
+    if (!check()) return this;
+
+    return super.whereAnd(conditions);
   }
 
   @Override

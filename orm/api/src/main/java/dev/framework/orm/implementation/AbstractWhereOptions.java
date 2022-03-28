@@ -2,7 +2,9 @@ package dev.framework.orm.implementation;
 
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.query.types.Condition;
 import dev.framework.orm.api.query.types.WhereOptions;
+import java.util.StringJoiner;
 import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractWhereOptions<T extends WhereOptions>
@@ -15,28 +17,42 @@ abstract class AbstractWhereOptions<T extends WhereOptions>
   }
 
   @Override
-  public T whereAnd(@NotNull String... columns) {
+  public T whereAnd(@NotNull Condition... conditions) {
     if (!check()) {
-      return (T) this;
+      return self();
     }
 
-    builder.append("WHERE ");
+    this.builder.append("WHERE ");
 
-    appendColumns(" AND ", "?", columns);
+    appendConditions(" AND ", "?", conditions);
 
-    return (T) this;
+    return self();
   }
 
   @Override
-  public T whereOr(@NotNull String... columns) {
+  public T whereOr(@NotNull Condition... conditions) {
     if (!check()) {
-      return (T) this;
+      return self();
     }
 
-    builder.append("WHERE ");
+    this.builder.append("WHERE ");
 
-    appendColumns(" OR ", "?", columns);
+    appendConditions(" OR ", "?", conditions);
 
-    return (T) this;
+    return self();
   }
+
+  private void appendConditions(final @NotNull String delimiter,
+      final @NotNull String columnSuffix,
+      final @NotNull Condition... conditions) {
+    final StringJoiner joiner = createJoiner(delimiter);
+
+    for (final Condition condition : conditions) {
+      joiner.add(dialectProvider.protectValue(condition.column()) + condition.condition() + columnSuffix);
+    }
+
+    this.builder.append(joiner).append(" ");
+  }
+
+  protected abstract T self();
 }

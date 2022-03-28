@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
 final class ReferenceObjectImpl<T extends RepositoryObject> implements ReferenceObject<T> {
 
   private final T instance;
-  private final Class<T> clazz;
+  private final Class<? extends T> clazz;
   private final ObjectData data;
 
-  ReferenceObjectImpl(final @NotNull T instance, final @NotNull Class<T> clazz,
+  ReferenceObjectImpl(final @NotNull T instance, final @NotNull Class<? extends T> clazz,
       final @NotNull ObjectData data) {
     this.instance = instance;
     this.clazz = clazz;

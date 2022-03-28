@@ -1,8 +1,10 @@
 plugins {
   id 'java'
+  id 'java-library'
   id 'org.cadixdev.licenser' version '0.6.1'
   id 'signing'
   id 'checkstyle'
+  id 'me.champeau.jmh' version '0.6.6'
 }
 
 group 'framework'
@@ -24,12 +26,20 @@ println DELIMITER
 
 println 'Configuring projects...'
 
+allprojects {
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+}
+
 subprojects {
   apply plugin: 'java'
   apply plugin: 'maven-publish'
   apply plugin: 'signing'
   apply plugin: 'org.cadixdev.licenser'
   apply plugin: 'checkstyle'
+  apply plugin: 'me.champeau.jmh'
 
   // checkstyle start
 
@@ -56,9 +66,6 @@ subprojects {
   // checkstyle end
 
   repositories {
-    mavenLocal()
-    mavenCentral()
-
     maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
     maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
     maven { url 'https://oss.sonatype.org/content/repositories/central' }
@@ -66,6 +73,11 @@ subprojects {
   }
 
   dependencies {
+    // jmh
+    jmhImplementation project
+    jmh 'org.openjdk.jmh:jmh-core:1.29'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.29'
+
     implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'joda-time:joda-time:2.10.14'
     implementation 'com.google.guava:guava:31.1-jre'

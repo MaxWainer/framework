@@ -20,7 +20,12 @@ final class CreateTableQueryImpl
       @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
-    builder.append("CREATE TABLE ");
+    this.builder.append("CREATE TABLE ");
+  }
+
+  @Override
+  protected CreateTableQuery self() {
+    return this;
   }
 
   @Override
@@ -30,7 +35,7 @@ final class CreateTableQueryImpl
     }
 
     if (!this.table) {
-      builder.append(" ").append(dialectProvider.protectValue(table));
+      this.builder.append(" ").append(dialectProvider.protectValue(table));
 
       this.table = true;
     }
@@ -44,7 +49,7 @@ final class CreateTableQueryImpl
     }
 
     if (!table) {
-      builder.append("IF NOT EXISTS");
+      this.builder.append("IF NOT EXISTS");
     }
     return this;
   }
@@ -70,7 +75,7 @@ final class CreateTableQueryImpl
         joiner.add(dialectProvider.columnMetaAppending(meta));
       }
 
-      builder.append(joiner);
+      this.builder.append(joiner);
 
       columns = true;
     }

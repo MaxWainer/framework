@@ -24,6 +24,7 @@
 
 package dev.framework.orm.api.credentials;
 
+import dev.framework.orm.api.ORMFacade;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,10 +34,21 @@ final class ConnectionCredentialsImpl implements ConnectionCredentials {
   private final Map<String, Object> options;
 
   ConnectionCredentialsImpl(
+      final @NotNull String facadeClassName,
       final @NotNull String jdbcUrl,
       final @NotNull String username,
       final @NotNull String password,
       final @NotNull Map<String, Object> options) {
+    try {
+      final Class<?> clazz = Class.forName(facadeClassName);
+
+      if (!clazz.isAssignableFrom(ORMFacade.class)) {
+        throw new UnsupportedOperationException(clazz + " is not facade!");
+      }
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException("Unable to find suitable driver!", e);
+    }
+
     this.jdbcUrl = jdbcUrl;
     this.username = username;
     this.password = password;

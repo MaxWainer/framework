@@ -51,21 +51,15 @@ public abstract class AbstractORMFacade implements ORMFacade {
   private final ObjectResolverRegistry objectResolverRegistry =
       new ObjectResolverRegistryImpl();
 
-  private final ReferenceClassFactory referenceClassFactory;
-  private final ObjectRepositoryRegistry objectRepositoryRegistry;
-  private final QueryFactory queryFactory;
-
-  protected AbstractORMFacade() {
-    this.queryFactory = new QueryFactoryImpl(dialectProvider(), connectionSource());
-    this.referenceClassFactory =
-        new CachedReferenceClassFactory(dataFactory);
-    this.objectRepositoryRegistry =
-        new ObjectRepositoryRegistryImpl(this);
-  }
+  private final ReferenceClassFactory referenceClassFactory =
+      new CachedReferenceClassFactory(dataFactory);
+  private final ObjectRepositoryRegistry objectRepositoryRegistry =
+      new ObjectRepositoryRegistryImpl(this);
+  private QueryFactory queryFactory;
 
   @Override
   public void open() {
-
+    queryFactory = new QueryFactoryImpl(dialectProvider(), connectionSource());
   }
 
   @Override

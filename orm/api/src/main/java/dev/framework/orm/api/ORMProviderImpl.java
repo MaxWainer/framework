@@ -12,12 +12,12 @@ final class ORMProviderImpl implements ORMProvider {
 
   private final OptionalMap<String, ORMFacadeFactory> registry = OptionalMaps.newConcurrentMap();
 
-  private ORMProviderImpl() {
-  }
+  private ORMProviderImpl() {}
 
   @Override
-  public @NotNull ORMFacade createFacade(
-      final @NotNull ConnectionCredentials connectionCredentials) throws MissingFacadeException {
+  public @NotNull ORMFacade createFacade(final @NotNull ConnectionCredentials connectionCredentials)
+      throws MissingFacadeException {
+
     final String url = connectionCredentials.jdbcUrl();
 
     final String driverId = url.split(":")[1];
@@ -26,15 +26,13 @@ final class ORMProviderImpl implements ORMProvider {
   }
 
   @Override
-  public void registerFactory(final @NotNull String driver,
-      final @NotNull ORMFacadeFactory facadeFactory) {
+  public void registerFactory(
+      final @NotNull String driver, final @NotNull ORMFacadeFactory facadeFactory) {
     registry.put(driver, facadeFactory);
   }
 
-  @NotNull ORMFacadeFactory fromDriver(final @NotNull String driver)
-      throws MissingFacadeException {
-    return registry.get(driver)
-        .orElseThrow(() -> new MissingFacadeException(driver));
+  @NotNull
+  ORMFacadeFactory fromDriver(final @NotNull String driver) throws MissingFacadeException {
+    return registry.get(driver).orElseThrow(() -> new MissingFacadeException(driver));
   }
-
 }

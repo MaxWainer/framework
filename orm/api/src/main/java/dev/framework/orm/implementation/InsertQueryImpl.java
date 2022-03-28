@@ -19,7 +19,12 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
       @NotNull ConnectionSource connectionSource) {
     super(dialectProvider, connectionSource);
 
-    builder.append("INSERT INTO ");
+    this.builder.append("INSERT INTO ");
+  }
+
+  @Override
+  protected InsertQuery self() {
+    return this;
   }
 
   @Override
@@ -33,7 +38,7 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
     }
 
     if (!values) {
-      builder.append("VALUES").append(MoreStrings.repeatJoining(count, "?", ",", "(", ")"));
+      this.builder.append("VALUES").append(MoreStrings.repeatJoining(count, "?", ",", "(", ")"));
 
       values = true;
     }
@@ -58,7 +63,7 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
         joiner.add(value);
       }
 
-      builder.append(joiner);
+      this.builder.append(joiner);
 
       this.values = true;
     }
@@ -73,7 +78,7 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
     }
 
     if (!this.table) {
-      builder.append(table).append(" ");
+      this.builder.append(table).append(" ");
 
       this.table = true;
     }

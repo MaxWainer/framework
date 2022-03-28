@@ -37,6 +37,7 @@ import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.query.QueryFactory;
+import dev.framework.orm.api.query.types.Condition;
 import dev.framework.orm.api.ref.ReferenceClass;
 import dev.framework.orm.api.ref.ReferenceObject;
 import dev.framework.orm.api.set.ResultSetReader;
@@ -97,7 +98,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
         .select()
         .everything()
         .from(tableMeta)
-        .whereAnd(tableMeta.identifyingColumn().identifier() + "=")
+        .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
         .preProcessUnexcepting()
         .appender(appender -> appender.next(i))
         .resultMapper(mapper -> {
@@ -191,7 +192,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
     queryFactory
         .delete()
         .from(tableMeta)
-        .whereAnd(tableMeta.identifyingColumn().identifier() + "=")
+        .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
         .executeUnexcepting();
   }
 
@@ -208,7 +209,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
         .update()
         .table(tableMeta)
         .set(tableMeta)
-        .whereAnd(tableMeta.identifier() + "=")
+        .whereAnd(Condition.of(tableMeta.identifier(), Condition.EQUALS))
         .preProcessUnexcepting()
         .appender(appender -> {
           try {
@@ -232,7 +233,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
     return queryFactory
         .select()
         .everything().from(tableMeta)
-        .whereAnd(tableMeta.identifier() + "=")
+        .whereAnd(Condition.of(tableMeta.identifier(), Condition.EQUALS))
         .<Boolean>preProcessUnexcepting()
         .appender(appender -> appender.next(i))
         .resultMapper(ResultSetReader::next)
@@ -266,7 +267,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
   }
 
   private ReferenceObject<T> createObjectReference(T t) {
-    return new ReferenceObjectImpl<>(t, Types.contravarianceType(t.getClass()), objectData);
+    return new ReferenceObjectImpl<>(t, (Class<? extends T>) t.getClass(), objectData);
   }
 
 }
