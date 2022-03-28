@@ -26,6 +26,7 @@ package dev.framework.orm.api;
 
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.dialect.DialectProvider;
+import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.registry.ObjectDataRegistry;
 import dev.framework.orm.api.registry.ObjectRepositoryRegistry;
@@ -43,14 +44,14 @@ public interface ORMFacade extends Closeable {
    *
    * @return {@link ObjectRepositoryRegistry}
    */
-  @NotNull ObjectRepositoryRegistry objectRepositoryRegistry();
+  @NotNull ObjectRepositoryRegistry repositoryRegistry();
 
   /**
    * Get object data registry
    *
    * @return {@link ObjectDataRegistry}
    */
-  @NotNull ObjectDataRegistry objectDataRegistry();
+  @NotNull ObjectDataRegistry dataRegistry();
 
   @NotNull ObjectResolverRegistry resolverRegistry();
 
@@ -66,10 +67,10 @@ public interface ORMFacade extends Closeable {
 
   @NotNull DialectProvider dialectProvider();
 
-  @NotNull ObjectDataFactory objectDataFactory();
+  @NotNull ObjectDataFactory dataFactory();
 
   @NotNull ReferenceClassFactory referenceClassFactory();
 
-  void open();
+  void open() throws MissingRepositoryException;
 
 }

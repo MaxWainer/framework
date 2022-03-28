@@ -37,12 +37,12 @@ final class ObjectResolverImpl<T extends RepositoryObject> implements ObjectReso
   }
 
   @Override
-  public void fillConstructor(@NotNull ReferenceObject<T> object,
+  public void fillConstructor(T object,
       @NotNull StatementAppender appender) throws Throwable {
     final TableMeta tableMeta = clazz.objectData().tableMeta();
 
     for (final ColumnMeta meta : tableMeta) {
-      appender.nextColumn(meta, object.asObject());
+      appender.nextColumn(meta, object);
     }
   }
 
@@ -56,6 +56,6 @@ final class ObjectResolverImpl<T extends RepositoryObject> implements ObjectReso
     }
 
     final ColumnMeta identifierMeta = tableMeta.identifyingColumn();
-    appender.next(object.filedData(identifierMeta.identifier()));
+    appender.next(object.filedData(identifierMeta.field().getName()));
   }
 }

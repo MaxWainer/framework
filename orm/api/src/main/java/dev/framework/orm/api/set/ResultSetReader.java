@@ -26,6 +26,7 @@ package dev.framework.orm.api.set;
 
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.sql.SQLException;
 import java.util.Optional;
@@ -46,7 +47,8 @@ public interface ResultSetReader {
 
   boolean readBoolean(final @NotNull String column) throws SQLException;
 
-  @NotNull Optional<Object> readColumn(final @NotNull ColumnMeta meta) throws SQLException, UnknownAdapterException;
+  @NotNull Optional<Object> readColumn(final @NotNull ColumnMeta meta)
+      throws SQLException, UnknownAdapterException, MissingRepositoryException;
 
   <T extends RepositoryObject> Optional<T> readJsonAdaptive(final @NotNull String column, final @NotNull Class<T> type)
       throws SQLException, UnknownAdapterException;

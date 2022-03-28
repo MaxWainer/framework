@@ -26,7 +26,7 @@ final class QueryPreProcessorImpl<T> implements QueryPreProcessor<T> {
       final @NotNull ConnectionSource connectionSource,
       final @NotNull String query,
       final @NotNull ThrowableConsumer<StatementAppender, SQLException> appender,
-      final @NotNull ThrowableFunction<ResultSetReader, T, SQLException> resultMapper) {
+      final @Nullable ThrowableFunction<ResultSetReader, T, SQLException> resultMapper) {
     this.connectionSource = connectionSource;
     this.query = query;
     this.appender = appender;
@@ -35,7 +35,11 @@ final class QueryPreProcessorImpl<T> implements QueryPreProcessor<T> {
 
   @Override
   public @NotNull QueryResult<T> result() {
-    return connectionSource.executeWithResult(query, appender, resultMapper);
+    if (resultMapper != null) {
+      return connectionSource.executeWithResult(query, appender, resultMapper);
+    }
+
+    return (QueryResult<T>) connectionSource.execute(query, appender);
   }
 
   public static final class QueryPreProcessorBuilderImpl<V> implements
@@ -45,7 +49,7 @@ final class QueryPreProcessorImpl<T> implements QueryPreProcessor<T> {
     private final String query;
 
     private ThrowableFunctions.ThrowableConsumer<StatementAppender, SQLException> appender = ThrowableConsumer.empty();
-    private ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper = ThrowableFunction.empty();
+    private ThrowableFunctions.ThrowableFunction<ResultSetReader, @Nullable V, SQLException> resultMapper = null;
 
     QueryPreProcessorBuilderImpl(
         final @NotNull ConnectionSource connectionSource,
@@ -57,7 +61,7 @@ final class QueryPreProcessorImpl<T> implements QueryPreProcessor<T> {
     @Override
     public QueryPreProcessor<V> build() {
       return new QueryPreProcessorImpl<>(connectionSource, query, requireNonNull(appender),
-          requireNonNull(resultMapper));
+          resultMapper);
     }
 
     @Override

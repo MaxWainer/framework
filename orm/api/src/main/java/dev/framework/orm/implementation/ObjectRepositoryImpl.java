@@ -24,21 +24,19 @@
 
 package dev.framework.orm.implementation;
 
-import dev.framework.commons.Types;
 import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.tuple.ImmutableTuple;
-import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.ObjectResolver;
 import dev.framework.orm.api.data.ObjectData;
+import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.data.meta.TableMeta;
-import dev.framework.orm.api.dialect.DialectProvider;
-import dev.framework.orm.api.query.QueryFactory;
 import dev.framework.orm.api.query.types.Condition;
-import dev.framework.orm.api.ref.ReferenceClass;
+import dev.framework.orm.api.query.types.SelectQuery;
 import dev.framework.orm.api.ref.ReferenceObject;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.util.ArrayList;
@@ -57,25 +55,17 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
   private final OptionalMap<I, List<T>> objectCache = OptionalMaps.newConcurrentMap();
 
-  private final DialectProvider dialectProvider;
-  private final ConnectionSource connectionSource;
+  private final ORMFacade facade;
 
   private final ObjectData objectData;
-  private final ReferenceClass<T> referenceClass;
-
-  private final QueryFactory queryFactory;
   private final ObjectResolver<T> objectResolver;
 
   ObjectRepositoryImpl(
       final @NotNull ORMFacade facade,
       final @NotNull ObjectResolver<T> resolver,
-      final @NotNull ReferenceClass<T> referenceClass,
       final @NotNull ObjectData objectData) {
-    this.dialectProvider = facade.dialectProvider();
-    this.connectionSource = facade.connectionSource();
     this.objectData = objectData;
-    this.referenceClass = referenceClass;
-    this.queryFactory = facade.queryFactory();
+    this.facade = facade;
     this.objectResolver = resolver;
   }
 
@@ -86,27 +76,40 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
   @Override
   public @NotNull List<T> findAll(@NotNull I i) {
-    if (objectCache.exists(i)) {
+    if (exists(i)) {
       return objectCache.get(i).orElse(Collections.emptyList());
     }
 
     final TableMeta tableMeta = objectData.tableMeta();
 
+    final List<T> list = findAll(tableMeta.identifyingColumn().identifier(), i);
+
+    objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).addAll(list);
+
+    return list;
+  }
+
+  @Override
+  public @NotNull List<T> findAll(@NotNull String column, @NotNull Object id) {
+    final TableMeta tableMeta = objectData.tableMeta();
+
     final List<T> list = new ArrayList<>();
 
-    queryFactory
+    final SelectQuery query = facade.queryFactory()
         .select()
         .everything()
         .from(tableMeta)
-        .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
+        .whereAnd(Condition.of(column, Condition.EQUALS));
+
+    modifyToJoinings(query)
         .preProcessUnexcepting()
-        .appender(appender -> appender.next(i))
+        .appender(appender -> appender.next(id))
         .resultMapper(mapper -> {
           while (mapper.next()) {
             try {
               list.add(objectResolver.constructObject(mapper).asObject());
             } catch (Throwable e) {
-              e.printStackTrace();
+              throw new CompletionException(e);
             }
           }
 
@@ -114,8 +117,6 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
         })
         .build()
         .join();
-
-    objectCache.computeIfAbsent(i, $ -> new ArrayList<>()).addAll(list);
 
     return list;
   }
@@ -126,10 +127,12 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    queryFactory
+    final SelectQuery query = facade.queryFactory()
         .select()
         .everything()
-        .from(tableMeta)
+        .from(tableMeta);
+
+    modifyToJoinings(query)
         .preProcessUnexcepting()
         .resultMapper(mapper -> {
           while (mapper.next()) {
@@ -161,15 +164,15 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    queryFactory
+    facade.queryFactory()
         .insert()
         .into(tableMeta)
         .values(tableMeta.columnMetaSet().size())
-        .preProcessUnexcepting()
+        .<Void>preProcessUnexcepting()
         .appender(it -> {
           try {
             objectResolver.fillConstructor(
-                createObjectReference(t),
+                t,
                 it);
           } catch (Throwable e) {
             throw new CompletionException(e);
@@ -183,34 +186,35 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
   @Override
   public void delete(@NotNull I i) {
-    if (objectCache.exists(i)) {
+    if (exists(i)) {
       objectCache.remove(i);
     }
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    queryFactory
+    facade.queryFactory()
         .delete()
         .from(tableMeta)
         .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
-        .executeUnexcepting();
+        .executeUnexcepting()
+        .join();
   }
 
   @Override
   public void update(@NotNull I i, @NotNull T t) {
-    if (!objectCache.exists(i)) {
+    if (!exists(i)) {
       register(i, t);
       return;
     }
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    queryFactory
+    facade.queryFactory()
         .update()
         .table(tableMeta)
         .set(tableMeta)
-        .whereAnd(Condition.of(tableMeta.identifier(), Condition.EQUALS))
-        .preProcessUnexcepting()
+        .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
+        .<Void>preProcessUnexcepting()
         .appender(appender -> {
           try {
             objectResolver.fillUpdater(createObjectReference(t), appender);
@@ -230,10 +234,10 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    return queryFactory
+    return facade.queryFactory()
         .select()
         .everything().from(tableMeta)
-        .whereAnd(Condition.of(tableMeta.identifier(), Condition.EQUALS))
+        .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
         .<Boolean>preProcessUnexcepting()
         .appender(appender -> appender.next(i))
         .resultMapper(ResultSetReader::next)
@@ -245,11 +249,13 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
   public void createTable() {
     final TableMeta tableMeta = objectData.tableMeta();
 
-    queryFactory
+    facade.queryFactory()
         .createTable()
         .ifNotExists()
+        .table(tableMeta.identifier())
         .columns(tableMeta.columnMetaSet())
-        .executeUnexcepting();
+        .executeUnexcepting()
+        .join();
   }
 
   @Override
@@ -270,4 +276,18 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
     return new ReferenceObjectImpl<>(t, (Class<? extends T>) t.getClass(), objectData);
   }
 
+  private SelectQuery modifyToJoinings(final @NotNull SelectQuery query) {
+    final TableMeta tableMeta = objectData.tableMeta();
+
+    for (final ColumnMeta foreign : tableMeta.foreignColumns()) {
+      final BaseForeignKey foreignKey = foreign.foreignKeyOptions();
+
+      query.join(
+          foreignKey.targetTable().tableMeta().identifier(),
+          foreign.identifier(),
+          foreignKey.foreignField());
+    }
+
+    return query;
+  }
 }

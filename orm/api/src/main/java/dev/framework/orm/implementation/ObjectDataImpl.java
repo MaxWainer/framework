@@ -24,7 +24,6 @@
 
 package dev.framework.orm.implementation;
 
-import dev.framework.commons.concurrent.SynchronizeableObject;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
 import dev.framework.orm.api.data.ObjectData;
@@ -36,7 +35,7 @@ import org.jetbrains.annotations.UnknownNullability;
 final class ObjectDataImpl implements ObjectData {
 
   private final Class<? extends RepositoryObject> delegate;
-  private final SynchronizeableObject<Version> version;
+  private final Version version;
   private final Constructor<?> targetConstructor;
 
   private final TableMeta meta;
@@ -47,7 +46,7 @@ final class ObjectDataImpl implements ObjectData {
       final @NotNull TableMeta meta,
       final @NotNull Constructor<?> targetConstructor) {
     this.delegate = delegate;
-    this.version = SynchronizeableObject.create(version);
+    this.version = version;
     this.meta = meta;
     this.targetConstructor = targetConstructor;
   }
@@ -63,13 +62,8 @@ final class ObjectDataImpl implements ObjectData {
   }
 
   @Override
-  public void replaceVersion(@NotNull Version version) {
-    this.version.replace(version);
-  }
-
-  @Override
   public @NotNull Version version() {
-    return version.get();
+    return version;
   }
 
   @Override

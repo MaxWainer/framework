@@ -10,7 +10,7 @@ public interface ObjectDataRegistry {
   @NotNull Optional<ObjectData> findData(final @NotNull Class<? extends RepositoryObject> clazz);
 
   default @NotNull ObjectData findDataOrThrow(final @NotNull Class<? extends RepositoryObject> clazz) {
-    return findData(clazz).orElseThrow(UnknownError::new);
+    return findData(clazz).orElseThrow(() -> new UnsupportedOperationException("Unknown repository: " + clazz));
   }
 
   void registerObjectData(final @NotNull Class<? extends RepositoryObject> clazz,

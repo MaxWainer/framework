@@ -31,7 +31,7 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
       throw new QueryNotCompletedException("Query not completed, currently: " + builder);
     }
 
-    return builder.toString();
+    return buildQueryUnexcepting();
   }
 
   @Override
@@ -56,7 +56,7 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
   protected void appendColumns(final @NotNull String delimiter,
       final @NotNull String columnSuffix,
       final @NotNull String... columns) {
-    final StringJoiner joiner = createJoiner(delimiter);
+    final StringJoiner joiner = new StringJoiner(delimiter);
 
     for (final String column : columns) {
       joiner.add(dialectProvider.protectValue(column) + columnSuffix);
@@ -89,15 +89,17 @@ abstract class AbstractQuery<T extends Query> implements Query<T> {
     return new QueryPreProcessorBuilderImpl<>(connectionSource, buildQueryUnexcepting());
   }
 
-  protected @NotNull StringJoiner createJoiner(final @NotNull String delimiter) {
-    return new StringJoiner(
-        dialectProvider.protectValue(delimiter));
-  }
+//  protected @NotNull StringJoiner createJoiner(final @NotNull String delimiter) {
+//    return new StringJoiner(
+//        dialectProvider.protectValue(delimiter),
+//        String.valueOf(dialectProvider.open()),
+//        String.valueOf(dialectProvider.close()));
+//  }
 
   @Override
   @Internal
   public @NotNull String buildQueryUnexcepting() {
-    return this.builder.toString();
+    return this.builder.toString().trim().replaceAll("\\s{2,}", " ");
   }
 
   protected abstract T self();

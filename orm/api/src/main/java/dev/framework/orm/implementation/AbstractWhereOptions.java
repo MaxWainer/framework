@@ -45,7 +45,7 @@ abstract class AbstractWhereOptions<T extends WhereOptions>
   private void appendConditions(final @NotNull String delimiter,
       final @NotNull String columnSuffix,
       final @NotNull Condition... conditions) {
-    final StringJoiner joiner = createJoiner(delimiter);
+    final StringJoiner joiner = new StringJoiner(delimiter);
 
     for (final Condition condition : conditions) {
       joiner.add(dialectProvider.protectValue(condition.column()) + condition.condition() + columnSuffix);

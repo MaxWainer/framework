@@ -10,6 +10,7 @@ import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.ref.ReferenceClass;
 import dev.framework.orm.api.registry.ObjectRepositoryRegistry;
+import java.util.Collection;
 import org.jetbrains.annotations.NotNull;
 
 final class ObjectRepositoryRegistryImpl implements ObjectRepositoryRegistry {
@@ -48,8 +49,15 @@ final class ObjectRepositoryRegistryImpl implements ObjectRepositoryRegistry {
         new ObjectRepositoryImpl<>(
             facade,
             new ObjectResolverImpl<>(referenceClass),
-            referenceClass,
-            facade.objectDataRegistry().findDataOrThrow(clazz)
+            referenceClass.objectData()
         ));
+
+    facade.dataRegistry().registerObjectData(clazz, referenceClass.objectData());
+    facade.resolverRegistry().registerResolver(clazz);
+  }
+
+  @Override
+  public @NotNull Collection<ObjectRepository<?, ?>> registeredRepositories() {
+    return repositoryCache.values();
   }
 }

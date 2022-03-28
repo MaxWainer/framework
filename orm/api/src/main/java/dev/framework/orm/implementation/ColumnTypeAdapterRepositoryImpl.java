@@ -28,12 +28,17 @@ import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
+import dev.framework.orm.implementation.columnadapters.UUIDColumnTypeAdapter;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
 final class ColumnTypeAdapterRepositoryImpl implements ColumnTypeAdapterRepository {
 
   private final OptionalMap<Class<?>, ColumnTypeAdapter<?, ?>> registry = OptionalMaps.newConcurrentMap();
+
+  ColumnTypeAdapterRepositoryImpl() {
+    register(new UUIDColumnTypeAdapter());
+  }
 
   @Override
   public @NotNull Optional<@NotNull ColumnTypeAdapter<?, ?>> find(@NotNull Class<?> aClass) {

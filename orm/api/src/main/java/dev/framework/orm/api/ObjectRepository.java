@@ -34,6 +34,8 @@ public interface ObjectRepository<I, T extends RepositoryObject<I>> extends Repo
 
   @NotNull List<T> findAll(final @NotNull I i);
 
+  @NotNull List<T> findAll(final @NotNull String column, final @NotNull Object id);
+
   @NotNull List<T> listAll();
 
   void createTable();

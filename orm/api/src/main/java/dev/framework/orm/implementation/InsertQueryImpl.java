@@ -57,10 +57,10 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
     }
 
     if (!this.values) {
-      final StringJoiner joiner = createJoiner(", ");
+      final StringJoiner joiner = new StringJoiner(", ");
 
       for (final String value : values) {
-        joiner.add(value);
+        joiner.add(dialectProvider.protectValue(value));
       }
 
       this.builder.append(joiner);
@@ -83,7 +83,7 @@ final class InsertQueryImpl extends AbstractQuery<InsertQuery> implements Insert
       this.table = true;
     }
 
-    return null;
+    return this;
   }
 
   @Override

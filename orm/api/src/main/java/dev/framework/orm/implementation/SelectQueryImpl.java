@@ -118,8 +118,7 @@ final class SelectQueryImpl extends AbstractWhereOptions<SelectQuery> implements
 
   @Override
   protected boolean subQuerySupported(@NotNull Query<?> sub) {
-    return sub instanceof CreateTableQuery || sub instanceof DropQuery
-        || sub instanceof InsertQuery;
+    return sub instanceof SelectQuery;
   }
 
   @Override

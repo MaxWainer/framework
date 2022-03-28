@@ -55,6 +55,29 @@ final class CreateTableQueryImpl
   }
 
   @Override
+  public CreateTableQuery rawColumns(@NotNull String... columns) {
+    if (check()) {
+      return this;
+    }
+
+    if (!table) {
+      return this;
+    }
+
+    final StringJoiner joiner = new StringJoiner(", ", " (", ")");
+
+    for (final String column : columns) {
+      joiner.add(column);
+    }
+
+    this.builder.append(joiner);
+
+    this.columns = true;
+
+    return this;
+  }
+
+  @Override
   public CreateTableQuery columns(@NotNull Iterable<? extends ColumnMeta> columnMeta) {
     if (check()) {
       return this;
@@ -64,21 +87,19 @@ final class CreateTableQueryImpl
       return this;
     }
 
-    if (!columns) {
-      final StringJoiner joiner = new StringJoiner(", ");
+    final StringJoiner joiner = new StringJoiner(", ", " (", ")");
 
-      for (final ColumnMeta meta : columnMeta) {
-        joiner.add(dialectProvider.columnMetaToString(meta));
-      }
-
-      for (final ColumnMeta meta : ORMHelper.filterAppending(columnMeta)) {
-        joiner.add(dialectProvider.columnMetaAppending(meta));
-      }
-
-      this.builder.append(joiner);
-
-      columns = true;
+    for (final ColumnMeta meta : columnMeta) {
+      joiner.add(dialectProvider.columnMetaToString(meta));
     }
+
+    for (final ColumnMeta meta : ORMHelper.filterAppending(columnMeta)) {
+      joiner.add(dialectProvider.columnMetaAppending(meta));
+    }
+
+    this.builder.append(joiner);
+
+    columns = true;
 
     return this;
   }
@@ -86,6 +107,13 @@ final class CreateTableQueryImpl
   @Override
   protected boolean subQuerySupported(@NotNull Query<?> sub) {
     return false;
+  }
+
+  @Override
+  public @NotNull String buildQueryUnexcepting() {
+    final String result = super.buildQueryUnexcepting();
+
+    return result;
   }
 
   @Override

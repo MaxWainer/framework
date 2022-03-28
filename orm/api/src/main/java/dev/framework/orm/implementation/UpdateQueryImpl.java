@@ -47,6 +47,8 @@ final class UpdateQueryImpl extends AbstractWhereOptions<UpdateQuery> implements
     }
 
     if (!set) {
+      builder.append(" SET ");
+
       appendColumns(",", "=?", columns);
 
       set = true;

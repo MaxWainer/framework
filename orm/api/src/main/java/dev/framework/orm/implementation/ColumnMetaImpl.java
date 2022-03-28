@@ -26,6 +26,9 @@ package dev.framework.orm.implementation;
 
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.annotation.ForeignKey;
+import dev.framework.orm.api.annotation.ForeignKey.Action;
+import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -40,6 +43,7 @@ final class ColumnMetaImpl implements ColumnMeta {
   private final Field field;
 
   private final boolean primaryKey;
+  private final BaseForeignKey foreignKey;
   private final BaseJsonMap map;
   private final BaseJsonCollection collection;
   private final BaseJsonSerializable serializable;
@@ -50,6 +54,7 @@ final class ColumnMetaImpl implements ColumnMeta {
   ColumnMetaImpl(
       final @NotNull Field field,
       final boolean primaryKey,
+      final @Nullable BaseForeignKey foreignKey,
       final @Nullable BaseJsonMap map,
       final @Nullable BaseJsonCollection collection,
       final @Nullable BaseJsonSerializable serializable,
@@ -57,6 +62,7 @@ final class ColumnMetaImpl implements ColumnMeta {
       final @Nullable BaseGenericType genericType,
       final boolean identifying) {
     this.primaryKey = primaryKey;
+    this.foreignKey = foreignKey;
     this.identifier = column.value();
     this.field = field;
     this.map = map;
@@ -95,6 +101,20 @@ final class ColumnMetaImpl implements ColumnMeta {
   @Override
   public boolean identifying() {
     return identifying;
+  }
+
+  @Override
+  public boolean foreign() {
+    return foreignKey != null;
+  }
+
+  @Override
+  public @NotNull BaseForeignKey foreignKeyOptions() {
+    if (foreign()) {
+      return Objects.requireNonNull(foreignKey);
+    }
+
+    throw new UnsupportedOperationException("Annotation ForeignKey, not preset!");
   }
 
   @Override
@@ -331,12 +351,70 @@ final class ColumnMetaImpl implements ColumnMeta {
     }
   }
 
+  static final class BaseForeignKeyImpl implements BaseForeignKey {
+
+    private final String foreignField;
+    private final ObjectData targetTable;
+    private final ColumnMeta foreignFieldMeta;
+    private final ForeignKey.Action delete, update;
+
+    BaseForeignKeyImpl(
+        final @NotNull String foreignField,
+        final @NotNull ObjectData targetTable,
+        final @NotNull Action delete,
+        final @NotNull Action update) {
+      this.foreignField = foreignField;
+      this.foreignFieldMeta = targetTable
+          .tableMeta().findForeignKey(foreignField);
+      this.targetTable = targetTable;
+      this.delete = delete;
+      this.update = update;
+    }
+
+    @Override
+    public @NotNull String foreignField() {
+      return foreignField;
+    }
+
+    @Override
+    public @NotNull ColumnMeta foreignFieldMeta() {
+      return foreignFieldMeta;
+    }
+
+    @Override
+    public @NotNull ObjectData targetTable() {
+      return targetTable;
+    }
+
+    @NotNull
+    @Override
+    public ForeignKey.Action onDelete() {
+      return delete;
+    }
+
+    @Override
+    public @NotNull ForeignKey.Action onUpdate() {
+      return update;
+    }
+
+    @Override
+    public String toString() {
+      return "BaseForeignKeyImpl{" +
+          "foreignField='" + foreignField + '\'' +
+          ", targetTable='" + targetTable + '\'' +
+          ", delete=" + delete +
+          ", update=" + update +
+          '}';
+    }
+  }
+
   @Override
   public String toString() {
     return "ColumnMetaImpl{" +
         "identifier='" + identifier + '\'' +
         ", field=" + field +
         ", primaryKey=" + primaryKey +
+        ", foreignKey=" + foreignKey +
         ", map=" + map +
         ", collection=" + collection +
         ", serializable=" + serializable +

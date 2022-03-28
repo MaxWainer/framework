@@ -12,6 +12,8 @@ public interface CreateTableQuery extends Query<CreateTableQuery>, TableScope<Cr
     return columns(Arrays.asList(columnMeta));
   }
 
+  CreateTableQuery rawColumns(final @NotNull String... columns);
+
   CreateTableQuery columns(final @NotNull Iterable<? extends ColumnMeta> columnMeta);
 
 }

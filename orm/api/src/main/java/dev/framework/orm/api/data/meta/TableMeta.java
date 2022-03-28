@@ -27,11 +27,28 @@ package dev.framework.orm.api.data.meta;
 import dev.framework.orm.api.annotation.Table;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
 
   @NotNull Set<ColumnMeta> columnMetaSet();
+
+  default @NotNull Set<ColumnMeta> foreignColumns() {
+    return columnMetaSet()
+        .stream()
+        .filter(ColumnMeta::foreign)
+        .collect(Collectors.toSet());
+  }
+
+  default @NotNull ColumnMeta findForeignKey(final @NotNull String foreignKeyName) {
+    return columnMetaSet()
+        .stream()
+        .filter(meta -> foreignKeyName.equals(meta.identifier()))
+        .findFirst()
+        .orElseThrow(() -> new UnsupportedOperationException(
+            "No any foreign field with name " + foreignKeyName));
+  }
 
   @NotNull ColumnMeta identifyingColumn();
 

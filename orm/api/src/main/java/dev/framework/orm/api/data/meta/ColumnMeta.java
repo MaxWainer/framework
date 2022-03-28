@@ -24,10 +24,10 @@
 
 package dev.framework.orm.api.data.meta;
 
-import dev.framework.commons.exception.NotImplementedYet;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.annotation.ForeignKey;
+import dev.framework.orm.api.data.ObjectData;
 import java.lang.reflect.Field;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,13 +45,9 @@ public interface ColumnMeta extends ObjectMeta<String> {
 
   boolean identifying();
 
-  default boolean foreign() {
-    throw new NotImplementedYet();
-  }
+  boolean foreign();
 
-  default @NotNull BaseForeignKey foreignKeyOptions() {
-    throw new NotImplementedYet();
-  }
+  @NotNull BaseForeignKey foreignKeyOptions();
 
   @Nullable BaseJsonMap mapOptions();
 
@@ -74,7 +70,10 @@ public interface ColumnMeta extends ObjectMeta<String> {
     @NotNull
     String foreignField();
 
-    @NotNull String targetTable();
+    @NotNull
+    ColumnMeta foreignFieldMeta();
+
+    @NotNull ObjectData targetTable();
 
     @NotNull ForeignKey.Action onDelete();
 

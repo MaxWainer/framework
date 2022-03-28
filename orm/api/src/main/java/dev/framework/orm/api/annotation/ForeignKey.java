@@ -1,5 +1,6 @@
 package dev.framework.orm.api.annotation;
 
+import dev.framework.commons.repository.RepositoryObject;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,7 +13,7 @@ public @interface ForeignKey {
 
   @NotNull String foreignColumn();
 
-  @NotNull String foreignTable();
+  @NotNull Class<? extends RepositoryObject> foreignTable();
 
   @NotNull Action onDelete() default Action.NO_ACTION;
 

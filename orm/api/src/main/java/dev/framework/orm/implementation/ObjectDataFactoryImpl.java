@@ -27,7 +27,9 @@ package dev.framework.orm.implementation;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
+import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.annotation.Column;
+import dev.framework.orm.api.annotation.ForeignKey;
 import dev.framework.orm.api.annotation.GenericType;
 import dev.framework.orm.api.annotation.IdentifierField;
 import dev.framework.orm.api.annotation.InstanceConstructor;
@@ -46,6 +48,7 @@ import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl;
 import dev.framework.orm.implementation.ColumnMetaImpl.BaseColumnImpl.BaseColumnOptionsImpl;
+import dev.framework.orm.implementation.ColumnMetaImpl.BaseForeignKeyImpl;
 import dev.framework.orm.implementation.ColumnMetaImpl.BaseGenericTypeImpl;
 import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonCollectionImpl;
 import dev.framework.orm.implementation.ColumnMetaImpl.BaseJsonMapImpl;
@@ -62,6 +65,12 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 final class ObjectDataFactoryImpl implements ObjectDataFactory {
+
+  private final ORMFacade facade;
+
+  ObjectDataFactoryImpl(final @NotNull ORMFacade facade) {
+    this.facade = facade;
+  }
 
   @Override
   public @NotNull ObjectData createFromClass(
@@ -107,7 +116,7 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
     return clazz;
   }
 
-  private static TableMeta readTableMeta(final @NotNull Class<? extends RepositoryObject> clazz)
+  private TableMeta readTableMeta(final @NotNull Class<? extends RepositoryObject> clazz)
       throws MissingAnnotationException, MetaConstructionException {
     final Table tableAnnotation = clazz.getAnnotation(Table.class);
 
@@ -140,7 +149,7 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
                 options.compression())));
   }
 
-  private static Set<ColumnMeta> readColumnSet(
+  private Set<ColumnMeta> readColumnSet(
       final @NotNull Class<? extends RepositoryObject> clazz) throws MetaConstructionException {
     final Set<ColumnMeta> columnSet = new LinkedHashSet<>();
 
@@ -151,7 +160,7 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
     return columnSet;
   }
 
-  private static ColumnMeta readFieldMeta(final @NotNull Field field,
+  private ColumnMeta readFieldMeta(final @NotNull Field field,
       final @NotNull Class<? extends RepositoryObject> clazz) throws MetaConstructionException {
     final JsonMap map = field.getAnnotation(JsonMap.class);
     final JsonCollection collection = field.getAnnotation(JsonCollection.class);
@@ -159,6 +168,7 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
     final boolean primary = field.getAnnotation(PrimaryKey.class) != null;
     final Column column = field.getAnnotation(Column.class);
     final JsonSerializable serializable = field.getAnnotation(JsonSerializable.class);
+    final ForeignKey foreignKey = field.getAnnotation(ForeignKey.class);
 
     if (column == null) {
       throw new MetaConstructionException(
@@ -193,11 +203,29 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
       }
     }
 
+    final ObjectData foreignKeyData;
+    if (foreignKey != null) {
+      if (!Collection.class.isAssignableFrom(field.getType())) {
+        throw new MetaConstructionException(
+            "Field " + field.getName() + ", foreign key but it's not collection!",
+            clazz);
+      }
+
+      foreignKeyData = facade.dataRegistry().findDataOrThrow(foreignKey.foreignTable());
+    } else {
+      foreignKeyData = null;
+    }
+
     final Column.ColumnOptions columnOptions = column.options();
 
     return new ColumnMetaImpl(
         field,
         primary,
+        foreignKey == null ? null : new BaseForeignKeyImpl(
+            foreignKey.foreignColumn(),
+            foreignKeyData,
+            foreignKey.onDelete(),
+            foreignKey.onUpdate()),
         map == null ? null : new BaseJsonMapImpl(map.useTopLevelAnnotation()),
         collection == null ? null : new BaseJsonCollectionImpl(collection.useTopLevelAnnotation()),
         serializable == null ? null : new BaseJsonSerializableImpl(serializable.value()),

@@ -35,8 +35,6 @@ public interface ObjectData extends Delegatable<Class<? extends RepositoryObject
 
   @NotNull TableMeta tableMeta();
 
-  void replaceVersion(final @NotNull Version version);
-
   @NotNull Version version();
 
   @NotNull Constructor<?> targetConstructor();

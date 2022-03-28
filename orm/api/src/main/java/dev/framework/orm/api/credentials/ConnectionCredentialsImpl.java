@@ -42,7 +42,7 @@ final class ConnectionCredentialsImpl implements ConnectionCredentials {
     try {
       final Class<?> clazz = Class.forName(facadeClassName);
 
-      if (!clazz.isAssignableFrom(ORMFacade.class)) {
+      if (!ORMFacade.class.isAssignableFrom(clazz)) {
         throw new UnsupportedOperationException(clazz + " is not facade!");
       }
     } catch (ClassNotFoundException e) {

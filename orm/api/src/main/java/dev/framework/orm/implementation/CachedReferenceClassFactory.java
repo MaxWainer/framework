@@ -2,6 +2,7 @@ package dev.framework.orm.implementation;
 
 import com.google.common.collect.Maps;
 import dev.framework.commons.repository.RepositoryObject;
+import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ReferenceClassFactory;
 import dev.framework.orm.api.data.ObjectDataFactory;
 import dev.framework.orm.api.exception.MetaConstructionException;
@@ -12,14 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 final class CachedReferenceClassFactory implements ReferenceClassFactory {
 
-  private final ObjectDataFactory objectDataFactory;
+  private final ORMFacade facade;
 
   private final
   Map<Class<? extends RepositoryObject>, ReferenceClass<? extends RepositoryObject>>
       cache = Maps.newConcurrentMap();
 
-  CachedReferenceClassFactory(final @NotNull ObjectDataFactory objectDataFactory) {
-    this.objectDataFactory = objectDataFactory;
+  CachedReferenceClassFactory(final @NotNull ORMFacade facade) {
+    this.facade = facade;
   }
 
   @Override
@@ -28,7 +29,7 @@ final class CachedReferenceClassFactory implements ReferenceClassFactory {
     if (cache.containsKey(clazz)) return (ReferenceClass<T>) cache.get(clazz);
 
     final ReferenceClass<T> referenceClass = new ReferenceClassImpl<>(
-        objectDataFactory.createFromClass(clazz),
+        facade.dataFactory().createFromClass(clazz),
         clazz
     );
 

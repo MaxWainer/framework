@@ -3,10 +3,12 @@ package dev.framework.orm.implementation.sql;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
 import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.ObjectResolver;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.query.types.InsertQuery;
+import dev.framework.orm.api.ref.ReferenceObject;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +25,10 @@ public class TemporaryBasedTableUpdater extends AbstractTableUpdater {
       @NotNull Version version) throws MissingRepositoryException {
 //    final TableMeta tableMeta = data.tableMeta();
 //
+//    final ObjectResolver objectResolver = facade
+//        .resolverRegistry()
+//        .findResolver(clazz);
+//
 //    final String tableName = tableMeta.identifier();
 //    final String tempName = "_TEMP_" + tableName;
 //
@@ -34,7 +40,10 @@ public class TemporaryBasedTableUpdater extends AbstractTableUpdater {
 //        .executeUnexcepting()
 //        .join();
 //
-//    final List<? extends RepositoryObject> objects = facade.findRepository(clazz).listAll();
+//    final List<? extends RepositoryObject> objects = facade
+//        .repositoryRegistry()
+//        .findRepository(clazz)
+//        .listAll();
 //
 //    // filling
 //    final InsertQuery insertQuery = facade.queryFactory()
@@ -42,10 +51,17 @@ public class TemporaryBasedTableUpdater extends AbstractTableUpdater {
 //        .values(tableMeta.columnMetaSet().size());
 //
 //    for (final RepositoryObject object : objects) {
-////      insertQuery
-////          .preProcessUnexcepting()
-////          .appender(it -> facade.)
-////          .build();
+//      insertQuery
+//          .preProcessUnexcepting()
+//          .appender(it -> {
+//            try {
+//              objectResolver.fillConstructor(object, it);
+//            } catch (Throwable e) {
+//              e.printStackTrace();
+//            }
+//          })
+//          .build()
+//          .join();
 //    }
 //
 //    // drop exists
@@ -60,7 +76,9 @@ public class TemporaryBasedTableUpdater extends AbstractTableUpdater {
 //        .renameTo(tableName)
 //        .executeUnexcepting()
 //        .join();
-//
-//    data.replaceVersion(version);
+  }
+
+  private ReferenceObject<? extends RepositoryObject> wrapObject(RepositoryObject object) {
+    return null;
   }
 }

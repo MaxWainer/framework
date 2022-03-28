@@ -78,7 +78,7 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
 
         return resultMapper.apply(new ResultSetReaderImpl(statement.executeQuery(), ormFacade));
       } catch (SQLException e) {
-        throw new CompletionException(e);
+        throw new CompletionException("Error while processing query " + query, e);
       }
     }, executorService());
   }
@@ -89,7 +89,7 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
       try (final PreparedStatement statement = connection().prepareStatement(query)) {
         statement.executeUpdate();
       } catch (SQLException e) {
-        throw new CompletionException(e);
+        throw new CompletionException("Error while processing query " + query, e);
       }
     }, executorService());
   }
@@ -103,7 +103,7 @@ public abstract class AbstractConnectionSource implements ConnectionSource {
 
         statement.executeUpdate();
       } catch (SQLException e) {
-        throw new CompletionException(e);
+        throw new CompletionException("Error while processing query " + query, e);
       }
     }, executorService());
   }

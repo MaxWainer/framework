@@ -29,6 +29,7 @@ import dev.framework.commons.Reflections;
 import dev.framework.commons.annotation.UtilityClass;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import java.lang.invoke.MethodHandle;

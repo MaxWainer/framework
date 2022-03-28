@@ -27,7 +27,9 @@ package dev.framework.commons.map;
 import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @UtilityClass
 public final class OptionalMaps {
@@ -38,6 +40,10 @@ public final class OptionalMaps {
 
   public static <K, V> OptionalMap<K, V> newConcurrentMap() {
     return new OptionalMapImpl<>(ConcurrentHashMap::new);
+  }
+
+  public static <K, V> OptionalMap<K, V> newLinkedMap() {
+    return new OptionalMapImpl<>(LinkedHashMap::new);
   }
 
   public static <K, V> OptionalMap<K, V> newMap() {

@@ -29,10 +29,12 @@ import com.google.gson.JsonObject;
 import dev.framework.commons.Types;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.ObjectRepository;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.appender.StatementAppender;
 import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.lang.reflect.Field;
@@ -96,6 +98,33 @@ final class StatementAppenderImpl implements StatementAppender {
       @NotNull Object object) throws Throwable {
     final Field field = meta.field();
     final Object fieldObject = ORMHelper.fieldData(field, object);
+
+    if (meta.foreign()) {
+      final BaseForeignKey foreignKey = meta.foreignKeyOptions();
+
+      final Collection<? extends RepositoryObject> foreignCollection =
+          (Collection<? extends RepositoryObject>) fieldObject;
+
+      final ObjectRepository foreignRepository = facade
+          .repositoryRegistry().findRepository(foreignKey.targetTable().delegate());
+
+      for (final RepositoryObject repositoryObject : foreignCollection) {
+        foreignRepository.update(repositoryObject.identifier(), repositoryObject);
+      }
+
+      final Object id = foreignCollection
+          .stream()
+          .findFirst()
+          .orElse(null);
+
+      final ColumnMeta foreignMeta = foreignKey.foreignFieldMeta();
+
+      if (id != null) {
+        typeWrite(ORMHelper.fieldData(foreignMeta.field(), id));
+      }
+
+      return this;
+    }
 
     if (typeWrite(fieldObject)) {
       return this;

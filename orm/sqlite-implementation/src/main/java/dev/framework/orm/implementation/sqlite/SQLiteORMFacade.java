@@ -39,15 +39,18 @@ public final class SQLiteORMFacade extends AbstractORMFacade {
     ORMProvider.instance().registerFactory("sqlite", SQLiteORMFacade::new);
   }
 
-  private final DialectProvider dialectProvider = new SQLiteDialectProvider();
+  private final DialectProvider dialectProvider;
 
   private final TableUpdater tableUpdater;
 
   private final ConnectionSource source;
 
   public SQLiteORMFacade(final @NotNull ConnectionCredentials credentials) {
+    super();
+
     this.source = new SQLiteConnectionSource(credentials, this);
     this.tableUpdater = new TemporaryBasedTableUpdater(this);
+    this.dialectProvider = new SQLiteDialectProvider(this);
   }
 
   @Override
