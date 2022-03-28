@@ -8,6 +8,7 @@ import dev.framework.orm.api.data.meta.TableMeta;
 import dev.framework.orm.api.ref.ReferenceClass;
 import dev.framework.orm.api.ref.ReferenceObject;
 import dev.framework.orm.api.set.ResultSetReader;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -28,9 +29,18 @@ final class ObjectResolverImpl<T extends RepositoryObject> implements ObjectReso
 
     final List linkedList = new LinkedList();
     for (final ColumnMeta meta : tableMeta) {
-      final Optional optional = reader.readColumn(meta);
+      try {
+        final Optional optional = reader.readColumn(meta);
 
-      linkedList.add(optional.orElse(null));
+        linkedList.add(optional.orElse(null));
+      } catch (final SQLException exception) {
+        // ignore no such column
+        if (!exception.getMessage().contains("no such column")) {
+          throw new RuntimeException(exception);
+        }
+
+        linkedList.add(null);
+      }
     }
 
     return clazz.newInstance(linkedList.toArray());

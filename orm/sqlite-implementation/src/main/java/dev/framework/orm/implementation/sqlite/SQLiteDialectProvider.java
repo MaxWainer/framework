@@ -25,23 +25,14 @@
 package dev.framework.orm.implementation.sqlite;
 
 import dev.framework.commons.Types;
-import dev.framework.orm.api.ORMFacade;
-import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn.BaseColumnOptions;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.dialect.DialectProvider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 final class SQLiteDialectProvider implements DialectProvider {
-
-  private final ORMFacade facade;
-
-  SQLiteDialectProvider(final @Nullable ORMFacade facade) {
-    this.facade = facade;
-  }
 
   private static @NotNull String adaptType(@NotNull ColumnMeta meta) {
     if (meta.collection() || meta.map()) {
@@ -90,35 +81,25 @@ final class SQLiteDialectProvider implements DialectProvider {
     final BaseColumnOptions options = meta.options();
 
     return String.format(
-        "%s %s %s %s %s %s",
+        "%s %s %s %s %s %s %s %s",
         columnName,
         rawType,
         options.nullable() ? "NULL" : "NOT NULL",
         column.defaultValue() == null ? "" : "DEFAULT " + column.defaultValue(),
         options.autoIncrement() ? "AUTO_INCREMENT" : "",
-        options.unique() ? "UNIQUE KEY" : ""
+        meta.primaryKey() ? "PRIMARY KEY" : "",
+        options.unique() ? "UNIQUE KEY" : "",
+        meta.foreign() ? foreign(meta.foreignKeyOptions()) : ""
     ).trim();
   }
 
-  @Override
-  public @NotNull String columnMetaAppending(@NotNull ColumnMeta meta) {
-    if (meta.foreign()) {
-      final BaseForeignKey foreignKey = meta.foreignKeyOptions();
-
-      return String.format(
-          "FOREIGN KEY (%s) REFERENCES %s (%s) ON DELETE %s ON UPDATE %s",
-          protectValue(meta.identifier()),
-          protectValue(foreignKey.targetTable().tableMeta().identifier()),
-          protectValue(foreignKey.foreignField()),
-          foreignKey.onDelete().name().replace("_", " "),
-          foreignKey.onUpdate().name().replace("_", " ")
-      );
-    }
-
-    if (meta.primaryKey()) {
-      return String.format("PRIMARY KEY (%s)", protectValue(meta.identifier()));
-    }
-
-    return "";
+  private @NotNull String foreign(final @NotNull BaseForeignKey foreignKey) {
+    return String.format(
+        "REFERENCES %s (%s) ON DELETE %s ON UPDATE %s",
+        protectValue(foreignKey.targetTable().tableMeta().identifier()),
+        protectValue(foreignKey.foreignField()),
+        foreignKey.onDelete().name().replace("_", " "),
+        foreignKey.onUpdate().name().replace("_", " ")
+    );
   }
 }

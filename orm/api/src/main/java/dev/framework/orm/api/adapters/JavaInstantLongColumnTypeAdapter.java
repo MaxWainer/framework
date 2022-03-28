@@ -31,12 +31,12 @@ import org.jetbrains.annotations.NotNull;
 public final class JavaInstantLongColumnTypeAdapter implements ColumnTypeAdapter<Long, Instant> {
 
   @Override
-  public @NotNull Long to(@NotNull Instant instant) {
+  public @NotNull Long toPrimitive(@NotNull Instant instant) {
     return instant.getEpochSecond();
   }
 
   @Override
-  public @NotNull Instant from(@NotNull Long data) {
+  public @NotNull Instant fromPrimitive(@NotNull Long data) {
     return Instant.ofEpochSecond(data);
   }
 

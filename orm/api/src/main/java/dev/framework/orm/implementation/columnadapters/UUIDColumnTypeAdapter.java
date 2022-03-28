@@ -12,12 +12,12 @@ public final class UUIDColumnTypeAdapter implements StringColumnTypeAdapter<UUID
   }
 
   @Override
-  public @NotNull String to(@NotNull UUID uuid) {
+  public @NotNull String toPrimitive(@NotNull UUID uuid) {
     return uuid.toString();
   }
 
   @Override
-  public @NotNull UUID from(@NotNull String data) {
+  public @NotNull UUID fromPrimitive(@NotNull String data) {
     return UUID.fromString(data);
   }
 

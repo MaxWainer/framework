@@ -55,18 +55,16 @@ final class AlterTableQueryImpl extends AbstractQuery<AlterTableQuery> implement
   }
 
   @Override
-  public AlterTableQuery alterColumn(@NotNull ColumnMeta columnMeta) {
+  public AlterTableQuery addColumn(@NotNull ColumnMeta columnMeta) {
     if (!table) {
       return this;
     }
 
-    this.builder.append("ALTER COLUMN ");
+    this.builder.append("ADD COLUMN ");
 
-    if (columnMeta.foreign() || columnMeta.primaryKey()) {
-      this.builder.append(dialectProvider.columnMetaAppending(columnMeta));
-    } else {
-      this.builder.append(dialectProvider.columnMetaToString(columnMeta));
-    }
+    this.builder.append(dialectProvider.columnMetaToString(columnMeta));
+
+    builder.append(" ");
 
     return this;
   }

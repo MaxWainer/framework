@@ -50,4 +50,10 @@ final class ColumnTypeAdapterRepositoryImpl implements ColumnTypeAdapterReposito
       @NotNull ColumnTypeAdapter<?, ?> columnTypeAdapter) {
     registry.put(aClass, columnTypeAdapter);
   }
+
+  @Override
+  public @NotNull Optional<ColumnTypeAdapter<?, ?>> adapterInstance(
+      @NotNull Class<? extends ColumnTypeAdapter> clazz) {
+    return Optional.empty();
+  }
 }

@@ -93,10 +93,6 @@ final class CreateTableQueryImpl
       joiner.add(dialectProvider.columnMetaToString(meta));
     }
 
-    for (final ColumnMeta meta : ORMHelper.filterAppending(columnMeta)) {
-      joiner.add(dialectProvider.columnMetaAppending(meta));
-    }
-
     this.builder.append(joiner);
 
     columns = true;
@@ -107,13 +103,6 @@ final class CreateTableQueryImpl
   @Override
   protected boolean subQuerySupported(@NotNull Query<?> sub) {
     return false;
-  }
-
-  @Override
-  public @NotNull String buildQueryUnexcepting() {
-    final String result = super.buildQueryUnexcepting();
-
-    return result;
   }
 
   @Override

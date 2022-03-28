@@ -31,13 +31,13 @@ public final class DummyColumnTypeAdapter implements ColumnTypeAdapter {
   public static final DummyColumnTypeAdapter INSTANCE = new DummyColumnTypeAdapter();
 
   @Override
-  public @NotNull Object to(@NotNull Object o) {
+  public @NotNull Object toPrimitive(@NotNull Object o) {
     throw new UnsupportedOperationException("It's dummy type adapter");
   }
 
   @NotNull
   @Override
-  public Object from(@NotNull Object data) {
+  public Object fromPrimitive(@NotNull Object data) {
     throw new UnsupportedOperationException("It's dummy type adapter");
   }
 

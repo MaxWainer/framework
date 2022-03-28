@@ -25,7 +25,12 @@
 package dev.framework.orm.api.repository;
 
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import java.util.Optional;
+import org.jetbrains.annotations.NotNull;
 
 public interface ColumnTypeAdapterRepository extends SimpleRepository<ColumnTypeAdapter<?, ?>> {
+
+  @NotNull Optional<ColumnTypeAdapter<?, ?>> adapterInstance(
+      final @NotNull Class<? extends ColumnTypeAdapter> clazz);
 
 }

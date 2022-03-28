@@ -28,6 +28,7 @@ import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.exception.UnknownAdapterException;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -58,4 +59,6 @@ public interface ResultSetReader {
 
   @NotNull
   Optional<String> readString(final @NotNull String column) throws SQLException;
+
+  @NotNull ResultSetMetaData metadata() throws SQLException;
 }

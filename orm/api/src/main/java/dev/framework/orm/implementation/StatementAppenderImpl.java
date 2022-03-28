@@ -35,7 +35,6 @@ import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.appender.StatementAppender;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
-import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
@@ -98,6 +97,18 @@ final class StatementAppenderImpl implements StatementAppender {
       @NotNull Object object) throws Throwable {
     final Field field = meta.field();
     final Object fieldObject = ORMHelper.fieldData(field, object);
+
+    final ColumnTypeAdapter columnTypeAdapter = ORMHelper.findColumnAdapter(facade,
+        meta.baseColumn());
+    if (columnTypeAdapter != null) {
+
+      writePrimitive(
+          columnTypeAdapter.toPrimitive(object),
+          columnTypeAdapter.primitiveType()
+      );
+
+      return this;
+    }
 
     if (meta.foreign()) {
       final BaseForeignKey foreignKey = meta.foreignKeyOptions();
@@ -167,13 +178,8 @@ final class StatementAppenderImpl implements StatementAppender {
     }
 
     if (meta.jsonSerializable()) {
-      final BaseJsonSerializable serializable = meta.serializerOptions();
-
-      final Class<? extends JsonObjectAdapter> adapter = serializable.value();
-
-      final JsonObjectAdapter instance = facade.jsonAdaptersRepository()
-          .adapterInstance(adapter)
-          .orElseThrow(() -> new UnknownAdapterException(adapter));
+      final JsonObjectAdapter instance = ORMHelper.findJsonAdapter(facade, meta.serializerOptions(),
+          field);
 
       nextString(instance.deconstruct(fieldObject).toString());
 
@@ -206,7 +212,7 @@ final class StatementAppenderImpl implements StatementAppender {
 
     final Class<?> primitiveType = typeAdapter.primitiveType();
 
-    writePrimitive(typeAdapter.to(content), primitiveType);
+    writePrimitive(typeAdapter.toPrimitive(content), primitiveType);
 
     return true;
   }

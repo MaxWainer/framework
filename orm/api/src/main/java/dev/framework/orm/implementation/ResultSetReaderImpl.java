@@ -36,12 +36,12 @@ import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.data.ObjectData;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
-import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
 import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.exception.UnknownAdapterException;
 import dev.framework.orm.api.set.ResultSetReader;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -95,6 +95,15 @@ final class ResultSetReaderImpl implements ResultSetReader {
 
     if (typed.isPresent()) {
       return Optional.of(typed.get());
+    }
+
+    final ColumnTypeAdapter columnTypeAdapter = ORMHelper.findColumnAdapter(facade,
+        meta.baseColumn());
+    if (columnTypeAdapter != null) {
+      final Object result = readPrimitive(meta.identifier(), columnTypeAdapter.primitiveType());
+
+      return result == null ? Optional.empty()
+          : Optional.of(columnTypeAdapter.fromPrimitive(result));
     }
 
     final Object primitive = readPrimitive(meta.identifier(), meta.field().getType());
@@ -164,13 +173,8 @@ final class ResultSetReaderImpl implements ResultSetReader {
     }
 
     if (meta.jsonSerializable()) {
-      final BaseJsonSerializable serializable = meta.serializerOptions();
-
-      final Class<? extends JsonObjectAdapter> adapter = serializable.value();
-
-      final JsonObjectAdapter instance = facade.jsonAdaptersRepository()
-          .adapterInstance(adapter)
-          .orElseThrow(() -> new UnknownAdapterException(adapter));
+      final JsonObjectAdapter instance = ORMHelper.findJsonAdapter(facade, meta.serializerOptions(),
+          field);
 
       return Optional.of(instance.construct(json));
     }
@@ -210,12 +214,17 @@ final class ResultSetReaderImpl implements ResultSetReader {
       return Optional.empty();
     }
 
-    return Optional.ofNullable((T) adapter.from(read));
+    return Optional.ofNullable((T) adapter.fromPrimitive(read));
   }
 
   @Override
   public @NotNull Optional<String> readString(@NotNull String column) throws SQLException {
     return Optional.ofNullable(resultSet.getString(column));
+  }
+
+  @Override
+  public @NotNull ResultSetMetaData metadata() throws SQLException {
+    return resultSet.getMetaData();
   }
 
   private <T extends RepositoryObject> Optional<T> readJsonAdaptive0(

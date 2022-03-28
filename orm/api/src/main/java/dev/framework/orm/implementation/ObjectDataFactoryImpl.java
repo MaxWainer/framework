@@ -24,6 +24,8 @@
 
 package dev.framework.orm.implementation;
 
+import dev.framework.commons.Identifiable;
+import dev.framework.commons.MoreCollections;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;
@@ -155,6 +157,10 @@ final class ObjectDataFactoryImpl implements ObjectDataFactory {
 
     for (final Field declaredField : clazz.getDeclaredFields()) {
       columnSet.add(readFieldMeta(declaredField, clazz));
+    }
+
+    if (MoreCollections.hasDuplicates(columnSet, Identifiable::identifier)) {
+      throw new MetaConstructionException("Contains duplicate columns!", clazz);
     }
 
     return columnSet;

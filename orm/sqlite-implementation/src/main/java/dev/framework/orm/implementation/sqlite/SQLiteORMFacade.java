@@ -30,7 +30,7 @@ import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.dialect.DialectProvider;
 import dev.framework.orm.api.update.TableUpdater;
 import dev.framework.orm.implementation.AbstractORMFacade;
-import dev.framework.orm.implementation.sql.TemporaryBasedTableUpdater;
+import dev.framework.orm.implementation.sql.AlterTableBasedTableUpdater;
 import org.jetbrains.annotations.NotNull;
 
 public final class SQLiteORMFacade extends AbstractORMFacade {
@@ -39,7 +39,7 @@ public final class SQLiteORMFacade extends AbstractORMFacade {
     ORMProvider.instance().registerFactory("sqlite", SQLiteORMFacade::new);
   }
 
-  private final DialectProvider dialectProvider;
+  private final DialectProvider dialectProvider = new SQLiteDialectProvider();
 
   private final TableUpdater tableUpdater;
 
@@ -49,8 +49,7 @@ public final class SQLiteORMFacade extends AbstractORMFacade {
     super();
 
     this.source = new SQLiteConnectionSource(credentials, this);
-    this.tableUpdater = new TemporaryBasedTableUpdater(this);
-    this.dialectProvider = new SQLiteDialectProvider(this);
+    this.tableUpdater = new AlterTableBasedTableUpdater(this);
   }
 
   @Override

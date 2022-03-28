@@ -36,6 +36,4 @@ public interface DialectProvider {
 
   @NotNull String columnMetaToString(final @NotNull ColumnMeta meta);
 
-  @NotNull String columnMetaAppending(final @NotNull ColumnMeta meta);
-
 }

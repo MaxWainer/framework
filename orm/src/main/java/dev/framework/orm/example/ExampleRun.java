@@ -80,20 +80,22 @@ public class ExampleRun {
       final UUID firstUid = UUID.randomUUID();
       final UUID secondUid = UUID.randomUUID();
 
-      personRepository.register(new Person(firstUid, "Mike", "Kekw", 10, "Not working", new ArrayList<Bill>() {{
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10));
+      personRepository.register(new Person(firstUid, "Mike", "Kekw", 10, "fwefwerf", "gai",
+          4, "Not working", new ArrayList<Bill>() {{
+        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
       }}));
 
-      personRepository.register(new Person(secondUid, "John", "HAdq", 23, "Microsoft", new ArrayList<Bill>() {{
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10));
+      personRepository.register(new Person(secondUid, "John", "HAdq", 23, "fwfe", "gai", 5,
+          "Microsoft", new ArrayList<Bill>() {{
+        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
+        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
       }}));
 
       final Person first = personRepository.findOrThrow(firstUid);
@@ -107,7 +109,7 @@ public class ExampleRun {
   }
 
   @Table("person")
-  @ObjectVersion(major = 0, minor = 0, revision = 2)
+  @ObjectVersion(major = 0, minor = 0, revision = 5)
   public static final class Person implements RepositoryObject<UUID> {
 
     @IdentifierField
@@ -124,6 +126,15 @@ public class ExampleRun {
     @Column("age")
     private final int age;
 
+    @Column(value = "altered", defaultValue = "Alllt")
+    private final String altered;
+
+    @Column(value = "gai", defaultValue = "Alllt")
+    private final String gai;
+
+    @Column(value = "lolw", defaultValue = "1")
+    private final int lolw;
+
     @Column(value = "job", options = @ColumnOptions(nullable = true))
     private final String job;
 
@@ -136,12 +147,15 @@ public class ExampleRun {
 
     @InstanceConstructor
     public Person(final UUID uuid, final String name, final String surname, final int age,
-        final String job,
+        final String altered, String gai, int lolw, final String job,
         final Collection<Bill> foreignBills) {
       this.uuid = uuid;
       this.name = name;
       this.surname = surname;
       this.age = age;
+      this.altered = altered;
+      this.gai = gai;
+      this.lolw = lolw;
       this.job = job;
       this.foreignBills = foreignBills;
     }
@@ -180,7 +194,7 @@ public class ExampleRun {
   }
 
   @Table("bills")
-  @ObjectVersion(major = 0, minor = 0, revision = 1)
+  @ObjectVersion(major = 0, minor = 0, revision = 3)
   public static final class Bill implements RepositoryObject<UUID> {
 
     @IdentifierField
@@ -196,13 +210,17 @@ public class ExampleRun {
     @Column("after_transaction")
     private final double afterTransaction;
 
+    @Column(value = "transaction_date", defaultValue = "UNDEFINED")
+    private final String date;
+
     @InstanceConstructor
     public Bill(UUID billId, UUID relatedPerson, double beforeTransaction,
-        double afterTransaction) {
+        double afterTransaction, String date) {
       this.billId = billId;
       this.relatedPerson = relatedPerson;
       this.beforeTransaction = beforeTransaction;
       this.afterTransaction = afterTransaction;
+      this.date = date;
     }
 
     public double getAfterTransaction() {
@@ -217,6 +235,10 @@ public class ExampleRun {
       return relatedPerson;
     }
 
+    public String getDate() {
+      return date;
+    }
+
     @Override
     public @NotNull UUID identifier() {
       return billId;
@@ -229,6 +251,7 @@ public class ExampleRun {
           ", relatedPerson=" + relatedPerson +
           ", beforeTransaction=" + beforeTransaction +
           ", afterTransaction=" + afterTransaction +
+          ", date='" + date + '\'' +
           '}';
     }
   }

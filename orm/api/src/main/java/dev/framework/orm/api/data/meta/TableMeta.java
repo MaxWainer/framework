@@ -27,8 +27,12 @@ package dev.framework.orm.api.data.meta;
 import dev.framework.orm.api.annotation.Table;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
 
@@ -41,13 +45,27 @@ public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
         .collect(Collectors.toSet());
   }
 
-  default @NotNull ColumnMeta findForeignKey(final @NotNull String foreignKeyName) {
+  default @NotNull ColumnMeta findNamed(final @NotNull String name) {
+    final ColumnMeta result = findNamedOrNull(name);
+
+    if (result == null) {
+      throw new UnsupportedOperationException(
+          "No any field with name " + name);
+    }
+
+    return result;
+  }
+
+  default @Nullable ColumnMeta findNamedOrNull(final @NotNull String name) {
     return columnMetaSet()
         .stream()
-        .filter(meta -> foreignKeyName.equals(meta.identifier()))
+        .filter(meta -> name.equals(meta.identifier()))
         .findFirst()
-        .orElseThrow(() -> new UnsupportedOperationException(
-            "No any foreign field with name " + foreignKeyName));
+        .orElse(null);
+  }
+
+  default int size() {
+    return columnMetaSet().size();
   }
 
   @NotNull ColumnMeta identifyingColumn();
@@ -64,6 +82,10 @@ public interface TableMeta extends ObjectMeta<String>, Iterable<ColumnMeta> {
   @Override
   default Iterator<ColumnMeta> iterator() {
     return columnMetaSet().iterator();
+  }
+
+  default @NotNull Stream<ColumnMeta> stream() {
+    return StreamSupport.stream(spliterator(), false);
   }
 
   interface BaseTable {

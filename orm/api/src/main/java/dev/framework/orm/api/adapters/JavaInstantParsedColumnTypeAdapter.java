@@ -31,12 +31,12 @@ import org.jetbrains.annotations.NotNull;
 public final class JavaInstantParsedColumnTypeAdapter implements StringColumnTypeAdapter<Instant> {
 
   @Override
-  public @NotNull String to(@NotNull Instant instant) {
+  public @NotNull String toPrimitive(@NotNull Instant instant) {
     return instant.toString();
   }
 
   @Override
-  public @NotNull Instant from(@NotNull String data) {
+  public @NotNull Instant fromPrimitive(@NotNull String data) {
     return Instant.parse(data);
   }
 

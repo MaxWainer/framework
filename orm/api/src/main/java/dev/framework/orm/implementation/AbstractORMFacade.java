@@ -65,8 +65,7 @@ public abstract class AbstractORMFacade implements ORMFacade {
       new JsonAdapterRepositoryImpl();
   private final ObjectDataRegistry objectDataRegistry =
       new ObjectDataRegistryImpl();
-  private final ObjectResolverRegistry objectResolverRegistry =
-      new ObjectResolverRegistryImpl();
+  private final ObjectResolverRegistry objectResolverRegistry;
 
   private final ReferenceClassFactory referenceClassFactory;
   private final ObjectRepositoryRegistry objectRepositoryRegistry =
@@ -78,6 +77,8 @@ public abstract class AbstractORMFacade implements ORMFacade {
         new ObjectDataFactoryImpl(this);
     this.referenceClassFactory =
         new CachedReferenceClassFactory(this);
+    this.objectResolverRegistry =
+        new ObjectResolverRegistryImpl(this);
   }
 
   @Override
@@ -205,7 +206,7 @@ public abstract class AbstractORMFacade implements ORMFacade {
               final ObjectData data = dataFactory.createFromClass(classPath);
               final Version localVersion = data.version();
 
-              if (!version.isEqual(localVersion)) {
+              if (!version.asString().equals(localVersion.asString())) {
                 tableUpdater().updateTable(classPath, data, version);
               }
 

@@ -29,9 +29,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ColumnTypeAdapter<S, T> extends RepositoryObject<Class<T>> {
 
-  @NotNull S to(final @NotNull T t);
+  @NotNull S toPrimitive(final @NotNull T t);
 
-  @NotNull T from(final @NotNull S data);
+  @NotNull T fromPrimitive(final @NotNull S data);
 
   @NotNull Class<S> primitiveType();
 

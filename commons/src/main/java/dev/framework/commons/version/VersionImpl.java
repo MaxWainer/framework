@@ -56,19 +56,13 @@ final class VersionImpl implements Version {
     return String.format("%s.%s.%s", major, minor, revision);
   }
 
-  private int versionSum() {
-    return Integer.parseInt(
-        String.valueOf(major) + minor + revision
-    );
+  @Override
+  public int compareTo(@NotNull Version o) {
+    return asString().compareTo(o.asString());
   }
 
   @Override
-  public int compareTo(@NotNull Version o) {
-    if (!(o instanceof VersionImpl)) {
-      return -1;
-    }
-    final VersionImpl oImp = (VersionImpl) o;
-
-    return Integer.compare(versionSum(), oImp.versionSum());
+  public String toString() {
+    return asString();
   }
 }

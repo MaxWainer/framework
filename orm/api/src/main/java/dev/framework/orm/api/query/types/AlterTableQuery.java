@@ -11,7 +11,7 @@ public interface AlterTableQuery extends TableScope<AlterTableQuery> {
 
   AlterTableQuery dropColumn(final @NotNull String column);
 
-  AlterTableQuery alterColumn(final @NotNull ColumnMeta columnMeta);
+  AlterTableQuery addColumn(final @NotNull ColumnMeta columnMeta);
 
   AlterTableQuery add(final @NotNull String syntax);
 

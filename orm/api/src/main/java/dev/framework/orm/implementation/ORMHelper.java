@@ -28,15 +28,19 @@ import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.annotation.UtilityClass;
 import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.adapter.json.DummyJsonObjectAdapter;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.adapter.simple.DummyColumnTypeAdapter;
 import dev.framework.orm.api.data.meta.ColumnMeta;
+import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseJsonSerializable;
+import dev.framework.orm.api.exception.UnknownAdapterException;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @UtilityClass
 final class ORMHelper {
@@ -45,11 +49,38 @@ final class ORMHelper {
     MoreExceptions.instantiationError();
   }
 
-  static ColumnMeta[] filterAppending(final @NotNull Iterable<? extends ColumnMeta> metas) {
-    return StreamSupport
-        .stream(metas.spliterator(), false)
-        .filter(it -> it.foreign() || it.primaryKey())
-        .toArray(ColumnMeta[]::new);
+  static @NotNull JsonObjectAdapter findJsonAdapter(
+      final @NotNull ORMFacade facade,
+      final @NotNull BaseJsonSerializable serializable,
+      final @NotNull Field field) throws UnknownAdapterException {
+    final Class<? extends JsonObjectAdapter> adapter = serializable.value();
+
+    if (adapter == DummyJsonObjectAdapter.class) {
+      return facade.jsonAdaptersRepository()
+          .findOrThrow(field.getType());
+    }
+
+    return facade
+        .jsonAdaptersRepository()
+        .adapterInstance(adapter)
+        .orElseThrow(() -> new UnknownAdapterException(adapter));
+  }
+
+  static @Nullable ColumnTypeAdapter findColumnAdapter(
+      final @NotNull ORMFacade facade,
+      final @NotNull BaseColumn baseColumn) throws UnknownAdapterException {
+    final Class<? extends ColumnTypeAdapter> columnAdapterClass = baseColumn.typeAdapter();
+
+    if (columnAdapterClass != DummyColumnTypeAdapter.class) {
+      final ColumnTypeAdapter columnTypeAdapter = facade
+          .columnTypeAdaptersRepository()
+          .adapterInstance(columnAdapterClass)
+          .orElseThrow(() -> new UnknownAdapterException(columnAdapterClass));
+
+      return columnTypeAdapter;
+    }
+
+    return null;
   }
 
   static Object handleConstructor(

@@ -24,6 +24,7 @@
 
 package dev.framework.orm.implementation;
 
+import dev.framework.orm.api.adapter.json.DummyJsonObjectAdapter;
 import dev.framework.orm.api.adapter.json.JsonObjectAdapter;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
 import dev.framework.orm.api.annotation.ForeignKey;
@@ -365,7 +366,7 @@ final class ColumnMetaImpl implements ColumnMeta {
         final @NotNull Action update) {
       this.foreignField = foreignField;
       this.foreignFieldMeta = targetTable
-          .tableMeta().findForeignKey(foreignField);
+          .tableMeta().findNamed(foreignField);
       this.targetTable = targetTable;
       this.delete = delete;
       this.update = update;

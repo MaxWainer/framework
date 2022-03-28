@@ -48,7 +48,7 @@ public interface Version extends Comparable<Version> {
             .numberOrThrow(() -> new MalformedVersionException("not number at 0")),
         NumberParser.parseInt(split[1])
             .numberOrThrow(() -> new MalformedVersionException("not number at 1")),
-        NumberParser.parseInt(split[1])
+        NumberParser.parseInt(split[2])
             .numberOrThrow(() -> new MalformedVersionException("not number at 2"))
     );
   }
