@@ -31,6 +31,7 @@ import dev.framework.commons.Nulls;
 import dev.framework.commons.SneakyThrows;
 import dev.framework.loader.helper.JVMHelper;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
+import dev.framework.loader.loadstrategy.version.InjectableClassLoadingStrategy;
 import dev.framework.loader.loadstrategy.version.ReflectionClassLoadingStrategy;
 import dev.framework.loader.loadstrategy.version.TheUnsafeClassLoadingStrategy;
 import dev.framework.loader.repository.RepositoryManager;
@@ -201,27 +202,25 @@ final class DependencyLoaderImpl implements DependencyLoader {
     if (JVMHelper.isTheUnsafeSupported()) {
       this.classLoadingStrategy = TheUnsafeClassLoadingStrategy.FACTORY.withClassLoader(
           (URLClassLoader) this.classLoader);
-    } else {
+    } else if (JVMHelper.isReflectionSupported()) {
       this.classLoadingStrategy = ReflectionClassLoadingStrategy.FACTORY.withClassLoader(
           (URLClassLoader) this.classLoader);
-
-      if (!JVMHelper.isReflectionSupported()) {
-        this.logger.warning(
-            "Looks like you are using undetected version of java, by default, will be used reflection-based class loading strategy!");
-      }
+    } else {
+      this.classLoadingStrategy = InjectableClassLoadingStrategy.FACTORY.withClassLoader(
+          (URLClassLoader) this.classLoader);
     }
   }
 
   private void loadPath(final Path path) throws MalformedURLException {
-    this.classLoadingStrategy.addURL(path.toFile().toURI().toURL());
+    this.classLoadingStrategy.addPath(path);
   }
 
   private void fastDependency(final Dependency dependency) throws MalformedURLException {
     final Path dependencyPath = this.repositoryManager.repositorySafe(dependency.repository())
         .loadDependency(dependency, this.librariesPath);
 
-    this.classLoadingStrategy.addURL(
-        requireNonNull(dependencyPath, "dependencyPath is null!").toFile().toURI().toURL());
+    this.classLoadingStrategy.addPath(
+        requireNonNull(dependencyPath, "dependencyPath is null!"));
   }
 
   @Override

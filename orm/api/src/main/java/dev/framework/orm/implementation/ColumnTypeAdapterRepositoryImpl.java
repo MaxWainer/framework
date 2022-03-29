@@ -27,8 +27,10 @@ package dev.framework.orm.implementation;
 import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
 import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import dev.framework.orm.api.adapters.JavaInstantAsStringColumnTypeAdapter;
+import dev.framework.orm.api.adapters.JavaInstantAsLongColumnTypeAdapter;
 import dev.framework.orm.api.repository.ColumnTypeAdapterRepository;
-import dev.framework.orm.implementation.columnadapters.UUIDColumnTypeAdapter;
+import dev.framework.orm.api.adapters.UUIDColumnTypeAdapter;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +40,8 @@ final class ColumnTypeAdapterRepositoryImpl implements ColumnTypeAdapterReposito
 
   ColumnTypeAdapterRepositoryImpl() {
     register(new UUIDColumnTypeAdapter());
+    register(new JavaInstantAsStringColumnTypeAdapter());
+    register(new JavaInstantAsLongColumnTypeAdapter());
   }
 
   @Override

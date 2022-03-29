@@ -24,13 +24,19 @@
 
 package dev.framework.loader.loadstrategy;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
 public interface ClassLoadingStrategy {
 
   void addURL(final @NotNull URL url);
+
+  default void addPath(final @NotNull Path path) throws MalformedURLException {
+    addURL(path.toUri().toURL());
+  }
 
   @NotNull URLClassLoader providedClassLoader();
 

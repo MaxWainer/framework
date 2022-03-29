@@ -25,8 +25,14 @@
 package dev.framework.bukkit.commons.annotation;
 
 import dev.framework.bukkit.commons.ForkHelper.Fork;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import org.jetbrains.annotations.NotNull;
 
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
 public @interface SupportedForks {
 
   @NotNull Fork[] value() default {Fork.PAPER, Fork.SPIGOT, Fork.UNSUPPORTED};

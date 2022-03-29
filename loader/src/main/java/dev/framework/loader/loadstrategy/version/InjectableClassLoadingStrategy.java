@@ -25,31 +25,59 @@
 package dev.framework.loader.loadstrategy.version;
 
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
+import dev.framework.loader.loadstrategy.version.InjectableClassLoadingStrategy.InjectedClassLoader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
-public final class InjectableClassLoadingStrategy extends AbstractClassLoadingStrategy {
+public final class InjectableClassLoadingStrategy
+    extends AbstractClassLoadingStrategy<InjectedClassLoader> {
 
-  public static final ClassLoadingStrategyFactory FACTORY = new SafeClassLoadingStrategyFactory();
+  public static final ClassLoadingStrategyFactory FACTORY =
+      new InjectableClassLoadingStrategyFactory();
 
-  private InjectableClassLoadingStrategy(
-      @NotNull final URLClassLoader providedClassLoader) {
-    super(providedClassLoader);
+  private InjectableClassLoadingStrategy(@NotNull final URLClassLoader providedClassLoader) {
+    super(new InjectedClassLoader(new URL[] {}, providedClassLoader));
   }
 
   @Override
   public void addURL(@NotNull final URL url) {
-
+    providedClassLoader.addUrl(url);
   }
 
-  private static final class SafeClassLoadingStrategyFactory implements
-      ClassLoadingStrategyFactory {
+  @Override
+  public void addPath(@NotNull Path path) throws MalformedURLException {
+    providedClassLoader.addPath(path);
+  }
+
+  public static final class InjectedClassLoader extends URLClassLoader {
+
+    static {
+      ClassLoader.registerAsParallelCapable();
+    }
+
+    public InjectedClassLoader(
+        final @NotNull URL[] urls, final @NotNull ClassLoader parentClassLoader) {
+      super(urls, parentClassLoader);
+    }
+
+    public void addUrl(final @NotNull URL url) {
+      super.addURL(url);
+    }
+
+    public void addPath(final @NotNull Path path) throws MalformedURLException {
+      addURL(path.toUri().toURL());
+    }
+  }
+
+  private static final class InjectableClassLoadingStrategyFactory
+      implements ClassLoadingStrategyFactory {
 
     @Override
     public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
       return new InjectableClassLoadingStrategy(classLoader);
     }
   }
-
 }

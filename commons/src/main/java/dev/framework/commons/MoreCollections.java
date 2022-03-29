@@ -14,8 +14,8 @@ public final class MoreCollections {
   }
 
   public static <T, P> boolean hasDuplicates(
-      final @NotNull Collection<T> initial, final @NotNull
-      Function<T, P> primitiveMapper) {
+      final @NotNull Collection<T> initial,
+      final @NotNull Function<T, P> primitiveMapper) {
     return initial.stream()
         .map(primitiveMapper)
         .collect(Collectors.toSet())

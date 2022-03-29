@@ -37,6 +37,16 @@ public final class PrimitiveArrays {
     MoreExceptions.instantiationError();
   }
 
+  public static <T> boolean contains(final @NotNull T[] arrT, final @NotNull T checking) {
+
+    for (final T t : arrT) {
+      if (checking.equals(t))
+        return true;
+    }
+
+    return false;
+  }
+
   public static <T> T[] appendHead(final @NotNull T @NonNls [] array,
       final @UnknownNullability T toAppend) {
     final int destSize = array.length + 1;

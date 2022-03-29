@@ -70,7 +70,7 @@ public final class JVMHelper {
   private static JavaVersion detectVersion() {
     final String stringVersion = System.getProperty("java.version");
 
-    LOGGER.info(() -> "Running plugin on version " + stringVersion);
+    LOGGER.info(() -> "Running on java version " + stringVersion);
 
     final JavaVersion detected = JavaVersion.fromString(stringVersion);
 

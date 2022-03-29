@@ -30,14 +30,14 @@ import java.net.URLClassLoader;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-abstract class AbstractClassLoadingStrategy implements ClassLoadingStrategy {
+abstract class AbstractClassLoadingStrategy<T extends URLClassLoader> implements ClassLoadingStrategy {
 
   static final Logger LOGGER = StaticLogger.getLogger();
 
-  protected final URLClassLoader providedClassLoader;
+  protected final T providedClassLoader;
 
   AbstractClassLoadingStrategy(final @NotNull URLClassLoader providedClassLoader) {
-    this.providedClassLoader = providedClassLoader;
+    this.providedClassLoader = (T) providedClassLoader;
   }
 
   @Override

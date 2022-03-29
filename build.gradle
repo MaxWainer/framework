@@ -45,7 +45,7 @@ subprojects {
 
   checkstyle {
     toolVersion '8.36.1'
-    configFile file('.checkstyle/checkstyle.xml')
+    configFile rootProject.file('.checkstyle/checkstyle.xml')
   }
 
   checkstyleMain {
@@ -75,7 +75,7 @@ subprojects {
   dependencies {
     // jmh
     jmhImplementation project
-    jmh 'org.openjdk.jmh:jmh-core:1.29'
+    jmh 'org.openjdk.jmh:jmh-core:1.35'
     jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
 
     implementation 'org.jetbrains:annotations:23.0.0'

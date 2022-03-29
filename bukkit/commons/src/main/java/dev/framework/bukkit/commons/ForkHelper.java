@@ -24,11 +24,14 @@
 
 package dev.framework.bukkit.commons;
 
+import dev.framework.bukkit.commons.annotation.SupportedForks;
 import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.PrimitiveArrays;
 import dev.framework.commons.StaticLogger;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import org.jetbrains.annotations.NotNull;
 
 public final class ForkHelper {
 
@@ -38,6 +41,14 @@ public final class ForkHelper {
 
   private ForkHelper() {
     MoreExceptions.instantiationError();
+  }
+
+  public static boolean classSupportsFork(final @NotNull Class<?> clazz) {
+    final SupportedForks forks = clazz.getAnnotation(SupportedForks.class);
+
+    if (forks == null) return true;
+
+    return PrimitiveArrays.contains(forks.value(), CURRENT_FORK);
   }
 
   private static Fork detectFork() {
@@ -83,5 +94,4 @@ public final class ForkHelper {
     SPIGOT,
     UNSUPPORTED
   }
-
 }

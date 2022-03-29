@@ -1,4 +1,4 @@
-package dev.framework.orm.implementation.columnadapters;
+package dev.framework.orm.api.adapters;
 
 import dev.framework.orm.api.adapter.simple.StringColumnTypeAdapter;
 import java.util.UUID;

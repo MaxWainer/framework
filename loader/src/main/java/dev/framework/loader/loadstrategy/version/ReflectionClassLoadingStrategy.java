@@ -32,7 +32,7 @@ import java.net.URLClassLoader;
 import java.util.logging.Level;
 import org.jetbrains.annotations.NotNull;
 
-public final class ReflectionClassLoadingStrategy extends AbstractClassLoadingStrategy {
+public final class ReflectionClassLoadingStrategy extends AbstractClassLoadingStrategy<URLClassLoader> {
 
   public static final ClassLoadingStrategyFactory FACTORY = new ReflectionClassLoadingStrategyFactory();
 

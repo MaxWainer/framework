@@ -48,9 +48,6 @@ public abstract class AbstractBukkitBootstrap extends JavaPlugin implements Fram
         PreprocessorBase.of(this, dependencyBuilder));
 
     this.preprocessor.onLoad();
-
-    // set instance
-    BukkitBootstrapProvider.initialize(this);
   }
 
   @Override
@@ -61,9 +58,6 @@ public abstract class AbstractBukkitBootstrap extends JavaPlugin implements Fram
   @Override
   public void onDisable() {
     this.preprocessor.onDisable();
-
-    // reset instance
-    BukkitBootstrapProvider.reset();
   }
 
   @Override
