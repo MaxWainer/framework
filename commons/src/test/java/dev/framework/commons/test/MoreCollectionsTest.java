@@ -2,7 +2,7 @@ package dev.framework.commons.test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import dev.framework.commons.MoreCollections;
+import dev.framework.commons.collection.MoreCollections;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;

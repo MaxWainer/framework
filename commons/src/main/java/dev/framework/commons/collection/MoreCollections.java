@@ -1,6 +1,8 @@
-package dev.framework.commons;
+package dev.framework.commons.collection;
 
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
+import dev.framework.commons.collection.xy.XYCollection;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,6 +22,10 @@ public final class MoreCollections {
         .map(primitiveMapper)
         .collect(Collectors.toSet())
         .size() != initial.size();
+  }
+
+  public static <T> XYCollection<T> xyCollection(final int maxX, final int maxY) {
+    return new XYCollectionImpl<>(maxX, maxY);
   }
 
 }

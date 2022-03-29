@@ -25,7 +25,7 @@
 package dev.framework.orm.implementation;
 
 import dev.framework.commons.Identifiable;
-import dev.framework.commons.MoreCollections;
+import dev.framework.commons.collection.MoreCollections;
 import dev.framework.commons.Reflections;
 import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.commons.version.Version;

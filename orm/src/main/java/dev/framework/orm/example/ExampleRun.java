@@ -29,6 +29,7 @@ import dev.framework.commons.repository.RepositoryObject;
 import dev.framework.orm.api.ORMFacade;
 import dev.framework.orm.api.ORMProvider;
 import dev.framework.orm.api.ObjectRepository;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.annotation.Column;
 import dev.framework.orm.api.annotation.Column.ColumnOptions;
 import dev.framework.orm.api.annotation.ForeignKey;
@@ -37,7 +38,6 @@ import dev.framework.orm.api.annotation.InstanceConstructor;
 import dev.framework.orm.api.annotation.ObjectVersion;
 import dev.framework.orm.api.annotation.PrimaryKey;
 import dev.framework.orm.api.annotation.Table;
-import dev.framework.orm.api.credentials.ConnectionCredentials;
 import dev.framework.orm.api.exception.MetaConstructionException;
 import dev.framework.orm.api.exception.MissingAnnotationException;
 import dev.framework.orm.api.exception.MissingFacadeException;
@@ -45,8 +45,8 @@ import dev.framework.orm.api.exception.MissingRepositoryException;
 import dev.framework.orm.api.exception.QueryNotCompletedException;
 import dev.framework.orm.api.exception.UnsupportedQueryConcatenationQuery;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -80,31 +80,14 @@ public class ExampleRun {
       final UUID firstUid = UUID.randomUUID();
       final UUID secondUid = UUID.randomUUID();
 
-      personRepository.register(new Person(firstUid, "Mike", "Kekw", 10, "fwefwerf", "gai",
-          4, "Not working", new ArrayList<Bill>() {{
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), firstUid, 0, 10, "date"));
-      }}));
+      personRepository.register(
+          new Person(firstUid, "Mike", "Doe", 10, "Not working", Collections.emptyList()));
 
-      personRepository.register(new Person(secondUid, "John", "HAdq", 23, "fwfe", "gai", 5,
-          "Microsoft", new ArrayList<Bill>() {{
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
-        add(new Bill(UUID.randomUUID(), secondUid, 0, 10, "date"));
-      }}));
+      personRepository.register(
+          new Person(secondUid, "John", "Doe", 23, "Microsoft", Collections.emptyList()));
 
       final Person first = personRepository.findOrThrow(firstUid);
       final Person second = personRepository.findOrThrow(secondUid);
-
-//      LOGGER.info(() -> "First: " + first);
-//      LOGGER.info(() -> "Second: " + second);
-//
-//      LOGGER.info(() -> "All persons: " + personRepository.listAll());
     }
   }
 
@@ -114,7 +97,7 @@ public class ExampleRun {
 
     @IdentifierField
     @PrimaryKey
-    @Column("uuid")
+    @Column(value = "uuid")
     private final UUID uuid;
 
     @Column("name")
@@ -125,15 +108,6 @@ public class ExampleRun {
 
     @Column("age")
     private final int age;
-
-    @Column(value = "altered", defaultValue = "Alllt")
-    private final String altered;
-
-    @Column(value = "gai", defaultValue = "Alllt")
-    private final String gai;
-
-    @Column(value = "lolw", defaultValue = "1")
-    private final int lolw;
 
     @Column(value = "job", options = @ColumnOptions(nullable = true))
     private final String job;
@@ -146,50 +120,40 @@ public class ExampleRun {
     private final Collection<Bill> foreignBills;
 
     @InstanceConstructor
-    public Person(final UUID uuid, final String name, final String surname, final int age,
-        final String altered, String gai, int lolw, final String job,
-        final Collection<Bill> foreignBills) {
+    public Person(UUID uuid, String name, String surname, int age, String job,
+        Collection<Bill> foreignBills) {
       this.uuid = uuid;
       this.name = name;
       this.surname = surname;
       this.age = age;
-      this.altered = altered;
-      this.gai = gai;
-      this.lolw = lolw;
       this.job = job;
       this.foreignBills = foreignBills;
     }
 
+
     public Collection<Bill> getForeignBills() {
       return foreignBills;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public int getAge() {
-      return age;
     }
 
     public String getJob() {
       return job;
     }
 
-    @Override
-    public @NotNull UUID identifier() {
-      return uuid;
+    public int getAge() {
+      return age;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getSurname() {
+      return surname;
     }
 
     @Override
-    public String toString() {
-      return "Person{" +
-          "uuid=" + uuid +
-          ", name='" + name + '\'' +
-          ", age=" + age +
-          ", job='" + job + '\'' +
-          ", foreignBills=" + foreignBills +
-          '}';
+    public @NotNull UUID identifier() {
+      return uuid;
     }
   }
 
@@ -223,36 +187,25 @@ public class ExampleRun {
       this.date = date;
     }
 
-    public double getAfterTransaction() {
-      return afterTransaction;
-    }
-
-    public double getBeforeTransaction() {
-      return beforeTransaction;
+    public String getDate() {
+      return date;
     }
 
     public UUID getRelatedPerson() {
       return relatedPerson;
     }
 
-    public String getDate() {
-      return date;
+    public double getBeforeTransaction() {
+      return beforeTransaction;
+    }
+
+    public double getAfterTransaction() {
+      return afterTransaction;
     }
 
     @Override
     public @NotNull UUID identifier() {
       return billId;
-    }
-
-    @Override
-    public String toString() {
-      return "Bill{" +
-          "billId=" + billId +
-          ", relatedPerson=" + relatedPerson +
-          ", beforeTransaction=" + beforeTransaction +
-          ", afterTransaction=" + afterTransaction +
-          ", date='" + date + '\'' +
-          '}';
     }
   }
 }
