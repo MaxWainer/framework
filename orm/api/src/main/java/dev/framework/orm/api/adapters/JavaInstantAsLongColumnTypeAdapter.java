@@ -22,49 +22,31 @@
  * SOFTWARE.
  */
 
-package dev.framework.bukkit.implementation.bootstrap;
+package dev.framework.orm.api.adapters;
 
-import dev.framework.commons.annotation.TargetGradleModule;
-import org.jetbrains.annotations.ApiStatus.Internal;
+import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
+import java.time.Instant;
 import org.jetbrains.annotations.NotNull;
 
-@Internal
-@TargetGradleModule(":bukkit:bukkit-implementation")
-public final class BukkitBootstrapProvider {
+public final class JavaInstantAsLongColumnTypeAdapter implements ColumnTypeAdapter<Long, Instant> {
 
-  static BukkitBootstrapProvider INSTANCE;
-
-  private final AbstractBukkitBootstrap bootstrap;
-
-  private BukkitBootstrapProvider(
-      final @NotNull AbstractBukkitBootstrap bootstrap) {
-    this.bootstrap = bootstrap;
+  @Override
+  public @NotNull Long toPrimitive(@NotNull Instant instant) {
+    return instant.getEpochSecond();
   }
 
-  static void reset() {
-    INSTANCE = null;
+  @Override
+  public @NotNull Instant fromPrimitive(@NotNull Long data) {
+    return Instant.ofEpochSecond(data);
   }
 
-  // initializers
-  static void initialize(final @NotNull AbstractBukkitBootstrap bootstrap) {
-    if (INSTANCE != null) {
-      throw new IllegalArgumentException("INSTANCE already set!");
-    }
-
-    INSTANCE = new BukkitBootstrapProvider(bootstrap);
+  @Override
+  public @NotNull Class<Long> primitiveType() {
+    return Long.class;
   }
 
-  public static BukkitBootstrapProvider instance() {
-    if (INSTANCE == null) {
-      throw new UnsupportedOperationException("Bootstrap isn't loaded!");
-    }
-
-    return INSTANCE;
+  @Override
+  public @NotNull Class<Instant> identifier() {
+    return Instant.class;
   }
-
-  @NotNull
-  public AbstractBukkitBootstrap bootstrap() {
-    return bootstrap;
-  }
-
 }

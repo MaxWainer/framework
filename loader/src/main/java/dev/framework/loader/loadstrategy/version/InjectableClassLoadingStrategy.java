@@ -22,31 +22,34 @@
  * SOFTWARE.
  */
 
-package dev.framework.orm.api.adapters;
+package dev.framework.loader.loadstrategy.version;
 
-import dev.framework.orm.api.adapter.simple.ColumnTypeAdapter;
-import java.time.Instant;
+import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
+import java.net.URL;
+import java.net.URLClassLoader;
 import org.jetbrains.annotations.NotNull;
 
-public final class JavaInstantLongColumnTypeAdapter implements ColumnTypeAdapter<Long, Instant> {
+public final class InjectableClassLoadingStrategy extends AbstractClassLoadingStrategy {
 
-  @Override
-  public @NotNull Long toPrimitive(@NotNull Instant instant) {
-    return instant.getEpochSecond();
+  public static final ClassLoadingStrategyFactory FACTORY = new SafeClassLoadingStrategyFactory();
+
+  private InjectableClassLoadingStrategy(
+      @NotNull final URLClassLoader providedClassLoader) {
+    super(providedClassLoader);
   }
 
   @Override
-  public @NotNull Instant fromPrimitive(@NotNull Long data) {
-    return Instant.ofEpochSecond(data);
+  public void addURL(@NotNull final URL url) {
+
   }
 
-  @Override
-  public @NotNull Class<Long> primitiveType() {
-    return Long.class;
+  private static final class SafeClassLoadingStrategyFactory implements
+      ClassLoadingStrategyFactory {
+
+    @Override
+    public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
+      return new InjectableClassLoadingStrategy(classLoader);
+    }
   }
 
-  @Override
-  public @NotNull Class<Instant> identifier() {
-    return Instant.class;
-  }
 }

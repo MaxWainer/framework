@@ -22,34 +22,31 @@
  * SOFTWARE.
  */
 
-package dev.framework.loader.loadstrategy.version;
+package dev.framework.orm.api.adapters;
 
-import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
-import java.net.URL;
-import java.net.URLClassLoader;
+import dev.framework.orm.api.adapter.simple.StringColumnTypeAdapter;
+import java.time.Instant;
 import org.jetbrains.annotations.NotNull;
 
-public final class SafeClassLoadingStrategy extends AbstractClassLoadingStrategy {
+public final class JavaInstantAsStringColumnTypeAdapter implements StringColumnTypeAdapter<Instant> {
 
-  public static final ClassLoadingStrategyFactory FACTORY = new SafeClassLoadingStrategyFactory();
-
-  private SafeClassLoadingStrategy(
-      @NotNull final URLClassLoader providedClassLoader) {
-    super(providedClassLoader);
+  @Override
+  public @NotNull String toPrimitive(@NotNull Instant instant) {
+    return instant.toString();
   }
 
   @Override
-  public void addURL(@NotNull final URL url) {
-
+  public @NotNull Instant fromPrimitive(@NotNull String data) {
+    return Instant.parse(data);
   }
 
-  private static final class SafeClassLoadingStrategyFactory implements
-      ClassLoadingStrategyFactory {
-
-    @Override
-    public ClassLoadingStrategy withClassLoader(@NotNull final URLClassLoader classLoader) {
-      return new SafeClassLoadingStrategy(classLoader);
-    }
+  @Override
+  public @NotNull Class<String> primitiveType() {
+    return String.class;
   }
 
+  @Override
+  public @NotNull Class<Instant> identifier() {
+    return Instant.class;
+  }
 }
