@@ -1,8 +1,11 @@
-package dev.framework.bukkit;
+package dev.framework.bukkit.menu.implementation;
 
 import dev.framework.bukkit.implementation.bootstrap.AbstractBukkitBootstrap;
-import dev.framework.bukkit.slot.Slot;
-import dev.framework.bukkit.slot.StackHolder;
+import dev.framework.bukkit.menu.api.Menu;
+import dev.framework.bukkit.menu.api.MenuConfig;
+import dev.framework.bukkit.menu.api.MenuIterable;
+import dev.framework.bukkit.menu.api.slot.Slot;
+import dev.framework.bukkit.menu.api.slot.StackHolder;
 import dev.framework.commons.collection.MoreCollections;
 import dev.framework.commons.collection.xy.XYCollection;
 import org.bukkit.Bukkit;
@@ -29,14 +32,12 @@ final class MenuImpl implements Menu {
       final @NotNull AbstractBukkitBootstrap bootstrap,
       final @NotNull Player viewer) {
     this.viewer = viewer;
-    this.bukkitTask = bootstrap
-        .getServer()
-        .getScheduler()
-        .runTaskTimer(bootstrap, this::update, 0, 20);
+    this.bukkitTask =
+        bootstrap.getServer().getScheduler().runTaskTimer(bootstrap, this::update, 0, 20);
     this.inventory =
         config.type() == InventoryType.CHEST
-            ? Bukkit.createInventory(this, config.rows() * 9, config.rawTitle())
-            : Bukkit.createInventory(this, config.type(), config.rawTitle());
+            ? Bukkit.createInventory(this, config.rows() * 9, config.serializedTitle())
+            : Bukkit.createInventory(this, config.type(), config.serializedTitle());
   }
 
   @Override
@@ -56,9 +57,9 @@ final class MenuImpl implements Menu {
 
   @Override
   public void update() {
-    for (Slot slot : slots) {
-      if (slot instanceof Updatable) {
-        ((Updatable) slot).onIteration(this.inventory);
+    for (final Slot slot : slots) {
+      if (slot instanceof MenuIterable) {
+        ((MenuIterable) slot).onIteration(this);
       }
 
       if (this.firstIteration && slot instanceof StackHolder) {

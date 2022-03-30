@@ -24,8 +24,8 @@ public final class MoreCollections {
         .size() != initial.size();
   }
 
-  public static <T> XYCollection<T> xyCollection(final int maxX, final int maxY) {
-    return new XYCollectionImpl<>(maxX, maxY);
+  public static <T> XYCollection<T> xyCollection(final int maxY, final int maxX) {
+    return new XYCollectionImpl<>(maxY, maxX);
   }
 
 }

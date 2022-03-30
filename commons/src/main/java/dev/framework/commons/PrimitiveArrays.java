@@ -37,6 +37,20 @@ public final class PrimitiveArrays {
     MoreExceptions.instantiationError();
   }
 
+  public static int size2d(final @NotNull Object[][] arrT) {
+    int count = 0;
+
+    for (Object[] objects : arrT) {
+      for (Object object : objects) {
+        count++;
+      }
+
+      count++;
+    }
+
+    return count;
+  }
+
   public static <T> boolean contains(final @NotNull T[] arrT, final @NotNull T checking) {
 
     for (final T t : arrT) {

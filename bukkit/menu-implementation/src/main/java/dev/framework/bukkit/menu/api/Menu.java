@@ -1,6 +1,7 @@
-package dev.framework.bukkit;
+package dev.framework.bukkit.menu.api;
 
-import dev.framework.bukkit.slot.Slot;
+import dev.framework.bukkit.menu.api.slot.DynamicSlot;
+import dev.framework.bukkit.menu.api.slot.Slot;
 import dev.framework.commons.collection.xy.XYCollection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;

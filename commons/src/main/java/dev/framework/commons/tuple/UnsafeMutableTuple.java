@@ -56,4 +56,12 @@ class UnsafeMutableTuple<K, V> implements MutableTuple<K, V> {
   public void updateValue(final V value) {
     this.value = value;
   }
+
+  @Override
+  public String toString() {
+    return "UnsafeMutableTuple{" +
+        "key=" + key +
+        ", value=" + value +
+        '}';
+  }
 }

@@ -25,6 +25,7 @@
 package dev.framework.commons.tuple;
 
 import dev.framework.commons.concurrent.annotation.ThreadSafe;
+import java.util.Arrays;
 
 @ThreadSafe
 final class SynchronizedMutableTuple<K, V> extends UnsafeMutableTuple<K, V> {
@@ -66,5 +67,12 @@ final class SynchronizedMutableTuple<K, V> extends UnsafeMutableTuple<K, V> {
     synchronized (mutex) {
       super.updateValue(value);
     }
+  }
+
+  @Override
+  public String toString() {
+    return "SynchronizedMutableTuple{" +
+        "mutex=" + Arrays.toString(mutex) +
+        '}';
   }
 }

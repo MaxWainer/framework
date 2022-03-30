@@ -1,4 +1,4 @@
-package dev.framework.bukkit.slot;
+package dev.framework.bukkit.menu.api.slot;
 
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;

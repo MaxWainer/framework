@@ -1,6 +1,8 @@
-package dev.framework.bukkit;
+package dev.framework.bukkit.menu.api;
 
-import dev.framework.bukkit.slot.Slot;
+import dev.framework.bukkit.commons.Components;
+import dev.framework.bukkit.menu.api.MenuConfigImpl.MenuConfigBuilderImpl;
+import dev.framework.bukkit.menu.api.slot.Slot;
 import dev.framework.commons.Buildable;
 import dev.framework.commons.collection.xy.XYCollection;
 import net.kyori.adventure.text.Component;
@@ -10,13 +12,22 @@ import org.jetbrains.annotations.Range;
 
 public interface MenuConfig {
 
-  @NotNull XYCollection<? extends Slot> slots();
+  static MenuConfig.MenuConfigBuilder builder() {
+    return new MenuConfigBuilderImpl();
+  }
 
-  @NotNull Component title();
+  @NotNull
+  XYCollection<? extends Slot> slots();
 
-  @NotNull String rawTitle();
+  @NotNull
+  Component title();
 
-  @NotNull InventoryType type();
+  default @NotNull String serializedTitle() {
+    return Components.legacySerialize(title());
+  }
+
+  @NotNull
+  InventoryType type();
 
   int rows();
 
@@ -28,8 +39,6 @@ public interface MenuConfig {
 
     MenuConfigBuilder rows(@Range(from = 1, to = 6) final int rows);
 
-    MenuConfigBuilder assertSlot(final @NotNull Slot slot);
-
+    <T extends Slot> MenuConfigBuilder assertSlot(final @NotNull T slot);
   }
-
 }

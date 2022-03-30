@@ -46,4 +46,12 @@ final class ImmutableTupleImpl<K, V> implements ImmutableTuple<K, V> {
   public V value() {
     return this.value;
   }
+
+  @Override
+  public String toString() {
+    return "ImmutableTupleImpl{" +
+        "key=" + key +
+        ", value=" + value +
+        '}';
+  }
 }

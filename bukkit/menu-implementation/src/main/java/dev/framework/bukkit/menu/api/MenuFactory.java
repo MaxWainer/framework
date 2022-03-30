@@ -1,4 +1,4 @@
-package dev.framework.bukkit;
+package dev.framework.bukkit.menu.api;
 
 import dev.framework.commons.Buildable;
 import org.bukkit.entity.Player;

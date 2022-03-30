@@ -1,4 +1,4 @@
-package dev.framework.bukkit.slot;
+package dev.framework.bukkit.menu.api.slot;
 
 import dev.framework.commons.concurrent.annotation.ThreadSafe;
 import dev.framework.commons.range.Ranges;

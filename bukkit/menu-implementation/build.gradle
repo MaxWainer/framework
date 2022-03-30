@@ -1,4 +1,5 @@
 dependencies {
   compileOnly project(':bukkit:framework-bukkit-bootstrap-implementation')
+  compileOnly project(':bukkit:framework-bukkit-commons')
   compileOnly project(':framework-bootstrap')
 }
