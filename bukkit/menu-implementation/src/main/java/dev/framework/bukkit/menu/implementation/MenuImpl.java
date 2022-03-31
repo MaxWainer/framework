@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 final class MenuImpl implements Menu {
 
-  private final XYCollection<? extends Slot> slots = MoreCollections.xyCollection(6, 9);
+  private final XYCollection<? extends Slot> slots;
 
   private final Player viewer;
 
@@ -32,6 +32,7 @@ final class MenuImpl implements Menu {
       final @NotNull AbstractBukkitBootstrap bootstrap,
       final @NotNull Player viewer) {
     this.viewer = viewer;
+    this.slots = config.slots();
     this.bukkitTask =
         bootstrap.getServer().getScheduler().runTaskTimer(bootstrap, this::update, 0, 20);
     this.inventory =

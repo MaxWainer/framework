@@ -39,6 +39,13 @@ public interface MenuConfig {
 
     MenuConfigBuilder rows(@Range(from = 1, to = 6) final int rows);
 
-    <T extends Slot> MenuConfigBuilder assertSlot(final @NotNull T slot);
+    MenuConfigBuilder assertSlot(final @NotNull Slot slot);
+
+    default MenuConfigBuilder assertSlots(final @NotNull Slot... slots) {
+      for (final Slot slot : slots) {
+        assertSlot(slot);
+      }
+      return this;
+    }
   }
 }

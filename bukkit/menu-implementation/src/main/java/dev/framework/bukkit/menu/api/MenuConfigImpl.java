@@ -75,7 +75,7 @@ final class MenuConfigImpl implements MenuConfig {
     }
 
     @Override
-    public <T extends Slot> MenuConfigBuilder assertSlot(@NotNull T slot) {
+    public MenuConfigBuilder assertSlot(@NotNull Slot slot) {
       final Position position = slot.position();
 
       slots.insertIfAbsent(position.x(), position.y(), slot);
