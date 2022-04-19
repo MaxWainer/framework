@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ForkHelper {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
   private static final Set<Fork> SUPPORTED_FORKS = EnumSet.of(Fork.PAPER);
   public static final Fork CURRENT_FORK = detectFork();
 

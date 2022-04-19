@@ -53,7 +53,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ExampleRun {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
 
   static {
     System.setProperty("java.util.logging.SimpleFormatter.format", "[%4$-7s] %5$s %n");

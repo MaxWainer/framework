@@ -24,18 +24,38 @@
 
 package dev.framework.commons.cooldown;
 
-import dev.framework.commons.TimePair;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import dev.framework.commons.time.TemporalValue;
+import java.time.temporal.ChronoUnit;
 import org.jetbrains.annotations.NotNull;
 
 final class CooldownListImpl<T> implements CooldownList<T> {
 
+  private final TemporalValue<ChronoUnit> cooldownTime;
+
+  private final LoadingCache<T, Waiter<T>> cache = CacheBuilder.newBuilder()
+      .concurrencyLevel(1)
+      .build(new CacheLoader<T, Waiter<T>>() {
+        @Override
+        public Waiter<T> load(T key) throws Exception {
+          return null;
+        }
+      });
+
+  CooldownListImpl(
+      final @NotNull TemporalValue<ChronoUnit> cooldownTime) {
+    this.cooldownTime = cooldownTime;
+  }
+
   @Override
-  public @NotNull TimePair cooldownTime() {
+  public @NotNull TemporalValue<ChronoUnit> cooldownTime() {
     return null;
   }
 
   @Override
-  public boolean check(@NotNull final T t) {
-    return false;
+  public @NotNull Waiter<T> check(@NotNull T t) {
+    return null;
   }
 }

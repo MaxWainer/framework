@@ -29,6 +29,7 @@ import static java.util.Objects.requireNonNull;
 import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.Nulls;
 import dev.framework.commons.SneakyThrows;
+import dev.framework.commons.relocation.RelocationEnsurer;
 import dev.framework.loader.helper.JVMHelper;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import dev.framework.loader.loadstrategy.version.InjectableClassLoadingStrategy;
@@ -78,25 +79,16 @@ final class DependencyLoaderImpl implements DependencyLoader {
     this.additionalDependencies = additionalDependencies;
   }
 
-  private static void ensureRelocation() {
-    final String basicPackage = new String(
-        new char[]{
-            'f', 'r', 'a', 'm', 'e', 'w', 'o', 'r', 'k', '.', 'l', 'o', 'a', 'd', 'e', 'r', '.',
-            'D', 'e', 'p', 'e', 'n', 'd', 'e', 'n', 'c', 'y', 'L', 'o', 'a', 'd', 'e', 'r'}
-    ); // avoid relocation
-
-    final String checkingClassName = DependencyLoader.class.getName();
-
-    if (basicPackage.equals(checkingClassName)) {
-      MoreExceptions.nagAuthor(checkingClassName
-          + " is not relocated, this part of framework is very sensitive to it, suggesting to nag plugin developer and resolve issue! "
-          + "To author: Add relocation to entire framework dependencies, if someone gonna use it not the same version, this may produce silly issues!");
-    }
-  }
-
   @Override
   public void load() {
-    ensureRelocation(); // to be sure, that framework is relocated
+    RelocationEnsurer.ensureRelocation(
+        'd', 'e', 'v', // dev
+        '.', // .
+        'f', 'r', 'a', 'm', 'e', 'w', 'o', 'r', 'k', // framework
+        '.', // .
+        'l', 'o', 'a', 'd', 'e', 'r' // loader
+    );
+    // to be sure, that framework is relocated
     this.logger.info("Loader is started working...");
     if (!Files.exists(this.librariesPath)) {
       try {

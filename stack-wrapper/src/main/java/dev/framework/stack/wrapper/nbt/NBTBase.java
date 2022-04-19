@@ -24,6 +24,7 @@
 
 package dev.framework.stack.wrapper.nbt;
 
+import dev.framework.commons.Copyable;
 import dev.framework.stack.wrapper.nbt.array.NBTByteArray;
 import dev.framework.stack.wrapper.nbt.array.NBTIntArray;
 import dev.framework.stack.wrapper.nbt.array.NBTLongArray;
@@ -34,9 +35,10 @@ import dev.framework.stack.wrapper.nbt.primitive.NBTInt;
 import dev.framework.stack.wrapper.nbt.primitive.NBTLong;
 import dev.framework.stack.wrapper.nbt.primitive.NBTShort;
 import dev.framework.stack.wrapper.nbt.primitive.NBTString;
+import dev.framework.stack.wrapper.nbt.stream.NBTStream;
 import org.jetbrains.annotations.NotNull;
 
-public interface NBTBase {
+public interface NBTBase extends Copyable<NBTBase> {
 
   default boolean isCompound() {
     return false;
@@ -152,6 +154,8 @@ public interface NBTBase {
     return !empty();
   }
 
-  @NotNull NBTBase copy();
+  default void writeToStream(final @NotNull NBTStream stream) {
+    throw new UnsupportedOperationException("Writing is not supported!");
+  }
 
 }

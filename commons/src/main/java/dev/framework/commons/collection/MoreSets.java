@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons;
+package dev.framework.commons.collection;
 
+import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
 import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Arrays;

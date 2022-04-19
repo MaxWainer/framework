@@ -22,29 +22,31 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons;
+package dev.framework.bukkit.menu.api.builder;
 
-import java.util.concurrent.TimeUnit;
+import dev.framework.bukkit.menu.api.handler.type.ClickHandler;
+import dev.framework.bukkit.menu.api.slot.Position;
+import dev.framework.bukkit.menu.api.slot.Slot;
+import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 
-public final class TimePair {
+@Internal
+public abstract class AbstractSlotBuildable<T extends Slot, B extends SlotBuildable<T, B>>
+    implements SlotBuildable<T, B> {
 
-  public static final TimePair ZERO = new TimePair(TimeUnit.NANOSECONDS, 0);
+  protected Position position;
+  protected ClickHandler clickHandler = event -> {
+  };
 
-  private final TimeUnit unit;
-  private final long time;
-
-  public TimePair(final @NotNull TimeUnit unit, final long time) {
-    this.unit = unit;
-    this.time = time;
+  @Override
+  public B position(@NotNull Position position) {
+    this.position = position;
+    return (B) this;
   }
 
-  @NotNull
-  public TimeUnit unit() {
-    return unit;
-  }
-
-  public long time() {
-    return time;
+  @Override
+  public B clickHandler(@NotNull ClickHandler handler) {
+    this.clickHandler = handler;
+    return (B) this;
   }
 }

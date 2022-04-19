@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 @ApiStatus.Internal
 public final class JVMHelper {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
 
   private static final Set<JavaVersion> REFLECTION_LOADABLE_VERSION = EnumSet.of(
       JavaVersion.JAVA_8

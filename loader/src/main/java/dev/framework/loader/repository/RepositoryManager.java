@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class RepositoryManager {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
 
   private final Map<String, Repository> registeredRepositories = new HashMap<>();
 

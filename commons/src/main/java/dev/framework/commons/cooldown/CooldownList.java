@@ -24,13 +24,14 @@
 
 package dev.framework.commons.cooldown;
 
-import dev.framework.commons.TimePair;
+import dev.framework.commons.time.TemporalValue;
+import java.time.temporal.ChronoUnit;
 import org.jetbrains.annotations.NotNull;
 
 public interface CooldownList<T> {
 
-  @NotNull TimePair cooldownTime();
+  @NotNull TemporalValue<ChronoUnit> cooldownTime();
 
-  boolean check(final @NotNull T t);
+  @NotNull Waiter<T> check(final @NotNull T t);
 
 }

@@ -28,6 +28,7 @@ import dev.framework.bootstrap.BootstrapPreprocessor;
 import dev.framework.bootstrap.BootstrapPreprocessor.PreprocessorBase;
 import dev.framework.bootstrap.FrameworkBootstrap;
 import dev.framework.bootstrap.inject.module.FrameworkModuleManager;
+import dev.framework.bootstrap.logger.FrameworkLogger;
 import dev.framework.loader.DependencyLoader;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -35,9 +36,11 @@ import org.jetbrains.annotations.NotNull;
 public abstract class AbstractBukkitBootstrap extends JavaPlugin implements FrameworkBootstrap {
 
   private BootstrapPreprocessor preprocessor;
+  private FrameworkLogger frameworkLogger;
 
   @Override
   public void onLoad() {
+    this.frameworkLogger = FrameworkLogger.wrapJava(this.getLogger());
     // create dependency loader
     final DependencyLoader.Builder dependencyBuilder = DependencyLoader.builder()
         .classLoader(this.getClassLoader())
@@ -70,5 +73,10 @@ public abstract class AbstractBukkitBootstrap extends JavaPlugin implements Fram
   public @NotNull
   DependencyLoader dependencyLoader() {
     return this.preprocessor.dependencyLoader();
+  }
+
+  @Override
+  public @NotNull FrameworkLogger frameworkLogger() {
+    return this.frameworkLogger;
   }
 }

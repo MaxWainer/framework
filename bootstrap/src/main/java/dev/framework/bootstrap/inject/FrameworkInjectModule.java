@@ -27,6 +27,7 @@ package dev.framework.bootstrap.inject;
 import com.google.inject.AbstractModule;
 import dev.framework.bootstrap.FrameworkBootstrap;
 import dev.framework.bootstrap.inject.module.FrameworkModule;
+import dev.framework.bootstrap.logger.FrameworkLogger;
 import dev.framework.commons.Types;
 import dev.framework.commons.annotation.TargetGradleModule;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -56,6 +57,9 @@ public final class FrameworkInjectModule extends AbstractModule {
 
       module.preconfigure(this.binder()); // then, preconfigure
     }
+
+    this.bind(FrameworkLogger.class)
+        .toInstance(this.bootstrap.frameworkLogger());
   }
 
 }

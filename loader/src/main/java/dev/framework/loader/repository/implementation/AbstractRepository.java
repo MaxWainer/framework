@@ -41,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 abstract class AbstractRepository implements Repository {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
 
   private static void loadFromUrl(
       final HttpURLConnection connection,

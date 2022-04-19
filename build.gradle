@@ -115,7 +115,7 @@ subprojects {
     publications {
       mavenJava(MavenPublication) {
         artifactId = project.name
-        groupId = 'io.github.maxwainer'
+        groupId = 'dev.framework'
         version = '0.0.2'
 
         from components.java
@@ -236,5 +236,8 @@ subprojects {
   // central publishing end
 
   println "[CONFIGURE] Configured '$project.name'!"
+}
+subprojects {
+  println "implementation 'dev.framework:$project.name:0.0.2'"
 }
 println DELIMITER

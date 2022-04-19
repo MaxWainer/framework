@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 abstract class AbstractClassLoadingStrategy<T extends URLClassLoader> implements ClassLoadingStrategy {
 
-  static final Logger LOGGER = StaticLogger.getLogger();
+  static final Logger LOGGER = StaticLogger.logger();
 
   protected final T providedClassLoader;
 

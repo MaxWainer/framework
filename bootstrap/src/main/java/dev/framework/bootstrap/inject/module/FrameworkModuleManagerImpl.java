@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
 
-  private static final Logger LOGGER = StaticLogger.getLogger();
+  private static final Logger LOGGER = StaticLogger.logger();
 
   private final ModuleInjector moduleInjector;
 

@@ -33,20 +33,12 @@ public final class StaticLogger {
     MoreExceptions.instantiationError();
   }
 
-  public static @NotNull Logger getLogger() {
+  public static @NotNull Logger logger() {
     // Getting caller name
-    final String callerName = getCallerClassName();
+    final String callerName = TraceExposer.callerClassName();
 
     // Creating logger for caller class
     return Logger.getLogger(callerName);
-  }
-
-  private static @NotNull String getCallerClassName() {
-    // Getting stack tract from current thread
-    final StackTraceElement[] elements = Thread.currentThread().getStackTrace();
-
-    // Getting from elements class name
-    return elements[3].getClassName();
   }
 
 }

@@ -24,6 +24,15 @@
 
 package dev.framework.commons.exception;
 
+import dev.framework.commons.TraceExposer;
+
+/**
+ *
+ */
 public final class NotImplementedYet extends RuntimeException {
+
+  public NotImplementedYet() {
+    super("Calling method is not implemented yet! Method: " + TraceExposer.callingMethodName());
+  }
 
 }

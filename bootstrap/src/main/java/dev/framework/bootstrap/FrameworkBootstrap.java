@@ -26,6 +26,7 @@ package dev.framework.bootstrap;
 
 import dev.framework.bootstrap.inject.module.FrameworkModuleManager;
 import dev.framework.bootstrap.inject.module.ModuleInjector;
+import dev.framework.bootstrap.logger.FrameworkLogger;
 import dev.framework.loader.DependencyLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,5 +41,7 @@ public interface FrameworkBootstrap extends BaseProcessable {
   @NotNull FrameworkModuleManager moduleManager();
 
   @NotNull DependencyLoader dependencyLoader();
+
+  @NotNull FrameworkLogger frameworkLogger();
 
 }

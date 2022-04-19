@@ -24,7 +24,16 @@
 
 package dev.framework.commons.cooldown;
 
-public interface Waiter {
+import dev.framework.commons.Delegatable;
 
+public interface Waiter<T> extends Delegatable<T> {
+
+  default long left() {
+    return total() - current();
+  }
+
+  long current();
+
+  long total();
 
 }

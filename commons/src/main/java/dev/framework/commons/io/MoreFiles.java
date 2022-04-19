@@ -22,10 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons;
+package dev.framework.commons.io;
 
+import dev.framework.commons.MoreExceptions;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;

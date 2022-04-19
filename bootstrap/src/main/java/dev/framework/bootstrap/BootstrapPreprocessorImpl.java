@@ -121,10 +121,10 @@ final class BootstrapPreprocessorImpl implements BootstrapPreprocessor {
     // check is there any exception
     if (result.isMeasuredWithException()) {
       this.dependencyLoader.logger()
-          .log(Level.SEVERE, result.exception(), () -> success);
+          .log(Level.SEVERE, result.exception(), () -> exception);
     } else {
       // else log took
-      this.dependencyLoader.logger().info(() -> exception + " " + result.took() + "ms");
+      this.dependencyLoader.logger().info(() -> success + " " + result.took() + "ms");
     }
   }
 }
