@@ -28,6 +28,7 @@ import com.google.inject.Guice;
 import dev.framework.bootstrap.inject.FrameworkInjectModule;
 import dev.framework.bootstrap.inject.module.FrameworkModuleManager;
 import dev.framework.bootstrap.inject.module.ModuleInjector;
+import dev.framework.bootstrap.inject.module.annotation.ModuleInfo.LoadScope;
 import dev.framework.commons.Measure;
 import dev.framework.loader.DependencyLoader;
 import dev.framework.loader.repository.dependency.Dependency;
@@ -49,41 +50,53 @@ final class BootstrapPreprocessorImpl implements BootstrapPreprocessor {
 
   @Override
   public void onEnable() {
-    final Measure.Result loadResult = this.moduleManager.load();
+    final Measure.Result beforeLoadResult = this.moduleManager.load(LoadScope.BEFORE);
 
-    handleResult(loadResult,
-        "Loading modules took",
-        "Loading modules is not successful!");
+    handleResult(beforeLoadResult,
+        "[BEFORE Group] Loading modules took",
+        "[BEFORE Group] Loading modules is not successful!");
 
     final Measure.Result baseLoadResult = Measure.measure(this.bootstrap::load);
 
     handleResult(baseLoadResult,
         "Loading plugin took",
         "Loading plugin is not successful!");
+
+    final Measure.Result afterLoadResult = this.moduleManager.load(LoadScope.AFTER);
+
+    handleResult(afterLoadResult,
+        "[AFTER Group] Loading modules took",
+        "[AFTER Group] Loading modules is not successful!");
   }
 
   @Override
   public void onDisable() {
-    final Measure.Result unloadResult = this.moduleManager.unload();
+    final Measure.Result beforeUnloadResult = this.moduleManager.unload(LoadScope.BEFORE);
 
-    handleResult(unloadResult,
-        "Unloading modules took",
-        "Unloading modules is not successful!");
+    handleResult(beforeUnloadResult,
+        "[BEFORE Group] Unloading modules took",
+        "[BEFORE Group] Unloading modules is not successful!");
 
-    final Measure.Result baseLoadResult = Measure.measure(this.bootstrap::unload);
+    final Measure.Result baseUnloadResult = Measure.measure(this.bootstrap::unload);
 
-    handleResult(baseLoadResult,
-        "Unloading plugin took",
-        "Unloading plugin is not successful!");
+    handleResult(baseUnloadResult,
+        "Loading plugin took",
+        "Loading plugin is not successful!");
+
+    final Measure.Result afterUnloadResult = this.moduleManager.unload(LoadScope.AFTER);
+
+    handleResult(afterUnloadResult,
+        "[AFTER Group] Unloading modules took",
+        "[AFTER Group] Unloading modules is not successful!");
   }
 
   @Override
   public void onLoad() {
     this.builder
         .additionalDependency(
-            Dependency.of("central:com{}google{}inject:guice:5.1.0"),
-            "dev.framework.boostrap.inject.internal"
-        ); // add guice
+            Dependency.of("central:javax{}inject:javax.inject:1"), "*")
+        .additionalDependency(
+            Dependency.of("central:com{}google{}inject:guice:5.1.0"), "*"); // add guice
     // preload it
     this.bootstrap.preload(builder);
 

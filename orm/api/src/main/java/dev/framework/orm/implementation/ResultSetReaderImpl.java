@@ -139,8 +139,8 @@ final class ResultSetReaderImpl implements ResultSetReader {
       return Optional.of(foreignRepository.findAll(foreignKey.foreignField(), id));
     }
 
-    final JsonElement json = JsonParser
-        .parseString(readString(meta.identifier())
+    final JsonElement json = new JsonParser()
+        .parse(readString(meta.identifier())
             .orElseThrow(UnsupportedOperationException::new));
 
     if (meta.collection()) {

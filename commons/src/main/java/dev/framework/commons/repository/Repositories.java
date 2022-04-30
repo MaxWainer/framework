@@ -30,8 +30,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 @UtilityClass
 public final class Repositories {
@@ -40,43 +42,64 @@ public final class Repositories {
     MoreExceptions.instantiationError();
   }
 
-  public static <V extends RepositoryObject<UUID>>
-  Repository<UUID, V> uuidToObjectMemoryRepository() {
-    return uuidToObjectMemoryRepository(HashMap::new);
+  public static <V extends RepositoryObject<UUID>> @NotNull Repository<UUID, V> uuidToObjectMemoryRepository() {
+    return uuidToObjectMemoryRepository(ConcurrentHashMap::new);
   }
 
-  public static <V extends RepositoryObject<UUID>> Repository<UUID, V> uuidToObjectMemoryRepository(
+  public static <V extends RepositoryObject<UUID>> @NotNull Repository<UUID, V> uuidToObjectMemoryRepository(
       final @NotNull Supplier<Map<UUID, V>> mapFactory) {
     return new UUIDToObjectMemoryRepository<>(mapFactory.get());
   }
 
-  private static final class UUIDToObjectMemoryRepository<O extends RepositoryObject<UUID>>
-      implements Repository<UUID, O> {
+  public static <I, V extends RepositoryObject<I>> @NotNull Repository<I, V> objectMemoryRepository(
+      final @NotNull Supplier<Map<I, V>> mapFactory) {
+    return new ObjectMemoryRepository<>(mapFactory.get());
+  }
 
-    private final Map<UUID, O> data;
+  public static <I, V extends RepositoryObject<I>> @NotNull Repository<I, V> objectMemoryRepository() {
+    return objectMemoryRepository(ConcurrentHashMap::new);
+  }
 
-    private UUIDToObjectMemoryRepository(final @NotNull Map<UUID, O> data) {
+  private static class ObjectMemoryRepository<I, O extends RepositoryObject<I>>
+      implements Repository<I, O> {
+
+    private final Map<I, O> data;
+
+    private ObjectMemoryRepository(final @NotNull Map<I, O> data) {
       this.data = data;
     }
 
     @Override
-    public @NotNull Optional<@NotNull O> find(final @NotNull UUID uuid) {
+    public @NotNull Optional<@NotNull O> find(final @NotNull I uuid) {
       return Optional.ofNullable(data.get(uuid));
     }
 
     @Override
-    public void register(final @NotNull UUID uuid, @NotNull final O o) {
+    public void register(final @NotNull I uuid, @NotNull final O o) {
       data.putIfAbsent(uuid, o);
     }
 
     @Override
-    public void delete(@NotNull UUID uuid) {
+    public void delete(@NotNull I uuid) {
       this.data.remove(uuid);
     }
 
     @Override
-    public void update(@NotNull UUID uuid, @NotNull O o) {
+    public void update(@NotNull I uuid, @NotNull O o) {
       this.data.replace(uuid, o);
+    }
+
+    @Override
+    public @NotNull @Unmodifiable Map<I, O> listObject() {
+      return data;
+    }
+  }
+
+  private static final class UUIDToObjectMemoryRepository<O extends RepositoryObject<UUID>> extends
+      ObjectMemoryRepository<UUID, O> {
+
+    private UUIDToObjectMemoryRepository(@NotNull Map<UUID, O> data) {
+      super(data);
     }
   }
 }

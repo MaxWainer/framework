@@ -24,14 +24,13 @@
 
 package dev.framework.loader.repository.dependency;
 
-import dev.framework.commons.MoreExceptions;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 public final class Dependencies {
 
   private Dependencies() {
-    MoreExceptions.instantiationError();
+    throw new AssertionError("Utility class cannot be instantiated!");
   }
 
   public static @NotNull String fileNameOf(final @NotNull Dependency dependency,

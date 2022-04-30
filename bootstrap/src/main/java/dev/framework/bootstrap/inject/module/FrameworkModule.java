@@ -46,6 +46,14 @@ public interface FrameworkModule extends BaseProcessable {
    * {@inheritDoc}
    */
   @Override
+  default void postConfigure(final @NotNull Binder binder) {
+    BaseProcessable.super.postConfigure(binder);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
   default void load() {
     BaseProcessable.super.load();
   }

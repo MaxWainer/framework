@@ -38,6 +38,13 @@ public @interface ModuleInfo {
 
   @NotNull Priority priority() default Priority.LOWEST;
 
+  @NotNull LoadScope scope() default LoadScope.AFTER;
+
+  enum LoadScope {
+    BEFORE,
+    AFTER
+  }
+
   enum Priority {
     LOWEST,
     LOW,

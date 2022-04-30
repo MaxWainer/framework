@@ -34,9 +34,9 @@ final class CommandStyleConfigImpl implements CommandStyleConfig {
   public static final CommandStyleConfig INSTANCE =
       new CommandStyleConfigImpl(
           NamedTextColor.GRAY,
-          NamedTextColor.YELLOW,
-          NamedTextColor.DARK_RED,
           NamedTextColor.GOLD,
+          NamedTextColor.DARK_RED,
+          NamedTextColor.YELLOW,
           NamedTextColor.DARK_AQUA,
           NamedTextColor.RED,
           NamedTextColor.DARK_GRAY);

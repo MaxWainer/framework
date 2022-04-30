@@ -24,15 +24,15 @@
 
 package dev.framework.loader.loadstrategy.version;
 
-import dev.framework.commons.StaticLogger;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import java.net.URLClassLoader;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-abstract class AbstractClassLoadingStrategy<T extends URLClassLoader> implements ClassLoadingStrategy {
+abstract class AbstractClassLoadingStrategy<T extends URLClassLoader> implements
+    ClassLoadingStrategy {
 
-  static final Logger LOGGER = StaticLogger.logger();
+  static final Logger LOGGER = Logger.getLogger(AbstractClassLoadingStrategy.class.getName());
 
   protected final T providedClassLoader;
 

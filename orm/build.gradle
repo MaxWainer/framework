@@ -5,7 +5,7 @@ allprojects {
     implementation project(':framework-commons')
     testCompileOnly project(':framework-commons')
 
-    implementation 'com.zaxxer:HikariCP:4.0.3'
+    compileOnly 'com.zaxxer:HikariCP:4.0.3'
   }
 }
 

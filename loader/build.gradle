@@ -1,9 +1,7 @@
 dependencies {
-  compileOnly 'org.ow2.asm:asm:9.2'
+  compileOnly 'org.ow2.asm:asm:9.3'
   compileOnly 'me.lucko:jar-relocator:1.5'
 
   compileOnly 'org.apache.logging.log4j:log4j-api:2.17.2'
   compileOnly 'org.apache.logging.log4j:log4j-core:2.17.2'
-
-  compileOnly project(':framework-commons')
 }

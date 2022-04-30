@@ -22,28 +22,21 @@
  * SOFTWARE.
  */
 
-package dev.framework.locale;
+package dev.framework.commons.function;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
 
-public final class TranslationManager {
+@FunctionalInterface
+public interface Filter<T> {
 
-  private static final Locale RUSSIAN = new Locale("ru");
+  boolean allowed(final @NotNull T value);
 
-  public TranslationManager(final @NotNull String projectName) {
-    final TranslationRegistry registry = TranslationRegistry.create(
-        Key.key("framework", "main"));
-
-    registry.defaultLocale(RUSSIAN);
-
-    GlobalTranslator.get().addSource(registry);
-
-    registry.registerAll(RUSSIAN,
-        new JsonResourceBundle(projectName + "_ru"), false);
+  static <V> Filter<V> alwaysNo() {
+    return $ -> false;
   }
+
+  static <V> Filter<V> reverse(final @NotNull Filter<V> filter) {
+    return it -> !filter.allowed(it);
+  }
+
 }

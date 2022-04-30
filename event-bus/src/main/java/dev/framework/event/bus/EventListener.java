@@ -22,28 +22,13 @@
  * SOFTWARE.
  */
 
-package dev.framework.locale;
+package dev.framework.event.bus;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
 
-public final class TranslationManager {
+@FunctionalInterface
+public interface EventListener<T> {
 
-  private static final Locale RUSSIAN = new Locale("ru");
+  void listen(final @NotNull T event);
 
-  public TranslationManager(final @NotNull String projectName) {
-    final TranslationRegistry registry = TranslationRegistry.create(
-        Key.key("framework", "main"));
-
-    registry.defaultLocale(RUSSIAN);
-
-    GlobalTranslator.get().addSource(registry);
-
-    registry.registerAll(RUSSIAN,
-        new JsonResourceBundle(projectName + "_ru"), false);
-  }
 }

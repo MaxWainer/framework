@@ -79,9 +79,9 @@ subprojects {
     jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
 
     implementation 'org.jetbrains:annotations:23.0.0'
-    implementation 'joda-time:joda-time:2.10.14'
-    implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'com.google.code.gson:gson:2.9.0'
+    compileOnly 'joda-time:joda-time:2.10.14'
+    compileOnly 'com.google.guava:guava:31.1-jre'
+    compileOnly 'com.google.code.gson:gson:2.9.0'
 
     // kyori
     compileOnly 'net.kyori:adventure-api:4.10.1'
@@ -115,8 +115,8 @@ subprojects {
     publications {
       mavenJava(MavenPublication) {
         artifactId = project.name
-        groupId = 'dev.framework'
-        version = '0.0.2'
+        groupId = 'io.github.maxwainer'
+        version = '0.0.3'
 
         from components.java
       }
@@ -238,6 +238,6 @@ subprojects {
   println "[CONFIGURE] Configured '$project.name'!"
 }
 subprojects {
-  println "implementation 'dev.framework:$project.name:0.0.2'"
+  println "implementation 'io.github.maxwainer:$project.name:0.0.2'"
 }
 println DELIMITER

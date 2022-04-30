@@ -22,44 +22,32 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons.repository;
+package dev.framework.event.bus;
 
-import dev.framework.commons.TraceExposer;
-import java.util.Map;
-import java.util.Optional;
+import dev.framework.commons.Buildable;
+import dev.framework.commons.exception.NotImplementedYet;
+import dev.framework.commons.function.Filter;
+import java.util.Set;
+import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-public interface Repository<I, T extends RepositoryObject> {
+public interface EventBus<T> {
 
-  @NotNull Optional<@NotNull T> find(final @NotNull I i);
-
-  void register(final @NotNull I i, final @NotNull T t);
-
-  default void register(final @NotNull T t) {
-    register((I) t.identifier(), t);
+  static <V> EventBus.EventBusBuilder<V> builder() {
+    throw new NotImplementedYet();
   }
 
-  default @NotNull @Unmodifiable Map<I, T> listObject() {
-    throw new UnsupportedOperationException(TraceExposer.callerClassName() + ", repository is not support listing!");
-  }
+  @NotNull @Unmodifiable Set<EventListener<? extends T>> listeners();
 
-  default void delete(final @NotNull I i) {
-    throw new UnsupportedOperationException(
-        TraceExposer.callerClassName() + ", repository is not support deleting!");
-  }
+  @NotNull @Unmodifiable Set<Filter<? extends T>> filters();
 
-  default void update(final @NotNull I i, final @NotNull T t) {
-    throw new UnsupportedOperationException(
-        TraceExposer.callerClassName() + ", repository is not support updating!");
-  }
+  interface EventBusBuilder<V> extends Buildable<EventBus<V>> {
 
-  default boolean exists(final @NotNull I i) {
-    return find(i).isPresent();
-  }
+    <E extends V> EventBusBuilder<V> filter(final @NotNull Filter<E> filter);
 
-  default @NotNull T findOrThrow(final @NotNull I i) {
-    return find(i).orElseThrow(() -> new IllegalArgumentException("No value present by key: " + i));
+    <E extends V> EventBusBuilder<V> listen(final @NotNull EventListener<E> listener);
+
   }
 
 }

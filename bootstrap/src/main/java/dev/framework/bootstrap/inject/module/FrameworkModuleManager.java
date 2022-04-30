@@ -25,6 +25,7 @@
 package dev.framework.bootstrap.inject.module;
 
 import dev.framework.bootstrap.exception.UnknownModuleException;
+import dev.framework.bootstrap.inject.module.annotation.ModuleInfo.LoadScope;
 import dev.framework.commons.Measure;
 import java.util.Optional;
 import java.util.Set;
@@ -37,17 +38,17 @@ public interface FrameworkModuleManager {
     return new FrameworkModuleManagerImpl(injector);
   }
 
-  @NotNull Optional<FrameworkModule> findModule(
-      final @NotNull Class<? extends FrameworkModule> moduleClass);
+  <M extends FrameworkModule> @NotNull Optional<M> findModule(
+      final @NotNull Class<? extends M> moduleClass);
 
-  default @NotNull FrameworkModule findModuleOrThrow(
-      final @NotNull Class<? extends FrameworkModule> moduleClass) throws UnknownModuleException {
+  default @NotNull <M extends FrameworkModule> M findModuleOrThrow(
+      final @NotNull Class<? extends M> moduleClass) throws UnknownModuleException {
     return findModule(moduleClass).orElseThrow(() -> new UnknownModuleException(moduleClass));
   }
 
-  @NotNull Measure.Result load();
+  @NotNull Measure.Result load(final @NotNull LoadScope loadScope);
 
-  @NotNull Measure.Result unload();
+  @NotNull Measure.Result unload(final @NotNull LoadScope loadScope);
 
   @NotNull Measure.Result reload();
 

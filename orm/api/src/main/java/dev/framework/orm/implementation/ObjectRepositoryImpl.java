@@ -71,12 +71,12 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
   @Override
   public @NotNull Optional<@NotNull T> find(@NotNull I i) {
-    return Optional.ofNullable(findAll(i).get(0));
+    return findAll(i).stream().findFirst();
   }
 
   @Override
   public @NotNull List<T> findAll(@NotNull I i) {
-    if (exists(i)) {
+    if (objectCache.exists(i)) {
       return objectCache.get(i).orElse(Collections.emptyList());
     }
 
@@ -234,7 +234,7 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
 
     final TableMeta tableMeta = objectData.tableMeta();
 
-    return facade.queryFactory()
+    final boolean result = facade.queryFactory()
         .select()
         .everything().from(tableMeta)
         .whereAnd(Condition.of(tableMeta.identifyingColumn().identifier(), Condition.EQUALS))
@@ -243,6 +243,12 @@ final class ObjectRepositoryImpl<I, T extends RepositoryObject<I>>
         .resultMapper(ResultSetReader::next)
         .build()
         .join();
+
+    if (result) {
+      findAll(i);
+    }
+
+    return result;
   }
 
   @Override

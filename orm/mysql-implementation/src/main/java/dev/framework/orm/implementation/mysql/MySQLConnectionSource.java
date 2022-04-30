@@ -22,28 +22,24 @@
  * SOFTWARE.
  */
 
-package dev.framework.locale;
+package dev.framework.orm.implementation.mysql;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
+import dev.framework.orm.api.ORMFacade;
+import dev.framework.orm.api.credentials.ConnectionCredentials;
+import dev.framework.orm.implementation.sql.AbstractSQLConnectionSource;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class TranslationManager {
+final class MySQLConnectionSource extends AbstractSQLConnectionSource {
 
-  private static final Locale RUSSIAN = new Locale("ru");
+  MySQLConnectionSource(
+      @NotNull ConnectionCredentials connectionCredentials,
+      @NotNull ORMFacade ormFacade) {
+    super(connectionCredentials, ormFacade);
+  }
 
-  public TranslationManager(final @NotNull String projectName) {
-    final TranslationRegistry registry = TranslationRegistry.create(
-        Key.key("framework", "main"));
-
-    registry.defaultLocale(RUSSIAN);
-
-    GlobalTranslator.get().addSource(registry);
-
-    registry.registerAll(RUSSIAN,
-        new JsonResourceBundle(projectName + "_ru"), false);
+  @Override
+  protected @Nullable String driverClassName() {
+    return null;
   }
 }

@@ -24,7 +24,6 @@
 
 package dev.framework.loader;
 
-import dev.framework.commons.Buildable;
 import dev.framework.loader.DependencyLoaderImpl.BuilderImpl;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import dev.framework.loader.repository.RepositoryManager;
@@ -53,7 +52,7 @@ public interface DependencyLoader {
 
   @NotNull Logger logger();
 
-  interface Builder extends Buildable<DependencyLoader> {
+  interface Builder {
 
     Builder logger(final @NotNull Logger logger);
 
@@ -67,6 +66,8 @@ public interface DependencyLoader {
     default Builder dataFolder(final @NotNull File dataFolder) {
       return dataFolder(dataFolder.toPath());
     }
+
+    @NotNull DependencyLoader build();
 
   }
 

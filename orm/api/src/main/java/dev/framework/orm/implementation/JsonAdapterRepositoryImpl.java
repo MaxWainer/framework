@@ -26,6 +26,7 @@ package dev.framework.orm.implementation;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import dev.framework.commons.Types;
 import dev.framework.commons.map.OptionalMap;
 import dev.framework.commons.map.OptionalMaps;
@@ -39,6 +40,25 @@ import org.jetbrains.annotations.NotNull;
 final class JsonAdapterRepositoryImpl implements JsonAdapterRepository {
 
   private final OptionalMap<Class<?>, JsonObjectAdapter<?>> registry = OptionalMaps.newConcurrentMap();
+
+  public JsonAdapterRepositoryImpl() {
+    registry.put(String.class, new JsonObjectAdapter<String>() {
+      @Override
+      public @NotNull String construct(@NotNull JsonElement element) {
+        return element.getAsString();
+      }
+
+      @Override
+      public @NotNull JsonElement deconstruct(@NotNull String s) {
+        return new JsonPrimitive(s);
+      }
+
+      @Override
+      public @NotNull Class<String> identifier() {
+        return String.class;
+      }
+    });
+  }
 
   @Override
   public @NotNull Optional<@NotNull JsonObjectAdapter<?>> find(@NotNull Class<?> aClass) {
@@ -57,7 +77,7 @@ final class JsonAdapterRepositoryImpl implements JsonAdapterRepository {
       @NotNull Class<T> type) throws UnknownAdapterException {
     final JsonObjectAdapter<T> adapter = findAdapter(type);
 
-    final JsonElement element = JsonParser.parseString(json);
+    final JsonElement element = new JsonParser().parse(json);
 
     return adapter.construct(element);
   }

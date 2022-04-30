@@ -27,6 +27,7 @@ package dev.framework.bukkit.implementation.command;
 import dev.framework.commands.sender.Sender;
 import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -46,8 +47,7 @@ final class BukkitSender implements Sender {
   }
 
   @Override
-  public @NotNull
-  UUID uniqueId() {
+  public @NotNull UUID uniqueId() {
     return handle instanceof ConsoleCommandSender ? Sender.GENERIC_UUID
         : ((Player) handle).getUniqueId();
   }

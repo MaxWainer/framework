@@ -24,7 +24,6 @@
 
 package dev.framework.loader.repository.implementation;
 
-import dev.framework.commons.StaticLogger;
 import dev.framework.loader.repository.Repository;
 import dev.framework.loader.repository.dependency.Dependencies;
 import dev.framework.loader.repository.dependency.Dependency;
@@ -41,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 abstract class AbstractRepository implements Repository {
 
-  private static final Logger LOGGER = StaticLogger.logger();
+  private static final Logger LOGGER = Logger.getLogger(AbstractRepository.class.getName());
 
   private static void loadFromUrl(
       final HttpURLConnection connection,
@@ -65,19 +64,19 @@ abstract class AbstractRepository implements Repository {
     try {
       // Build file name
       final String fileName = Dependencies.fileNameOf(dependency);
+      final String relocatedFileName = Dependencies.fileNameOf(dependency, "relocated");
 
       // Resolve dependency file
       final Path dependencyFile = to.resolve(fileName);
-      final Path relocatedDependencyFile = to.resolve(
-          Dependencies.fileNameOf(dependency, "relocated"));
-
-      if (Files.exists(relocatedDependencyFile)) {
-        return relocatedDependencyFile;
-      }
+      final Path relocatedDependencyFile = to.resolve(relocatedFileName);
 
       // If exists, return it
       if (Files.exists(dependencyFile)) {
         return dependencyFile;
+      }
+
+      if (Files.exists(relocatedDependencyFile)) {
+        return relocatedDependencyFile;
       }
 
       LOGGER.info(() -> "Trying loading dependency " + dependency.artifactId() + "...");
@@ -90,6 +89,8 @@ abstract class AbstractRepository implements Repository {
           + dependency.artifactId().replace("{}", "/") + '/'
           + dependency.version() + '/'
           + fileName;
+
+      LOGGER.info(() -> "Loading " + dependency.artifactId() + ", from " + stringUrl + "...");
 
       // Create url
       final URL url = new URL(stringUrl);

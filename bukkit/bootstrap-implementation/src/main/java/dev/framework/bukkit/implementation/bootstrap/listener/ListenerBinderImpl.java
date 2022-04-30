@@ -25,16 +25,17 @@
 package dev.framework.bukkit.implementation.bootstrap.listener;
 
 import dev.framework.bukkit.implementation.bootstrap.AbstractBukkitBootstrap;
-import java.util.ArrayList;
-import java.util.List;
+import dev.framework.commons.concurrent.annotation.NotThreadSafe;
+import java.util.HashSet;
+import java.util.Set;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+@NotThreadSafe
 final class ListenerBinderImpl implements ListenerBinder {
 
-  private final List<Listener> listeners = new ArrayList<>();
+  private final Set<Listener> listeners = new HashSet<>();
 
   @Override
   public ListenerBinder bind(@NotNull Listener listener) {
@@ -43,7 +44,7 @@ final class ListenerBinderImpl implements ListenerBinder {
   }
 
   @Override
-  public void toBoostrap(@Nullable AbstractBukkitBootstrap bootstrap) {
+  public void toBoostrap(@NotNull AbstractBukkitBootstrap bootstrap) {
     final PluginManager pluginManager = bootstrap
         .getServer()
         .getPluginManager();

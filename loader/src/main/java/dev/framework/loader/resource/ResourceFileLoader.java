@@ -27,7 +27,6 @@ package dev.framework.loader.resource;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.framework.commons.MoreExceptions;
 import dev.framework.loader.repository.dependency.Dependency;
 import java.io.IOException;
 import java.io.Reader;
@@ -39,7 +38,7 @@ import org.jetbrains.annotations.NotNull;
 public final class ResourceFileLoader {
 
   private ResourceFileLoader() {
-    MoreExceptions.instantiationError();
+    throw new AssertionError("Utility class cannot be instantiated!");
   }
 
   public static ResourceFile readFile(

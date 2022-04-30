@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.implementation.mysql;
 
 import dev.framework.orm.api.ConnectionSource;
 import dev.framework.orm.api.ORMProvider;
@@ -34,10 +34,9 @@ import dev.framework.orm.implementation.sql.AlterTableBasedTableUpdater;
 import dev.framework.orm.implementation.sql.SQLDialectProvider;
 import org.jetbrains.annotations.NotNull;
 
-public final class SQLiteORMFacade extends AbstractORMFacade {
-
+public final class MySQLORMFacade extends AbstractORMFacade {
   static {
-    ORMProvider.instance().registerFactory("sqlite", SQLiteORMFacade::new);
+    ORMProvider.instance().registerFactory("mysql", MySQLORMFacade::new);
   }
 
   private final DialectProvider dialectProvider = new SQLDialectProvider();
@@ -46,10 +45,10 @@ public final class SQLiteORMFacade extends AbstractORMFacade {
 
   private final ConnectionSource source;
 
-  public SQLiteORMFacade(final @NotNull ConnectionCredentials credentials) {
+  public MySQLORMFacade(final @NotNull ConnectionCredentials credentials) {
     super();
 
-    this.source = new SQLiteConnectionSource(credentials, this);
+    this.source = new MySQLConnectionSource(credentials, this);
     this.tableUpdater = new AlterTableBasedTableUpdater(this);
   }
 

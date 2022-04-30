@@ -1,0 +1,5 @@
+group 'dev.framework.event.bus'
+
+dependencies {
+  compileOnly project(':framework-commons')
+}

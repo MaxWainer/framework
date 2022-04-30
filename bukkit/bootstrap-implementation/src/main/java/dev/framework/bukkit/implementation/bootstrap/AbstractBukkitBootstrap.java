@@ -64,14 +64,12 @@ public abstract class AbstractBukkitBootstrap extends JavaPlugin implements Fram
   }
 
   @Override
-  public @NotNull
-  FrameworkModuleManager moduleManager() {
+  public @NotNull FrameworkModuleManager moduleManager() {
     return this.preprocessor.moduleManager();
   }
 
   @Override
-  public @NotNull
-  DependencyLoader dependencyLoader() {
+  public @NotNull DependencyLoader dependencyLoader() {
     return this.preprocessor.dependencyLoader();
   }
 

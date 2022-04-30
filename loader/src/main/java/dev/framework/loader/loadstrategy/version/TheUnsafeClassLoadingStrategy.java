@@ -24,16 +24,18 @@
 
 package dev.framework.loader.loadstrategy.version;
 
-import dev.framework.commons.Reflections;
-import dev.framework.commons.SneakyThrows;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLClassLoader;
 import org.jetbrains.annotations.NotNull;
+import sun.misc.Unsafe;
 
-public final class TheUnsafeClassLoadingStrategy extends AbstractClassLoadingStrategy<URLClassLoader> {
+public final class TheUnsafeClassLoadingStrategy extends
+    AbstractClassLoadingStrategy<URLClassLoader> {
 
   public static final ClassLoadingStrategyFactory FACTORY =
       new TheUnsafeClassLoadingStrategyFactory();
@@ -42,19 +44,46 @@ public final class TheUnsafeClassLoadingStrategy extends AbstractClassLoadingStr
     super(providedClassLoader);
   }
 
+  private static final MethodHandles.Lookup TRUSTED_LOOKUP;
+  private static final Unsafe UNSAFE;
+
+  static {
+    try {
+      // Access theUnsafe
+      final Field theUnsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+      theUnsafeField.setAccessible(true);
+
+      // Cast and create
+      UNSAFE = (Unsafe) theUnsafeField.get(null);
+
+      // MethodHandles.lookup(); > Not trusted, we need TRUSTED Lookup!
+      final Field implLookupField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+
+      // Get field base
+      final Object implLookupBase = UNSAFE.staticFieldBase(implLookupField);
+      // Get field offset
+      final long implLookupOffset = UNSAFE.staticFieldOffset(implLookupField);
+
+      // Getting object
+      TRUSTED_LOOKUP = (MethodHandles.Lookup) UNSAFE.getObject(implLookupBase, implLookupOffset);
+    } catch (final IllegalAccessException | NoSuchFieldException exception) {
+      throw new RuntimeException(exception);
+    }
+  }
+
   @Override
   public void addURL(@NotNull final URL url) {
     try {
       // Getting method handle using lookup
       final MethodHandle addUrlMethodHandle =
-          Reflections.trustedLookup()
+          TRUSTED_LOOKUP
               .findVirtual(
                   URLClassLoader.class, "addURL", MethodType.methodType(void.class, URL.class));
 
       // Invoking method
       addUrlMethodHandle.invoke(this.providedClassLoader, url);
     } catch (final Throwable exception) {
-      SneakyThrows.sneakyThrows(exception);
+      throw new RuntimeException(exception);
     }
   }
 

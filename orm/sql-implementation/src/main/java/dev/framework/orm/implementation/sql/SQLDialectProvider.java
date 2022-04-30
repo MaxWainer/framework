@@ -22,17 +22,16 @@
  * SOFTWARE.
  */
 
-package dev.framework.orm.implementation.sqlite;
+package dev.framework.orm.implementation.sql;
 
 import dev.framework.commons.Types;
 import dev.framework.orm.api.data.meta.ColumnMeta;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn;
 import dev.framework.orm.api.data.meta.ColumnMeta.BaseColumn.BaseColumnOptions;
-import dev.framework.orm.api.data.meta.ColumnMeta.BaseForeignKey;
 import dev.framework.orm.api.dialect.DialectProvider;
 import org.jetbrains.annotations.NotNull;
 
-final class SQLiteDialectProvider implements DialectProvider {
+public final class SQLDialectProvider implements DialectProvider {
 
   private static @NotNull String adaptType(@NotNull ColumnMeta meta) {
     if (meta.collection() || meta.map()) {
@@ -93,7 +92,7 @@ final class SQLiteDialectProvider implements DialectProvider {
     ).trim();
   }
 
-  private @NotNull String foreign(final @NotNull BaseForeignKey foreignKey) {
+  private @NotNull String foreign(final @NotNull ColumnMeta.BaseForeignKey foreignKey) {
     return String.format(
         "REFERENCES %s (%s) ON DELETE %s ON UPDATE %s",
         protectValue(foreignKey.targetTable().tableMeta().identifier()),

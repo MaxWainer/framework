@@ -26,10 +26,6 @@ package dev.framework.loader;
 
 import static java.util.Objects.requireNonNull;
 
-import dev.framework.commons.MoreExceptions;
-import dev.framework.commons.Nulls;
-import dev.framework.commons.SneakyThrows;
-import dev.framework.commons.relocation.RelocationEnsurer;
 import dev.framework.loader.helper.JVMHelper;
 import dev.framework.loader.loadstrategy.ClassLoadingStrategy;
 import dev.framework.loader.loadstrategy.version.InjectableClassLoadingStrategy;
@@ -81,7 +77,7 @@ final class DependencyLoaderImpl implements DependencyLoader {
 
   @Override
   public void load() {
-    RelocationEnsurer.ensureRelocation(
+    ensureRelocation(
         'd', 'e', 'v', // dev
         '.', // .
         'f', 'r', 'a', 'm', 'e', 'w', 'o', 'r', 'k', // framework
@@ -94,7 +90,7 @@ final class DependencyLoaderImpl implements DependencyLoader {
       try {
         Files.createDirectories(this.librariesPath);
       } catch (final IOException exception) {
-        SneakyThrows.sneakyThrows(exception);
+        throw new RuntimeException(exception);
       }
     }
 
@@ -113,13 +109,13 @@ final class DependencyLoaderImpl implements DependencyLoader {
 
     try {
       // Load ASM, we need it for jar-relocator
-      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm:9.2"));
-      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm-commons:9.2"));
+      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm:9.3"));
+      this.fastDependency(Dependency.of("central:org{}ow2{}asm:asm-commons:9.3"));
 
       // Load lucko's jar-relocator
       this.fastDependency(Dependency.of("central:me{}lucko:jar-relocator:1.5"));
     } catch (final MalformedURLException exception) {
-      SneakyThrows.sneakyThrows(exception);
+      throw new RuntimeException(exception);
     }
 
     for (final Entry<Dependency, String> entry : dependencies.entrySet()) {
@@ -127,7 +123,8 @@ final class DependencyLoaderImpl implements DependencyLoader {
       final String relocateTo = entry.getValue();
 
       try {
-        Path outPath = this.repositoryManager.repositorySafe(dependency.repository())
+        Path outPath = this.repositoryManager
+            .repositorySafe(dependency.repository())
             .loadDependency(dependency, this.librariesPath);
 
         requireNonNull(outPath, "outPath is null!");
@@ -140,30 +137,35 @@ final class DependencyLoaderImpl implements DependencyLoader {
           // relocated
           outPath = this.librariesPath.resolve(Dependencies.fileNameOf(dependency, "relocated"));
 
-          // As far as group id not always represent
-          // jar package, we should handle it via
-          // stuff like that
-          final String groupId;
-          final String relocationGroup;
-          if (relocateTo.contains(":")) {
-            final String[] data = relocateTo.split(":");
+          // check is our also relocated path exists
+          if (!Files.exists(outPath)) {
 
-            groupId = data[0];
-            relocationGroup = data[1];
-          } else {
-            groupId = dependency.groupId();
-            relocationGroup = relocateTo;
+            // As far as group id not always represent
+            // jar package, we should handle it via
+            // stuff like that
+            final String groupId;
+            final String relocationGroup;
+            if (relocateTo.contains(":")) {
+              final String[] data = relocateTo.split(":");
+
+              groupId = data[0];
+              relocationGroup = data[1];
+            } else {
+              groupId = dependency.groupId();
+              relocationGroup = relocateTo;
+            }
+
+            // Create relocator
+            final JarRelocator relocator = new JarRelocator(tempPath.toFile(), outPath.toFile(),
+                Collections.singletonList(
+                    new Relocation(groupId.replace("{}", "."), relocationGroup)));
+
+            // Run relocator
+            relocator.run();
+
+            // Delete unneeded file
+            Files.deleteIfExists(tempPath);
           }
-
-          // Create relocator
-          final JarRelocator relocator = new JarRelocator(tempPath.toFile(), outPath.toFile(),
-              Collections.singletonList(new Relocation(groupId, relocationGroup)));
-
-          // Run relocator
-          relocator.run();
-
-          // Delete unneeded file
-          Files.deleteIfExists(tempPath);
         }
 
         this.loadPath(outPath);
@@ -177,8 +179,9 @@ final class DependencyLoaderImpl implements DependencyLoader {
   private ResourceFile readDependencies() {
     final ResourceFile resourceFile;
     try (final Reader reader = new InputStreamReader(
-        requireNonNull(this.classLoader.getResourceAsStream("dependencies.json"),
-            "loader.json is not provided!")
+        requireNonNull(
+            DependencyLoaderImpl.class.getClassLoader().getResourceAsStream("dependencies.json"),
+            "dependencies.json is not provided!")
     )) {
       resourceFile = ResourceFileLoader.readFile(reader);
     } catch (final IOException exception) {
@@ -272,13 +275,27 @@ final class DependencyLoaderImpl implements DependencyLoader {
     }
 
     @Override
-    public DependencyLoader build() {
+    public @NotNull DependencyLoader build() {
       return new DependencyLoaderImpl(
           requireNonNull(classLoader, "Class loader is not provided in builder!"),
           requireNonNull(dataFolder, "Data folder is not provided in builder!"),
-          Nulls.getOr(logger, () -> Logger.getLogger("Framework")),
+          logger == null ? Logger.getLogger("Framework") : logger,
           additionalDependencies
       );
+    }
+  }
+
+  private static void ensureRelocation(final char... pkg) {
+    final String basicPackage = new String(
+        pkg
+    ); // avoid relocation
+
+    final String checkingClassName = DependencyLoaderImpl.class.getName();
+
+    if (basicPackage.startsWith(checkingClassName)) {
+      throw new RuntimeException(checkingClassName
+          + " is not relocated, this part of framework is very sensitive to it, suggesting to nag plugin developer and resolve issue! "
+          + "To author: Add relocation to entire framework dependencies, if someone gonna use it not the same version, this may produce silly issues!");
     }
   }
 

@@ -21,12 +21,12 @@ Mainly, framework created with intent on dependency injection, and require `guic
     dependencies {
         
         // highly recommend include them in jar if you really using this 
-        implementation 'io.github.maxwainer:framework-commons:<Major>.<Minor>.<Revision>'
         implementation 'io.github.maxwainer:framework-loader:<Major>.<Minor>.<Revision>'
         implementation 'io.github.maxwainer:framework-bootstrap:<Major>.<Minor>.<Revision>'
-        // bootstrap implementation also required to implementation
         implementation 'io.github.maxwainer:framework-bukkit-bootstrap-implementation:<Major>.<Minor>.<Revision>'
+        // they are lightweight, so, they didn't produce some problems
   
+        compileOnly 'io.github.maxwainer:framework-commons:<Major>.<Minor>.<Revision>'
         // implementation of some modules
         compileOnly 'io.github.maxwainer:framework-<platform>-<module>-implementation:<Major>.<Minor>.<Revision>'
         

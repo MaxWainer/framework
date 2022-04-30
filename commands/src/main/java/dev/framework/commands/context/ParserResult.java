@@ -24,6 +24,7 @@
 
 package dev.framework.commands.context;
 
+import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +44,10 @@ public final class ParserResult<T> {
 
   public static <V> ParserResult<V> error(final @NotNull Component errorMessage) {
     return new ParserResult<>(null, errorMessage);
+  }
+
+  public static <V> ParserResult<V> fromOptional(final @NotNull Optional<V> optional, final @NotNull Component errorMessage) {
+    return optional.isPresent() ? success(optional.get()) : error(errorMessage);
   }
 
   public T result() {

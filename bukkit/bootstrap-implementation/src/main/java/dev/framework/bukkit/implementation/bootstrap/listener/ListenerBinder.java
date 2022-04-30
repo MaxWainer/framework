@@ -27,7 +27,6 @@ package dev.framework.bukkit.implementation.bootstrap.listener;
 import dev.framework.bukkit.implementation.bootstrap.AbstractBukkitBootstrap;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public interface ListenerBinder {
 
@@ -37,6 +36,6 @@ public interface ListenerBinder {
 
   ListenerBinder bind(final @NotNull Listener listener);
 
-  void toBoostrap(final @Nullable AbstractBukkitBootstrap bootstrap);
+  void toBoostrap(final @NotNull AbstractBukkitBootstrap bootstrap);
 
 }

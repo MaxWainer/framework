@@ -25,10 +25,12 @@
 package dev.framework.bootstrap.inject.module;
 
 import dev.framework.bootstrap.inject.module.annotation.ModuleInfo;
+import dev.framework.bootstrap.inject.module.annotation.ModuleInfo.LoadScope;
 import dev.framework.commons.Comparators;
 import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.StaticLogger;
 import dev.framework.commons.Measure;
+import dev.framework.commons.function.ScopeFunctions;
 import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Comparator;
 import java.util.Objects;
@@ -60,18 +62,22 @@ final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
   }
 
   @Override
-  public @NotNull Optional<FrameworkModule> findModule(
-      final @NotNull Class<? extends FrameworkModule> moduleClass) {
-    return moduleInjector.injectableModules()
+  public @NotNull <M extends FrameworkModule> Optional<M> findModule(
+      final @NotNull Class<? extends M> moduleClass) {
+    return (Optional<M>) moduleInjector.injectableModules()
         .stream()
         .filter(it -> it.getClass().isAssignableFrom(moduleClass))
         .findFirst();
   }
 
   @Override
-  public @NotNull Measure.Result load() {
+  public @NotNull Measure.Result load(final @NotNull LoadScope loadScope) {
     return Measure.measure(() -> {
       for (final WrappedFrameworkModule module : sortedModules()) {
+        if (module.moduleInfo.scope() != loadScope) {
+          continue;
+        }
+
         final FrameworkModule delegate = module.delegate;
 
         LOGGER.info(() -> "Loading module '" + module.moduleInfo.name() + "'...");
@@ -81,9 +87,13 @@ final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
   }
 
   @Override
-  public @NotNull Measure.Result unload() {
+  public @NotNull Measure.Result unload(final @NotNull LoadScope loadScope) {
     return Measure.measure(() -> {
       for (final WrappedFrameworkModule module : sortedModules()) {
+        if (module.moduleInfo.scope() != loadScope) {
+          continue;
+        }
+
         final FrameworkModule delegate = module.delegate;
 
         LOGGER.info(() -> "Unloading module '" + module.moduleInfo.name() + "'...");
@@ -132,6 +142,14 @@ final class FrameworkModuleManagerImpl implements FrameworkModuleManager {
         final @NotNull ModuleInfo moduleInfo) {
       this.delegate = delegate;
       this.moduleInfo = moduleInfo;
+    }
+
+    @Override
+    public String toString() {
+      return "WrappedFrameworkModule{" +
+          "delegate=" + delegate +
+          ", moduleInfo=" + moduleInfo +
+          '}';
     }
   }
 

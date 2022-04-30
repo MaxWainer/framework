@@ -42,6 +42,9 @@ public interface BaseProcessable {
   default void preconfigure(final @NotNull Binder binder) {
   }
 
+  default void postConfigure(final @NotNull Binder binder) {
+  }
+
   /**
    * Startup logic
    */

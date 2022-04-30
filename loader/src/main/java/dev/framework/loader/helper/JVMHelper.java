@@ -24,18 +24,17 @@
 
 package dev.framework.loader.helper;
 
-import dev.framework.commons.MoreExceptions;
-import dev.framework.commons.StaticLogger;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
+import jdk.jpackage.internal.Log;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 @ApiStatus.Internal
 public final class JVMHelper {
 
-  private static final Logger LOGGER = StaticLogger.logger();
+  private static final Logger LOGGER = Logger.getLogger(JVMHelper.class.getName());
 
   private static final Set<JavaVersion> REFLECTION_LOADABLE_VERSION = EnumSet.of(
       JavaVersion.JAVA_8
@@ -50,13 +49,14 @@ public final class JVMHelper {
       JavaVersion.JAVA_14,
       JavaVersion.JAVA_15,
       JavaVersion.JAVA_16,
-      JavaVersion.JAVA_17
+      JavaVersion.JAVA_17,
+      JavaVersion.JAVA_18
   );
 
   public static final JavaVersion CURRENT_VERSION = detectVersion();
 
   private JVMHelper() {
-    MoreExceptions.instantiationError();
+    throw new AssertionError("Utility class cannot be instantiated!");
   }
 
   public static boolean isReflectionSupported() {
@@ -104,11 +104,16 @@ public final class JVMHelper {
     JAVA_15,
     JAVA_16,
     JAVA_17,
+    JAVA_18,
     UNDETECTED;
 
     static JavaVersion fromString(final @NotNull String propertyVersion) {
       if (propertyVersion.startsWith("1.")) {
         return JAVA_8;
+      }
+
+      if (propertyVersion.contains("18")) {
+        return JAVA_18;
       }
 
       if (propertyVersion.contains("17")) {

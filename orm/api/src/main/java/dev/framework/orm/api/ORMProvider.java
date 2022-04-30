@@ -38,6 +38,7 @@ public interface ORMProvider {
 
   @Internal
   Set<String> LOADING_BLACKLIST_NAMES = MoreSets.newImmutableHashSet(
+      "dev.framework.orm.facadeClass",
       "dev.framework.orm.jdbcUrl",
       "dev.framework.orm.facadeClass",
       "dev.framework.orm.username",

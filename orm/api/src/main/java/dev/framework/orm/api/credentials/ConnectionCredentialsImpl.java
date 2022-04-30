@@ -39,6 +39,8 @@ final class ConnectionCredentialsImpl implements ConnectionCredentials {
       final @NotNull String username,
       final @NotNull String password,
       final @NotNull Map<String, Object> options) {
+    this(jdbcUrl, username, password, options);
+
     try {
       final Class<?> clazz = Class.forName(facadeClassName);
 
@@ -48,7 +50,13 @@ final class ConnectionCredentialsImpl implements ConnectionCredentials {
     } catch (ClassNotFoundException e) {
       throw new RuntimeException("Unable to find suitable driver!", e);
     }
+  }
 
+  ConnectionCredentialsImpl(
+      final @NotNull String jdbcUrl,
+      final @NotNull String username,
+      final @NotNull String password,
+      final @NotNull Map<String, Object> options) {
     this.jdbcUrl = jdbcUrl;
     this.username = username;
     this.password = password;

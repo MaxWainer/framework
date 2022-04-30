@@ -60,6 +60,12 @@ public final class FrameworkInjectModule extends AbstractModule {
 
     this.bind(FrameworkLogger.class)
         .toInstance(this.bootstrap.frameworkLogger());
+
+    this.bootstrap.postConfigure(this.binder());
+
+    for (final FrameworkModule module : this.bootstrap.moduleManager().modules()) {
+      module.postConfigure(this.binder()); // then, post configure
+    }
   }
 
 }
