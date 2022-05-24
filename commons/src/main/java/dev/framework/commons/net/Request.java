@@ -3,10 +3,12 @@ package dev.framework.commons.net;
 import dev.framework.commons.Buildable;
 import dev.framework.commons.exception.NotImplementedYet;
 import dev.framework.commons.net.type.RequestType;
+import dev.framework.commons.net.type.RequestTypes;
+import dev.framework.commons.net.type.post.MediaType;
+import dev.framework.commons.net.type.post.RequestBody;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -36,6 +38,15 @@ public interface Request {
     }
 
     Builder type(final @NotNull RequestType requestType);
+
+    default Builder get() {
+      return type(RequestTypes.GET);
+    }
+
+    default Builder post(final @NotNull MediaType mediaType,
+        final @NotNull RequestBody requestBody) {
+      return type(RequestTypes.post(mediaType, requestBody));
+    }
 
     Builder contentLength(final int contentLength);
 
