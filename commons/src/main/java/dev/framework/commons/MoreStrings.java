@@ -40,6 +40,11 @@ public final class MoreStrings {
       final @NotNull CharSequence delimiter,
       final @NotNull CharSequence prefix,
       final @NotNull CharSequence suffix) {
+    Nulls.isNull(repeating, "repeating");
+    Nulls.isNull(delimiter, "delimiter");
+    Nulls.isNull(prefix, "prefix");
+    Nulls.isNull(suffix, "suffix");
+
     final StringJoiner joiner = new StringJoiner(delimiter, prefix, suffix);
 
     for (int i = 0; i < count; i++) {

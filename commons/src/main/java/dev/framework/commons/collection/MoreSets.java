@@ -25,6 +25,7 @@
 package dev.framework.commons.collection;
 
 import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.Nulls;
 import dev.framework.commons.annotation.UtilityClass;
 import dev.framework.commons.immutable.ImmutableCollectors;
 import java.util.Arrays;
@@ -45,35 +46,51 @@ public final class MoreSets {
   }
 
   public static <T> Set<T> newLinkedHashSet(final @NotNull T @NonNls ... values) {
+    Nulls.isNull(values, "values");
+
     return new LinkedHashSet<>(Arrays.asList(values));
   }
 
   public static <T> Set<T> newHashSet(final @NotNull T @NonNls ... values) {
+    Nulls.isNull(values, "values");
+
     return new HashSet<>(Arrays.asList(values));
   }
 
   public static <T> Set<T> newLinkedHashSet(final @NotNull Stream<T> stream) {
+    Nulls.isNull(stream, "stream");
+
     return stream.collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
   public static <T> Set<T> newHashSet(final @NotNull Stream<T> stream) {
+    Nulls.isNull(stream, "stream");
+
     return stream.collect(Collectors.toCollection(HashSet::new));
   }
 
 
   public static <T> Set<T> newImmutableLinkedHashSet(final @NotNull T @NonNls ... values) {
+    Nulls.isNull(values, "values");
+
     return Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(values)));
   }
 
   public static <T> Set<T> newImmutableHashSet(final @NotNull T @NonNls ... values) {
+    Nulls.isNull(values, "values");
+
     return Collections.unmodifiableSet(new HashSet<>(Arrays.asList(values)));
   }
 
   public static <T> Set<T> newImmutableLinkedHashSet(final @NotNull Stream<T> stream) {
+    Nulls.isNull(stream, "stream");
+
     return stream.collect(ImmutableCollectors.linkedSet());
   }
 
   public static <T> Set<T> newImmutableHashSet(final @NotNull Stream<T> stream) {
+    Nulls.isNull(stream, "stream");
+
     return stream.collect(ImmutableCollectors.set());
   }
 }

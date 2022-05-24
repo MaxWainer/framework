@@ -36,6 +36,7 @@ public final class FrameworkObjects {
 
   @NotNull
   public static <V> V copy(final @NotNull Copyable<V> copyable) {
+    Nulls.isNull(copyable, "copyable");
     return copyable.copy();
   }
 

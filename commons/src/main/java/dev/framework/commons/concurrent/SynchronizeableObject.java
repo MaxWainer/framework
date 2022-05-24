@@ -24,6 +24,7 @@
 
 package dev.framework.commons.concurrent;
 
+import dev.framework.commons.Nulls;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 public interface SynchronizeableObject<T> extends Supplier<T> {
 
   static <V> SynchronizeableObject<V> create(final @NotNull V value) {
+    Nulls.isNull(value, "value");
+
     return new SynchronizeableObjectImpl<>(value);
   }
 

@@ -36,6 +36,7 @@ public final class Initalizer {
   }
 
   public static <T> T initalize(final @NotNull Supplier<T> supplier) {
+    Nulls.isNull(supplier, "supplier");
     return supplier.get();
   }
 

@@ -39,6 +39,7 @@ public final class Enums {
   }
 
   public static <E extends Enum<E>> List<E> reversedEnumValues(final @NotNull Class<E> eClass) {
+    Nulls.isNull(eClass, "eClass");
     final List<E> list = new ArrayList<>(EnumSet.allOf(eClass)); // getting all values
 
     Collections.reverse(list); // reverse it

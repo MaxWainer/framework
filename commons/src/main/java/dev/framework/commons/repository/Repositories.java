@@ -26,7 +26,6 @@ package dev.framework.commons.repository;
 
 import dev.framework.commons.MoreExceptions;
 import dev.framework.commons.annotation.UtilityClass;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,6 +34,9 @@ import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+/**
+ * Simple class, which is implements bunch of memory-based repositories
+ */
 @UtilityClass
 public final class Repositories {
 

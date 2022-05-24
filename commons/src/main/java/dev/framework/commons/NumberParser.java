@@ -138,11 +138,13 @@ public final class NumberParser {
     }
 
     public T numberOr(final @NotNull T number) {
+      Nulls.isNull(number, "number");
       return this.number == null ? number : this.number;
     }
 
     public <X extends Exception> T numberOrThrow(final @NotNull Supplier<? extends X> supplier)
         throws X {
+      Nulls.isNull(supplier, "supplier");
       if (number == null) {
         throw supplier.get();
       }

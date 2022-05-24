@@ -39,18 +39,27 @@ public final class Nulls {
   public static <V> V getOr(
       final @Nullable V original,
       final @NotNull Supplier<@NotNull V> supplier) {
+    Nulls.isNull(supplier, "supplier");
     return original == null ? supplier.get() : original;
   }
 
   public static <V> V checkNull(
       final @Nullable V original,
       final @NotNull String name) {
+    Nulls.isNull(name, "name");
     if (original == null) {
       throw new NullPointerException("Argument cannot be null: " + name + " (Calling method: "
           + TraceExposer.callingMethodName() + ")");
     }
 
     return original;
+  }
+
+  public static void isNull(final Object obj, final  @NotNull String paramName) {
+    if (obj == null) {
+      throw new NullPointerException("Next parameter cannot be null: " + paramName);
+    }
+
   }
 
 }

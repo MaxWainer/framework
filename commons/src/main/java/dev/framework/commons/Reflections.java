@@ -82,6 +82,9 @@ public final class Reflections {
 
   public static @Nullable Constructor<?> findConstructorWithAnnotation(
       final @NotNull Class<?> clazz, final @NotNull Class<? extends Annotation> annotation) {
+    Nulls.isNull(clazz, "clazz");
+    Nulls.isNull(annotation, "annotation");
+
     for (final Constructor<?> constructor : clazz.getConstructors()) {
       if (constructor.isAnnotationPresent(annotation)) {
         return constructor;
@@ -95,6 +98,10 @@ public final class Reflections {
       final @NotNull Class<?> clazz,
       final @NotNull Class<? extends T> annotationType,
       final @NotNull Predicate<T> annotationPredicate) {
+    Nulls.isNull(clazz, "clazz");
+    Nulls.isNull(annotationType, "annotationType");
+    Nulls.isNull(annotationPredicate, "annotationPredicate");
+
     for (final Field declaredField : clazz.getDeclaredFields()) {
       final T annotation = declaredField.getAnnotation(annotationType);
 
@@ -108,6 +115,7 @@ public final class Reflections {
   }
 
   public static @NotNull Class<?> @NonNls [] genericTypes(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     final Type genericSuperclass = clazz.getGenericSuperclass();
 
     return Arrays.stream(((ParameterizedType) genericSuperclass).getActualTypeArguments())
@@ -123,6 +131,9 @@ public final class Reflections {
 
   public static @NotNull Constructor<?> findConstructorWithAnnotationOrThrow(
       final @NotNull Class<?> clazz, final @NotNull Class<? extends Annotation> annotation) {
+    Nulls.isNull(clazz, "clazz");
+    Nulls.isNull(annotation, "annotation");
+
     final Constructor<?> constructor = findConstructorWithAnnotation(clazz, annotation);
 
     if (constructor == null) {
@@ -141,6 +152,11 @@ public final class Reflections {
       final @NotNull Class<?> fieldType,
       final @NotNull Object object
   ) {
+    Nulls.isNull(clazz, "clazz");
+    Nulls.isNull(fieldName, "fieldName");
+    Nulls.isNull(fieldType, "fieldType");
+    Nulls.isNull(object, "object");
+
     try {
       // finding getter (field)
       final MethodHandle handle = TRUSTED_LOOKUP.findGetter(clazz, fieldName, fieldType);
