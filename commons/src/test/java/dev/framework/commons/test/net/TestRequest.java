@@ -18,7 +18,7 @@ class TestRequest {
   @Test
   void testBody() throws Exception {
     final NetCall call = client.call(Request.builder()
-        .url("https://google.com/")
+        .url("https://localhost:2301/empty")
         .type(RequestTypes.jsonPost(RequestBody.create("")))
         .build());
 

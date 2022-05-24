@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -63,7 +64,7 @@ final class RequestImpl implements Request {
     }
 
     @Override
-    public Builder url(@NotNull String rawUrl) throws MalformedURLException {
+    public Builder url(@NotNull @URLPattern String rawUrl) throws MalformedURLException {
       return url(new URL(rawUrl));
     }
 

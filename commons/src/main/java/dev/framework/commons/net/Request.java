@@ -26,7 +26,7 @@ public interface Request {
 
     Builder url(final @NotNull URL url);
 
-    Builder url(final @NotNull @Pattern(NetConstants.RAW_URL_PATTERN) String rawUrl)
+    Builder url(final @NotNull @URLPattern String rawUrl)
         throws MalformedURLException;
 
     Builder appendHeader(final @NotNull String key, final @NotNull String value);
