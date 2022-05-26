@@ -22,15 +22,36 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.internal.lock;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+import dev.framework.scheduler.exception.WaiterException;
+import dev.framework.scheduler.lock.LockProvider;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import org.jetbrains.annotations.NotNull;
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
+public final class JavaLockProvider implements LockProvider {
 
-  default void await() throws JobExecutionException {
-    waitCompletion();
+  private final Lock lock;
+
+  public JavaLockProvider(final @NotNull Lock lock) {
+    this.lock = lock;
   }
 
+  @Override
+  public boolean waitFor(@NotNull TimeUnit unit, long time) throws WaiterException {
+    try {
+      if (lock.tryLock(time, unit)) {
+        try {
+          return true;
+        } finally {
+          lock.unlock();
+        }
+      }
+    } catch (InterruptedException e) {
+      throw new WaiterException(e);
+    }
+
+    throw new WaiterException("An error acquired while locking!");
+  }
 }

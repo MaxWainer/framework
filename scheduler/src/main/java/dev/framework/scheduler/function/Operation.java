@@ -22,15 +22,10 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.function;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+public interface Operation {
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
-
-  default void await() throws JobExecutionException {
-    waitCompletion();
-  }
+  void execute();
 
 }

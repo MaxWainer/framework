@@ -22,16 +22,18 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.scope;
+package dev.framework.scheduler.exception;
 
-import dev.framework.scheduler.wait.Waited;
-import java.util.concurrent.Callable;
 import org.jetbrains.annotations.NotNull;
 
-public interface SchedulerScope {
+public final class WaiterException extends Exception {
 
-  void run(final @NotNull Runnable runnable);
+  public WaiterException(final @NotNull String message) {
+    super(message);
+  }
 
-  <V> @NotNull Waited<V> call(final @NotNull Callable<V> callable);
+  public WaiterException(final @NotNull Throwable suppress) {
+    super(suppress);
+  }
 
 }

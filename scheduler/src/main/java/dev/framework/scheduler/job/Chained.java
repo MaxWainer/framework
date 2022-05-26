@@ -22,15 +22,15 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler;
+package dev.framework.scheduler.job;
 
-import dev.framework.scheduler.scope.SchedulerScope;
+import java.util.function.BiConsumer;
 import org.jetbrains.annotations.NotNull;
 
-public interface SchedulerFactory {
+public interface Chained<C extends Chained> {
 
-  @NotNull Scheduler create();
+  @NotNull C then(final @NotNull C then);
 
-  @NotNull Scheduler create(final @NotNull SchedulerScope defaultScope);
+  @NotNull C ifException(final @NotNull BiConsumer<Thread, Exception> consumer);
 
 }

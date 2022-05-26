@@ -22,15 +22,28 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.internal;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+import dev.framework.commons.Nulls;
+import dev.framework.scheduler.lock.LockProvider;
+import dev.framework.scheduler.function.Operation;
+import dev.framework.scheduler.job.Job;
+import org.jetbrains.annotations.NotNull;
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
+public final class JobImpl extends AbstractJob<Job> implements Job {
 
-  default void await() throws JobExecutionException {
-    waitCompletion();
+  private final Operation operation;
+
+  public JobImpl(
+      @NotNull LockProvider awaiterProvider,
+      @NotNull Operation operation) {
+    super(awaiterProvider);
+    Nulls.isNull(operation, "operation");
+    this.operation = operation;
   }
 
+  @Override
+  protected void processResource() {
+    operation.execute();
+  }
 }

@@ -22,19 +22,19 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.wait;
+package dev.framework.scheduler.job;
 
-import dev.framework.commons.function.ThrowableFunctions.ThrowableSupplier;
-import dev.framework.commons.time.TemporalValue;
-import dev.framework.scheduler.exception.SchedulerException;
-import java.time.temporal.ChronoUnit;
-import org.jetbrains.annotations.NotNull;
+import dev.framework.scheduler.exception.JobExecutionException;
+import org.jetbrains.annotations.Nullable;
 
-public interface Waited<T> extends ThrowableSupplier<T, SchedulerException> {
+public interface StateHolder {
 
-  @Override
-  T get() throws SchedulerException;
+  void cancel() throws JobExecutionException;
 
-  T get(final @NotNull TemporalValue<ChronoUnit> value) throws SchedulerException;
+  boolean done();
+
+  boolean cancelled();
+
+  @Nullable Exception exception();
 
 }

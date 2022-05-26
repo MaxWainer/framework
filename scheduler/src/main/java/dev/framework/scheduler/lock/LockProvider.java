@@ -22,15 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.lock;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+import dev.framework.scheduler.exception.WaiterException;
+import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
+public interface LockProvider {
 
-  default void await() throws JobExecutionException {
-    waitCompletion();
-  }
+  boolean waitFor(final @NotNull TimeUnit unit, final long time) throws WaiterException;
 
 }

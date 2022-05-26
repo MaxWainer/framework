@@ -22,15 +22,12 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.commons;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+import org.jetbrains.annotations.NotNull;
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
+public interface Facotry<T> {
 
-  default void await() throws JobExecutionException {
-    waitCompletion();
-  }
+  @NotNull T create();
 
 }

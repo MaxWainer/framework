@@ -22,15 +22,10 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.commons.function;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+public interface TriConsumer<F, S, T> {
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
-
-  default void await() throws JobExecutionException {
-    waitCompletion();
-  }
+  void apply(F f, S s, T t);
 
 }

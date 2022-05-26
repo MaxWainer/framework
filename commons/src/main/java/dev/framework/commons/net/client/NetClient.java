@@ -61,6 +61,8 @@ public interface NetClient {
     Builder socketFactory(
         final @NotNull SocketFactory socketFactory);
 
+    Builder jobFactory();
+
     Builder sslSocketFactory(final @NotNull SSLSocketFactory sslSocketFactory);
 
     Builder authenticator(final @NotNull Authenticator authenticator);

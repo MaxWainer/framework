@@ -22,8 +22,10 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.exception;
+package dev.framework.scheduler.function;
 
-public final class SchedulerException extends Throwable {
+public interface GenericOperation<T> {
+
+  T execute();
 
 }

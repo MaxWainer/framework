@@ -22,15 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.exception;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+import org.jetbrains.annotations.NotNull;
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
+public final class JobExecutionException extends Exception {
 
-  default void await() throws JobExecutionException {
-    waitCompletion();
+  public JobExecutionException(final @NotNull String message) {
+    super(message);
   }
 
 }
