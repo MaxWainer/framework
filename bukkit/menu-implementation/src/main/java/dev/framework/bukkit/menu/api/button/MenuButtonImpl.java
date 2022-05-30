@@ -30,13 +30,13 @@ import dev.framework.bukkit.menu.api.builder.AbstractMenuButtonBuildable;
 import dev.framework.bukkit.menu.api.handler.type.ClickHandler;
 import dev.framework.bukkit.menu.api.slot.Position;
 import dev.framework.bukkit.menu.api.slot.SlotImpl;
-import dev.framework.commons.concurrent.SynchronizeableObject;
+import dev.framework.commons.concurrent.SynchronizedObject;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 class MenuButtonImpl extends SlotImpl implements MenuButton {
 
-  private final SynchronizeableObject<ItemStack> itemStack;
+  private final SynchronizedObject<ItemStack> itemStack;
 
   MenuButtonImpl(
       @NotNull ClickHandler clickHandler,
@@ -44,7 +44,7 @@ class MenuButtonImpl extends SlotImpl implements MenuButton {
       @NotNull ItemStack stack) {
     super(clickHandler, position);
 
-    this.itemStack = SynchronizeableObject.create(stack);
+    this.itemStack = SynchronizedObject.create(stack);
   }
 
   @Override

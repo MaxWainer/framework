@@ -29,12 +29,12 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 
-public interface SynchronizeableObject<T> extends Supplier<T> {
+public interface SynchronizedObject<T> extends Supplier<T> {
 
-  static <V> SynchronizeableObject<V> create(final @NotNull V value) {
+  static <V> SynchronizedObject<V> create(final @NotNull V value) {
     Nulls.isNull(value, "value");
 
-    return new SynchronizeableObjectImpl<>(value);
+    return new SynchronizedObjectImpl<>(value);
   }
 
   void update(final @NotNull UnaryOperator<T> operator);

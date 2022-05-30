@@ -22,16 +22,42 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler;
 
-import dev.framework.scheduler.function.GenericOperation;
+import dev.framework.commons.Buildable;
+import dev.framework.scheduler.lock.LockProvider;
+import java.util.concurrent.ThreadFactory;
+import org.jetbrains.annotations.NotNull;
 
-public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+public final class Schedulers {
 
-  V await() throws Exception;
+  public static final int DYNAMIC_POOL_SIZE = -1;
 
-  @Override
-  default V execute() throws Exception {
-    return await();
+  public static Builder builder() {
+    return new Builder();
   }
+
+  public static final class Builder implements Buildable<Scheduler> {
+
+    public Builder lockProvider(final @NotNull LockProvider provider) {
+
+      return this;
+    }
+
+    public Builder threadFactory(final @NotNull ThreadFactory threadFactory) {
+
+      return this;
+    }
+
+    public Builder poolSize(final int size) {
+
+      return this;
+    }
+
+    @Override
+    public Scheduler build() {
+      return null;
+    }
+  }
+
 }

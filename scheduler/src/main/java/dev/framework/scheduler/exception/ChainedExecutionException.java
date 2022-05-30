@@ -22,16 +22,22 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler.exception;
 
-import dev.framework.scheduler.function.GenericOperation;
+import org.jetbrains.annotations.NotNull;
 
-public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+public final class ChainedExecutionException extends Exception {
 
-  V await() throws Exception;
-
-  @Override
-  default V execute() throws Exception {
-    return await();
+  public ChainedExecutionException(final @NotNull String message, final @NotNull Exception exception) {
+    super(message, exception);
   }
+
+  public ChainedExecutionException(final @NotNull Exception exception) {
+    super(exception);
+  }
+
+  public ChainedExecutionException(final @NotNull String message) {
+    super(message);
+  }
+
 }

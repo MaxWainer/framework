@@ -24,8 +24,13 @@
 
 package dev.framework.scheduler.function;
 
-public interface Operation {
+@FunctionalInterface
+public interface Operation extends GenericOperation<Void> {
 
-  void execute();
+  Void execute();
+
+  default void executeOperation() {
+    execute();
+  }
 
 }

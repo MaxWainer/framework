@@ -24,13 +24,10 @@
 
 package dev.framework.scheduler.job;
 
-import dev.framework.scheduler.wait.Waitable;
-import dev.framework.scheduler.exception.JobExecutionException;
+public interface Job extends GenericJob<Void> {
 
-public interface Job extends Waitable, StateHolder, Chained<Job> {
-
-  default void await() throws JobExecutionException {
-    waitCompletion();
+  default void awaitJob() throws Exception {
+    await();
   }
 
 }

@@ -24,8 +24,9 @@
 
 package dev.framework.scheduler.function;
 
+@FunctionalInterface
 public interface GenericOperation<T> {
 
-  T execute();
+  T execute() throws Exception;
 
 }

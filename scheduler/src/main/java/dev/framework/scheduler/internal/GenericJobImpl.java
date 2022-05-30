@@ -24,38 +24,20 @@
 
 package dev.framework.scheduler.internal;
 
-import dev.framework.commons.Nulls;
-import dev.framework.scheduler.lock.LockProvider;
-import dev.framework.scheduler.exception.JobExecutionException;
 import dev.framework.scheduler.function.GenericOperation;
-import dev.framework.scheduler.job.GenericJob;
-import java.util.concurrent.atomic.AtomicReference;
+import dev.framework.scheduler.lock.LockProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class GenericJobImpl<V> extends AbstractJob<GenericJob<V>> implements GenericJob<V> {
+public final class GenericJobImpl<T> extends AbstractGenericJob<T> {
 
-  private final GenericOperation<V> operation;
-  private final AtomicReference<V> resource = new AtomicReference<>(null);
-
-  protected GenericJobImpl(
-      @NotNull GenericOperation<V> operation,
-      @NotNull LockProvider awaiterProvider) {
-    super(awaiterProvider);
-    Nulls.isNull(operation, "operation");
-
-    this.operation = operation;
+  public GenericJobImpl(
+      @NotNull GenericOperation<T> operation,
+      @NotNull LockProvider lockProvider) {
+    super(operation, lockProvider);
   }
 
-
   @Override
-  protected void processResource() {
+  protected void releaseResource() throws Exception {
     resource.set(operation.execute());
-  }
-
-  @Override
-  public V await() throws JobExecutionException {
-    ensureStates();
-
-    return resource.get();
   }
 }

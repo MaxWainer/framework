@@ -22,16 +22,46 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler;
 
+import dev.framework.scheduler.exception.JobExecutionException;
 import dev.framework.scheduler.function.GenericOperation;
+import dev.framework.scheduler.function.Operation;
+import dev.framework.scheduler.internal.JobImpl;
+import dev.framework.scheduler.job.GenericJob;
+import dev.framework.scheduler.job.Job;
+import dev.framework.scheduler.lock.LockProvider;
+import java.util.concurrent.ScheduledExecutorService;
+import org.jetbrains.annotations.NotNull;
 
-public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+final class DynamicThreadPoolScheduler implements Scheduler {
 
-  V await() throws Exception;
+  private final ScheduledExecutorService service;
+  private final LockProvider lockProvider;
+
+  DynamicThreadPoolScheduler(final @NotNull ScheduledExecutorService service,
+      final @NotNull LockProvider lockProvider) {
+    this.service = service;
+    this.lockProvider = lockProvider;
+  }
 
   @Override
-  default V execute() throws Exception {
-    return await();
+  public @NotNull Job run(@NotNull Operation operation) {
+    final Job job = new JobImpl(operation, lockProvider);
+
+    service.execute(() -> {
+      try {
+        job.waitCompletion();
+      } catch (JobExecutionException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    return job;
+  }
+
+  @Override
+  public @NotNull <V> GenericJob<V> run(@NotNull GenericOperation<V> genericOperation) {
+    return null;
   }
 }

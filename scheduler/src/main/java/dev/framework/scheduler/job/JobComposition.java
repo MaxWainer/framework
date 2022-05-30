@@ -24,14 +24,8 @@
 
 package dev.framework.scheduler.job;
 
-import dev.framework.scheduler.function.GenericOperation;
+import dev.framework.scheduler.wait.Waitable;
 
-public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+public interface JobComposition extends Waitable, StateHolder {
 
-  V await() throws Exception;
-
-  @Override
-  default V execute() throws Exception {
-    return await();
-  }
 }

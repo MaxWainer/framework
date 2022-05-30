@@ -22,15 +22,41 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.commons.concurrent;
 
-import java.util.function.BiConsumer;
+import dev.framework.commons.concurrent.annotation.GuardedBy;
+import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 
-public interface Chained<C extends Chained> {
+final class SynchronizedObjectImpl<T> implements SynchronizedObject<T> {
 
-  @NotNull C then(final @NotNull C then);
+  private final Object[] mutex = new Object[0];
 
-  @NotNull C ifException(final @NotNull BiConsumer<Thread, Exception> consumer);
+  @GuardedBy("mutex")
+  private T data;
 
+  SynchronizedObjectImpl(final @NotNull T data) {
+    this.data = data;
+  }
+
+  @Override
+  public void update(@NotNull UnaryOperator<T> operator) {
+    synchronized (mutex) {
+      this.data = operator.apply(data);
+    }
+  }
+
+  @Override
+  public void replace(@NotNull T newData) {
+    synchronized (mutex) {
+      this.data = newData;
+    }
+  }
+
+  @Override
+  public T get() {
+    synchronized (mutex) {
+      return this.data;
+    }
+  }
 }

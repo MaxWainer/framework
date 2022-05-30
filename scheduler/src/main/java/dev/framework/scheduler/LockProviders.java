@@ -22,16 +22,17 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.job;
+package dev.framework.scheduler;
 
-import dev.framework.scheduler.function.GenericOperation;
+import dev.framework.scheduler.internal.lock.JavaLockProvider;
+import dev.framework.scheduler.lock.LockProvider;
+import java.util.concurrent.locks.Lock;
+import org.jetbrains.annotations.NotNull;
 
-public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+public class LockProviders {
 
-  V await() throws Exception;
-
-  @Override
-  default V execute() throws Exception {
-    return await();
+  public static LockProvider wrapJava(final @NotNull Lock lock) {
+    return new JavaLockProvider(lock);
   }
+
 }

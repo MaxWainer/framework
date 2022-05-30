@@ -32,4 +32,7 @@ public final class JobExecutionException extends Exception {
     super(message);
   }
 
+  public JobExecutionException(final @NotNull String message, final @NotNull Exception exception) {
+    super(message, exception);
+  }
 }

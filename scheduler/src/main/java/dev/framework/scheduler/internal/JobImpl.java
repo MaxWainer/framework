@@ -24,26 +24,21 @@
 
 package dev.framework.scheduler.internal;
 
-import dev.framework.commons.Nulls;
-import dev.framework.scheduler.lock.LockProvider;
-import dev.framework.scheduler.function.Operation;
+import dev.framework.scheduler.function.GenericOperation;
 import dev.framework.scheduler.job.Job;
+import dev.framework.scheduler.lock.LockProvider;
 import org.jetbrains.annotations.NotNull;
 
-public final class JobImpl extends AbstractJob<Job> implements Job {
-
-  private final Operation operation;
+public final class JobImpl extends AbstractGenericJob<Void> implements Job {
 
   public JobImpl(
-      @NotNull LockProvider awaiterProvider,
-      @NotNull Operation operation) {
-    super(awaiterProvider);
-    Nulls.isNull(operation, "operation");
-    this.operation = operation;
+      @NotNull GenericOperation<Void> operation,
+      @NotNull LockProvider lockProvider) {
+    super(operation, lockProvider);
   }
 
   @Override
-  protected void processResource() {
-    operation.execute();
+  protected void releaseResource() throws Exception {
+    resource.set(operation.execute());
   }
 }
