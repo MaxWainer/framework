@@ -22,19 +22,23 @@
  * SOFTWARE.
  */
 
-package dev.framework.locale;
+package dev.framework.bungee.implementation.command;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import org.jetbrains.annotations.NotNull;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-@FunctionalInterface
-public interface MessageMapper extends ComponentLike {
+public interface BungeeSuggestions {
 
-  @NotNull Component applyArguments(final @NotNull Object... args);
+  static Set<String> servers() {
+    return ProxyServer.getInstance().getServers().keySet();
+  }
 
-  @Override
-  default @NotNull Component asComponent() {
-    return applyArguments();
+  static List<String> onlinePlayers() {
+    return ProxyServer.getInstance().getPlayers().stream()
+        .map(ProxiedPlayer::getName)
+        .collect(Collectors.toList());
   }
 }

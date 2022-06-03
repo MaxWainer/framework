@@ -130,7 +130,7 @@ final class ResultSetReaderImpl implements ResultSetReader {
         return Optional.empty();
       }
 
-      final ObjectRepository<Object, RepositoryObject<Object>> foreignRepository = facade
+      final ObjectRepository foreignRepository = facade
           .repositoryRegistry()
           .findRepository(targetTable.delegate());
 

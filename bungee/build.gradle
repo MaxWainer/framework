@@ -1,0 +1,7 @@
+subprojects {
+  dependencies {
+    compileOnly project(':framework-commons')
+    compileOnly 'net.kyori:adventure-platform-bungeecord:4.1.0'
+    compileOnly 'net.md-5:bungeecord-api:1.16-R0.3'
+  }
+}

@@ -1,5 +1,7 @@
 group 'framework.bukkit.commons'
 
-dependencies {
-
+subprojects {
+  dependencies {
+    compileOnly project(':framework-commons')
+  }
 }

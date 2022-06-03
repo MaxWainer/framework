@@ -32,6 +32,11 @@ import org.jetbrains.annotations.NotNull;
 
 public interface ContextParsers {
 
+  static ContextParser<Boolean> flagParser(final @NotNull String preFlag) {
+    final String flag = "--" + preFlag;
+
+    return new FlagParser(flag);
+  }
   static ContextParser<String> regexPattern(final @RegExp @NotNull String pattern) {
     return new PatternParser(Pattern.compile(pattern));
   }

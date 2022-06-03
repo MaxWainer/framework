@@ -27,7 +27,6 @@ package dev.framework.loader.helper;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.logging.Logger;
-import jdk.jpackage.internal.Log;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 

@@ -43,7 +43,7 @@ public final class Repositories {
   }
 
   public static <V extends RepositoryObject<UUID>> @NotNull Repository<UUID, V> uuidToObjectMemoryRepository() {
-    return uuidToObjectMemoryRepository(ConcurrentHashMap::new);
+    return new UUIDToObjectMemoryRepository<>(new ConcurrentHashMap<>());
   }
 
   public static <V extends RepositoryObject<UUID>> @NotNull Repository<UUID, V> uuidToObjectMemoryRepository(

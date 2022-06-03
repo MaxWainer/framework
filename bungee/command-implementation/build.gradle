@@ -1,0 +1,4 @@
+dependencies {
+  compileOnly project(':bungee:framework-bungee-bootstrap-implementation')
+  compileOnly project(':framework-commands')
+}

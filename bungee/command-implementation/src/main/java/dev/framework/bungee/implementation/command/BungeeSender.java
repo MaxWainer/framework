@@ -22,51 +22,50 @@
  * SOFTWARE.
  */
 
-package dev.framework.commands.sender;
+package dev.framework.bungee.implementation.command;
 
+import dev.framework.commands.sender.Sender;
 import java.util.UUID;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.jetbrains.annotations.NotNull;
 
-public interface Sender {
+final class BungeeSender implements Sender {
 
-  UUID GENERIC_UUID = new UUID(0, 0); // if sender is console or undefined
+  private final Audience audience;
+  private final CommandSender handle;
 
-  @NotNull UUID uniqueId();
-
-  void sendMessage(final @NotNull Component component);
-
-  default void sendMessage(final @NotNull ComponentLike like) {
-    sendMessage(like.asComponent());
+  BungeeSender(
+      final @NotNull Audience audience,
+      final @NotNull CommandSender handle) {
+    this.audience = audience;
+    this.handle = handle;
   }
 
-
-  default void sendMessages(final @NotNull ComponentLike ...like) {
-    for (final ComponentLike componentLike : like) {
-      sendMessage(componentLike);
-    }
+  @Override
+  public @NotNull UUID uniqueId() {
+    return !(handle instanceof ProxiedPlayer) ? Sender.GENERIC_UUID
+        : ((ProxiedPlayer) handle).getUniqueId();
   }
 
-  default void sendMessages(final @NotNull Component ...messages) {
-    for (final Component message : messages) {
-      sendMessage(message);
-    }
+  @Override
+  public void sendMessage(final @NotNull Component component) {
+    audience.sendMessage(component);
   }
 
-  default void sendMessages(final @NotNull Iterable<? extends ComponentLike> messages) {
-    for (final ComponentLike message : messages) {
-      sendMessage(message);
-    }
+  @Override
+  public void sendMessage(final @NotNull String message) {
+    handle.sendMessage(message);
   }
 
-  void sendMessage(final @NotNull String message);
-
-  boolean hasPermission(final @NotNull String permission);
-
-  default boolean console() {
-    return uniqueId().equals(GENERIC_UUID);
+  @Override
+  public boolean hasPermission(final @NotNull String permission) {
+    return handle.hasPermission(permission);
   }
 
+  public CommandSender handle() {
+    return handle;
+  }
 }

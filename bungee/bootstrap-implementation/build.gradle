@@ -1,0 +1,4 @@
+dependencies {
+  compileOnly project(':framework-bootstrap')
+  compileOnly project(':framework-loader')
+}
