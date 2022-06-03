@@ -22,8 +22,16 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.exception;
+package dev.framework.scheduler.job;
 
-public final class SchedulerException extends Throwable {
+import dev.framework.scheduler.function.GenericOperation;
 
+public interface GenericJob<V> extends JobComposition, GenericOperation<V> {
+
+  V await() throws Exception;
+
+  @Override
+  default V execute() throws Exception {
+    return await();
+  }
 }

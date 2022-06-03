@@ -25,6 +25,7 @@
 package dev.framework.commons.bool;
 
 import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.Nulls;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,6 +54,8 @@ public final class Booleans {
   }
 
   public static Boolean parseBooleanStrict(final @NotNull String input) {
+    Nulls.isNull(input, "input");
+
     final Boolean result = MAPPERS.get(input); // getting from mappers our input
 
     if (result == null) { // if null, we throw exception

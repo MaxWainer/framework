@@ -22,15 +22,41 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler;
+package dev.framework.commons.concurrent;
 
-import dev.framework.scheduler.scope.SchedulerScope;
+import dev.framework.commons.concurrent.annotation.GuardedBy;
+import java.util.function.UnaryOperator;
 import org.jetbrains.annotations.NotNull;
 
-public interface SchedulerFactory {
+final class SynchronizedObjectImpl<T> implements SynchronizedObject<T> {
 
-  @NotNull Scheduler create();
+  private final Object[] mutex = new Object[0];
 
-  @NotNull Scheduler create(final @NotNull SchedulerScope defaultScope);
+  @GuardedBy("mutex")
+  private T data;
 
+  SynchronizedObjectImpl(final @NotNull T data) {
+    this.data = data;
+  }
+
+  @Override
+  public void update(@NotNull UnaryOperator<T> operator) {
+    synchronized (mutex) {
+      this.data = operator.apply(data);
+    }
+  }
+
+  @Override
+  public void replace(@NotNull T newData) {
+    synchronized (mutex) {
+      this.data = newData;
+    }
+  }
+
+  @Override
+  public T get() {
+    synchronized (mutex) {
+      return this.data;
+    }
+  }
 }

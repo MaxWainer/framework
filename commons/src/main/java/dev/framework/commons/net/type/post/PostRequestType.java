@@ -22,20 +22,19 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons.concurrent;
+package dev.framework.commons.net.type.post;
 
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
+import dev.framework.commons.net.type.RequestType;
 import org.jetbrains.annotations.NotNull;
 
-public interface SynchronizeableObject<T> extends Supplier<T> {
+public interface PostRequestType extends RequestType {
 
-  static <V> SynchronizeableObject<V> create(final @NotNull V value) {
-    return new SynchronizeableObjectImpl<>(value);
+  @NotNull MediaType mediaType();
+
+  @NotNull RequestBody requestBody();
+
+  @Override
+  default @NotNull String rawType() {
+    return "POST";
   }
-
-  void update(final @NotNull UnaryOperator<T> operator);
-
-  void replace(final @NotNull T newData);
-
 }

@@ -39,6 +39,7 @@ public final class MoreExceptions {
   }
 
   public static void nagAuthor(final @NotNull String detailedMessage) {
+    Nulls.isNull(detailedMessage, "detailedMessage");
     throw new NagAuthorException(detailedMessage);
   }
 
@@ -46,6 +47,9 @@ public final class MoreExceptions {
       final T object,
       final @NotNull Predicate<T> predicate,
       final @NotNull Function<T, X> exceptionFactory) throws X {
+    Nulls.isNull(predicate, "predicate");
+    Nulls.isNull(exceptionFactory, "exceptionFactory");
+
     if (!predicate.test(object)) {
       throw exceptionFactory.apply(object);
     }

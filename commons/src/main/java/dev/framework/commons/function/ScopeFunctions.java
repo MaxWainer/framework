@@ -25,6 +25,7 @@
 package dev.framework.commons.function;
 
 import dev.framework.commons.MoreExceptions;
+import dev.framework.commons.Nulls;
 import dev.framework.commons.annotation.UtilityClass;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
@@ -37,6 +38,9 @@ public final class ScopeFunctions {
   }
 
   public static <T> T after(final @NotNull T object, final @NotNull Consumer<T> consumer) {
+    Nulls.isNull(object, "object");
+    Nulls.isNull(consumer, "consumer");
+
     consumer.accept(object);
     return object;
   }

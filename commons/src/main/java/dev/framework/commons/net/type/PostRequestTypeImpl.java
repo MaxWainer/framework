@@ -22,41 +22,30 @@
  * SOFTWARE.
  */
 
-package dev.framework.commons.concurrent;
+package dev.framework.commons.net.type;
 
-import dev.framework.commons.concurrent.annotation.GuardedBy;
-import java.util.function.UnaryOperator;
+import dev.framework.commons.net.type.post.MediaType;
+import dev.framework.commons.net.type.post.PostRequestType;
+import dev.framework.commons.net.type.post.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
-final class SynchronizeableObjectImpl<T> implements SynchronizeableObject<T> {
+final class PostRequestTypeImpl implements PostRequestType {
 
-  private final Object[] mutex = new Object[0];
+  private final MediaType mediaType;
+  private final RequestBody requestBody;
 
-  @GuardedBy("mutex")
-  private T data;
-
-  SynchronizeableObjectImpl(final @NotNull T data) {
-    this.data = data;
+  PostRequestTypeImpl(final @NotNull MediaType mediaType, RequestBody requestBody) {
+    this.mediaType = mediaType;
+    this.requestBody = requestBody;
   }
 
   @Override
-  public void update(@NotNull UnaryOperator<T> operator) {
-    synchronized (mutex) {
-      this.data = operator.apply(data);
-    }
+  public @NotNull MediaType mediaType() {
+    return mediaType;
   }
 
   @Override
-  public void replace(@NotNull T newData) {
-    synchronized (mutex) {
-      this.data = newData;
-    }
-  }
-
-  @Override
-  public T get() {
-    synchronized (mutex) {
-      return this.data;
-    }
+  public @NotNull RequestBody requestBody() {
+    return requestBody;
   }
 }

@@ -22,19 +22,14 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.wait;
+package dev.framework.commons.net.call.result;
 
-import dev.framework.commons.function.ThrowableFunctions.ThrowableSupplier;
-import dev.framework.commons.time.TemporalValue;
-import dev.framework.scheduler.exception.SchedulerException;
-import java.time.temporal.ChronoUnit;
+import dev.framework.commons.net.data.ResultBody;
 import org.jetbrains.annotations.NotNull;
 
-public interface Waited<T> extends ThrowableSupplier<T, SchedulerException> {
+public interface CallResult extends AutoCloseable {
 
-  @Override
-  T get() throws SchedulerException;
+  @NotNull ResultBody resultBody();
 
-  T get(final @NotNull TemporalValue<ChronoUnit> value) throws SchedulerException;
-
+  int responseCode();
 }

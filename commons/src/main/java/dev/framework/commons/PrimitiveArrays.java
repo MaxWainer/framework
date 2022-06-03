@@ -37,7 +37,8 @@ public final class PrimitiveArrays {
     MoreExceptions.instantiationError();
   }
 
-  public static int size2d(final @NotNull Object[][] arrT) {
+  public static int size2d(final @NotNull Object @NotNull [] @NotNull [] arrT) {
+    Nulls.isNull(arrT, "arrT");
     int count = 0;
 
     for (Object[] objects : arrT) {
@@ -51,7 +52,9 @@ public final class PrimitiveArrays {
     return count;
   }
 
-  public static <T> boolean contains(final @NotNull T[] arrT, final @NotNull T checking) {
+  public static <T> boolean contains(final @NotNull T @NotNull [] arrT, final @NotNull T checking) {
+    Nulls.isNull(arrT, "arrT");
+    Nulls.isNull(checking, "checking");
 
     for (final T t : arrT) {
       if (checking.equals(t))
@@ -63,6 +66,8 @@ public final class PrimitiveArrays {
 
   public static <T> T[] appendHead(final @NotNull T @NonNls [] array,
       final @UnknownNullability T toAppend) {
+    Nulls.isNull(array, "array");
+
     final int destSize = array.length + 1;
     final T[] result = Arrays.copyOf(array, destSize);
 

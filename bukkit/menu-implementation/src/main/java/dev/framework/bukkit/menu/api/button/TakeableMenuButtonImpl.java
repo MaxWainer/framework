@@ -32,7 +32,7 @@ import dev.framework.bukkit.menu.api.handler.type.ClickHandler;
 import dev.framework.bukkit.menu.api.handler.type.PlaceItemHandler;
 import dev.framework.bukkit.menu.api.slot.DynamicSlotImpl;
 import dev.framework.bukkit.menu.api.slot.Position;
-import dev.framework.commons.concurrent.SynchronizeableObject;
+import dev.framework.commons.concurrent.SynchronizedObject;
 import java.util.function.Consumer;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 final class TakeableMenuButtonImpl extends DynamicSlotImpl implements TakeableMenuButton {
 
-  private final SynchronizeableObject<ItemStack> itemStack;
+  private final SynchronizedObject<ItemStack> itemStack;
 
   public TakeableMenuButtonImpl(
       @NotNull ClickHandler clickHandler,
@@ -49,7 +49,7 @@ final class TakeableMenuButtonImpl extends DynamicSlotImpl implements TakeableMe
       @Nullable Consumer<Menu> onIteration,
       @NotNull ItemStack stack) {
     super(clickHandler, position, placeItemHandler, onIteration);
-    this.itemStack = SynchronizeableObject.create(stack);
+    this.itemStack = SynchronizedObject.create(stack);
   }
 
   @Override

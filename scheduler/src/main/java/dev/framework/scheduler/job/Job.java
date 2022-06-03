@@ -24,29 +24,10 @@
 
 package dev.framework.scheduler.job;
 
-import dev.framework.commons.Buildable;
-import dev.framework.commons.function.ExceptionHandler;
-import dev.framework.commons.function.ThrowableFunctions.ThrowableBiConsumer;
-import dev.framework.scheduler.exception.SchedulerException;
-import dev.framework.scheduler.wait.Waited;
-import org.jetbrains.annotations.NotNull;
+public interface Job extends GenericJob<Void> {
 
-public interface Job<T> {
-
-  @NotNull Job<T> then(
-      final @NotNull ThrowableBiConsumer<T, Exception, SchedulerException> then);
-
-  @NotNull Job<T> composeWith(final @NotNull Job<T> composing);
-
-  @NotNull Waited<T> get();
-
-  @NotNull ExceptionHandler<? extends Throwable> exceptionHandler();
-
-  interface JobPreProcessor<V> extends Buildable<Job<V>> {
-
-    @NotNull JobPreProcessor<V> exceptionHandler(
-        final @NotNull ExceptionHandler<? extends Throwable> exceptionHandler);
-
+  default void awaitJob() throws Exception {
+    await();
   }
 
 }

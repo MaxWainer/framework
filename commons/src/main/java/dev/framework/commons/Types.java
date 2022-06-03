@@ -53,22 +53,27 @@ public final class Types {
 
   // contravariance object type as class
   public static <R> Class<? super R> contravarianceType(final @NotNull R obj) {
+    Nulls.isNull(obj, "obj");
     return (Class<? super R>) TypeToken.of(obj.getClass()).getRawType();
   }
 
   public static boolean isPrimitive(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     return PRIMITIVE_TO_BOXED.containsKey(clazz) || BOXED_TO_PRIMITIVE.containsKey(clazz);
   }
 
   public static Class<?> asBoxedPrimitive(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     return isBoxed(clazz) ? clazz : boxed(clazz);
   }
 
   public static boolean isBoxed(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     return BOXED_TO_PRIMITIVE.containsKey(clazz);
   }
 
   public static Class<?> unboxed(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     return MoreExceptions.checkObject(
         BOXED_TO_PRIMITIVE.get(clazz),
         Objects::nonNull,
@@ -76,6 +81,7 @@ public final class Types {
   }
 
   public static Class<?> boxed(final @NotNull Class<?> clazz) {
+    Nulls.isNull(clazz, "clazz");
     return MoreExceptions.checkObject(
         PRIMITIVE_TO_BOXED.get(clazz),
         Objects::nonNull,

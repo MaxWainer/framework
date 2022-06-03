@@ -33,6 +33,7 @@ public final class Measure {
   final Result result;
 
   public Measure(final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
+    Nulls.isNull(runnable, "runnable");
     final long start = System.currentTimeMillis();
 
     Throwable exception = null;
@@ -49,6 +50,7 @@ public final class Measure {
 
   public static @NotNull Measure.Result measure(
       final @NotNull ThrowableFunctions.ThrowableRunnable<Throwable> runnable) {
+    Nulls.isNull(runnable, "runnable");
     return new Measure(runnable).result;
   }
 

@@ -22,16 +22,22 @@
  * SOFTWARE.
  */
 
-package dev.framework.scheduler.scope;
+package dev.framework.commons.net;
 
-import dev.framework.scheduler.wait.Waited;
-import java.util.concurrent.Callable;
-import org.jetbrains.annotations.NotNull;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 
-public interface SchedulerScope {
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.intellij.lang.annotations.Pattern;
 
-  void run(final @NotNull Runnable runnable);
-
-  <V> @NotNull Waited<V> call(final @NotNull Callable<V> callable);
+@Pattern(NetConstants.RAW_URL_PATTERN)
+@Retention(RetentionPolicy.CLASS)
+@Target({METHOD, FIELD, PARAMETER, LOCAL_VARIABLE, ANNOTATION_TYPE})
+public @interface URLPattern {
 
 }

@@ -24,30 +24,16 @@
 
 package dev.framework.scheduler;
 
-import dev.framework.commons.io.Openable;
-import dev.framework.scheduler.wait.Waited;
-import dev.framework.scheduler.exception.SchedulerException;
+import dev.framework.scheduler.function.GenericOperation;
+import dev.framework.scheduler.function.Operation;
+import dev.framework.scheduler.job.GenericJob;
 import dev.framework.scheduler.job.Job;
-import dev.framework.scheduler.scope.SchedulerScope;
-import java.io.Closeable;
-import org.jetbrains.annotations.ApiStatus.NonExtendable;
 import org.jetbrains.annotations.NotNull;
 
-@NonExtendable
-public interface Scheduler extends Closeable, Openable<SchedulerException> {
+public interface Scheduler {
 
-  <V> @NotNull Waited<V> callJob(
-      final @NotNull SchedulerScope scope,
-      final @NotNull Job<V> job);
+  @NotNull Job run(final @NotNull Operation operation);
 
-  <V> @NotNull Waited<V> callJob(
-      final @NotNull Job<V> job);
-
-  @NotNull Waited<Void> runJob(
-      final @NotNull SchedulerScope scope,
-      final @NotNull Job<Void> job);
-
-  @NotNull Waited<Void> runJob(
-      final @NotNull Job<Void> job);
+  <V> @NotNull GenericJob<V> run(final @NotNull GenericOperation<V> genericOperation);
 
 }
